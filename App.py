@@ -7,22 +7,14 @@ import plotly.express as px
 # --------------------------------------------
 df = pd.read_csv("dashboard_clean.csv")
 
+# Force Minutes to be numeric
+df["Minutes"] = pd.to_numeric(df["Minutes"], errors="coerce")
+
 # Ensure Age_Group order
 df["Age_Group"] = pd.Categorical(
     df["Age_Group"],
     categories=["Children", "Adolescents", "Adult", "Unknown"],
     ordered=True
-)
-
-# --------------------------------------------
-# Sidebar Filters
-# --------------------------------------------
-st.sidebar.header("Filters")
-
-age_filter = st.sidebar.multiselect(
-    "Age Group",
-    options=df["Age_Group"].unique().tolist(),
-    default=df["Age_Group"].unique().tolist()
 )
 
 device_filter = st.sidebar.multiselect(
