@@ -176,46 +176,68 @@ with col2:
 
 
 # ----------------------------------------------------
-# PLOT 3 — DOT & MEAN LINE PLOT
+# NEW — BEHAVIOR CHOICE FOR SCATTER PLOT
 # ----------------------------------------------------
-st.subheader("All Study Data Points + Mean Lines")
+st.subheader("Behavior-Specific Scatter Plot")
 
-if df_f.empty:
-    st.warning("No study data available.")
+behavior_choice = st.selectbox(
+    "Choose a behavior to visualize",
+    options=["Sleep", "SB", "LPA", "MVPA"]
+)
+
+df_b = df_f[df_f["Behavior"] == behavior_choice].copy()
+
+if df_b.empty:
+    st.warning(f"No data available for behavior: {behavior_choice}")
 else:
-    fig_scatter = px.scatter(
-        df_f,
+
+    # Split by arithmetic vs geometric
+    arith_b = df_b[df_b["Mean_Type"] == "Arithmetic"]
+    geo_b   = df_b[df_b["Mean_Type"] == "Geometric"]
+
+    # Compute means
+    mean_arith = arith_b.groupby("Age_Group")["Minutes"].mean()
+    mean_geo   = geo_b.groupby("Age_Group")["Minutes"].mean()
+
+    # Create a placeholder y value so points appear in a horizontal cloud
+    df_b["y"] = 0
+
+    fig_b = px.scatter(
+        df_b,
         x="Minutes",
-        y="Behavior",
+        y="y",
         color="Mean_Type",
         symbol="Mean_Type",
         symbol_map={"Arithmetic": "circle", "Geometric": "triangle-up"},
-        facet_row="Age_Group",
-        title="Study Values (Dots) with Arithmetic & Geometric Means (Lines)",
+        facet_col="Age_Group",
         category_orders={"Age_Group": ["Children", "Adolescents", "Adult", "Unknown"]},
-        height=1200,
+        title=f"{behavior_choice}: Individual Data Points with Means",
+        height=400
     )
 
-    # Add mean lines
-    for _, row in arith_means.iterrows():
-        fig_scatter.add_shape(
-            type="line",
-            x0=row["Minutes"], x1=row["Minutes"],
-            y0=0, y1=1,
-            xref="x", yref="paper",
-            line=dict(color="black", width=2),
-        )
+    # Add mean horizontal lines
+    for age in ["Children", "Adolescents", "Adult", "Unknown"]:
+        if age in mean_arith.index:
+            fig_b.add_hline(
+                y=0.2,
+                line_width=3,
+                line_color="black",
+                row=1,
+                col=["Children","Adolescents","Adult","Unknown"].index(age) + 1
+            )
+        if age in mean_geo.index:
+            fig_b.add_hline(
+                y=-0.2,
+                line_width=3,
+                line_color="blue",
+                line_dash="dot",
+                row=1,
+                col=["Children","Adolescents","Adult","Unknown"].index(age) + 1
+            )
 
-    for _, row in geo_means.iterrows():
-        fig_scatter.add_shape(
-            type="line",
-            x0=row["Minutes"], x1=row["Minutes"],
-            y0=0, y1=1,
-            xref="x", yref="paper",
-            line=dict(color="blue", width=2, dash="dot"),
-        )
+    fig_b.update_yaxes(visible=False)
 
-    st.plotly_chart(fig_scatter, use_container_width=True)
+    st.plotly_chart(fig_b, use_container_width=True)
 
 
 # ----------------------------------------------------
