@@ -110,7 +110,7 @@ with col2:
         st.info("No geometric data available after filtering.")
 
 # ======================================================================
-# NEW IMPROVED PLOT 2 — INDIVIDUAL STUDY POINTS WITH FACETS
+# NEW FIXED SCATTER — COLLAPSE DUPLICATES & CLEAN FACETS
 # ======================================================================
 
 st.subheader("Individual Study Estimates by Behavior")
@@ -125,35 +125,43 @@ df_beh = df_f[df_f["Behavior"] == selected_behavior].copy()
 if df_beh.empty:
     st.warning("No data for this behavior with current filters.")
 else:
-    # Make row index for visual spacing
-    df_beh = df_beh.sort_values("Minutes").reset_index(drop=True)
-    df_beh["row_id"] = df_beh.index.astype(str)
 
-    # Compute arithmetic and geometric means per age group
+    # ---------------------------------------------------------
+    # REMOVE DUPLICATES:
+    # keep 1 row per STUDY × SUBGROUP × BEHAVIOR × MEAN_TYPE
+    # ---------------------------------------------------------
+    df_beh = (
+        df_beh
+        .sort_values("Minutes")
+        .drop_duplicates(subset=["StudyID","Subgroup","Behavior","Mean_Type"])
+        .reset_index(drop=True)
+    )
+
+    # --------------------------
+    # Set study order by Minutes
+    # --------------------------
+    df_beh = df_beh.sort_values("Minutes", ascending=True)
+    df_beh["row_id"] = df_beh.index
+
+    # Compute means per age group
     mean_df = (
-        df_beh.groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
+        df_beh.groupby(["Age_Group","Mean_Type"], observed=False)["Minutes"]
         .mean()
         .reset_index()
     )
 
-    # Force all three facets to exist even if empty
+    # Force consistent facet order
     df_beh["Age_Group"] = pd.Categorical(
         df_beh["Age_Group"],
-        categories=["Children", "Adolescents", "Adult"],
+        categories=["Children","Adolescents","Adult"],
         ordered=True
     )
     mean_df["Age_Group"] = pd.Categorical(
         mean_df["Age_Group"],
-        categories=["Children", "Adolescents", "Adult"],
+        categories=["Children","Adolescents","Adult"],
         ordered=True
     )
 
-    shape_map = {"Arithmetic": "circle", "Geometric": "triangle-up"}
-    color_map = {"Arithmetic": "#2E86C1", "Geometric": "#C0392B"}
-
-    # --------------------------
-    # BUILD SCATTER WITH FACETS
-    # --------------------------
     fig = px.scatter(
         df_beh,
         x="Minutes",
@@ -161,51 +169,46 @@ else:
         color="Mean_Type",
         symbol="Mean_Type",
         hover_name="StudyID_display",
-        hover_data=["StudyID_display", "Minutes"],
-        color_discrete_map=color_map,
-        symbol_map=shape_map,
+        hover_data=["Minutes","Subgroup"],
         facet_col="Age_Group",
         facet_col_wrap=3,
-        height=650,
-        title=f"{selected_behavior}: Study-Level Arithmetic & Geometric Estimates",
+        height=900,
+        color_discrete_map={"Arithmetic":"#1f77b4","Geometric":"#d62728"},
+        title=f"{selected_behavior}: Study-Level Estimates"
     )
 
-    # Make facet backgrounds distinct
-    fig.for_each_xaxis(lambda a: a.update(showgrid=True, gridcolor="#CCCCCC"))
-    fig.for_each_yaxis(lambda a: a.update(showgrid=False))
-    fig.update_layout(plot_bgcolor="white")
+    # Replace row_id ticks with Study names
+    fig.update_yaxes(
+        tickvals=df_beh["row_id"],
+        ticktext=df_beh["StudyID_display"],
+        automargin=True
+    )
 
     # --------------------------
     # ADD MEAN LINES PER FACET
     # --------------------------
-    for _, r in mean_df.iterrows():
+    for i, age in enumerate(["Children","Adolescents","Adult"], start=1):
+        xA = mean_df[(mean_df["Age_Group"]==age) & (mean_df["Mean_Type"]=="Arithmetic")]["Minutes"]
+        xG = mean_df[(mean_df["Age_Group"]==age) & (mean_df["Mean_Type"]=="Geometric")]["Minutes"]
 
-        x_mean = r["Minutes"]
-        mean_type = r["Mean_Type"]
-        age = r["Age_Group"]
+        xref = f"x{i}" if i>1 else "x"
 
-        # Which facet this belongs to
-        facet_index = ["Children", "Adolescents", "Adult"].index(age) + 1
-        xref = f"x{facet_index}" if facet_index > 1 else "x"
-
-        line_color = color_map[mean_type]
-
-        fig.add_shape(
-            type="line",
-            x0=x_mean, x1=x_mean,
-            y0=0, y1=1,
-            xref=xref,
-            yref="paper",  # stays within facet
-            line=dict(color=line_color, width=3, dash="dash"),
-            opacity=0.9,
-        )
-
-    # Replace row_id ticks with StudyID labels
-    fig.update_yaxes(
-        ticktext=df_beh["StudyID_display"].tolist(),
-        tickvals=df_beh["row_id"].tolist(),
-        automargin=True,
-    )
+        if not xA.empty:
+            fig.add_vline(
+                x=xA.values[0],
+                line_dash="dash",
+                line_color="#1f77b4",
+                row=1,
+                col=i
+            )
+        if not xG.empty:
+            fig.add_vline(
+                x=xG.values[0],
+                line_dash="dash",
+                line_color="#d62728",
+                row=1,
+                col=i
+            )
 
     st.plotly_chart(fig, width="stretch")
 
