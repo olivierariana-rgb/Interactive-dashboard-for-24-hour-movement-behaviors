@@ -348,98 +348,123 @@ else:
     st.dataframe(wide_all)
 
 # ======================================================================
-#  SIMPLEX EXPLORER — Sleep / SB / MVPA (Geometric Means Only)
-# ======================================================================
+# ============================================================
+# SIMPLEX VISUALIZATION — Sleep / SB / MVPA
+# ============================================================
 
-st.header("Simplex Explorer (Geometric Means Only)")
+st.subheader("Geometric Mean Simplex (Sleep – SB – MVPA)")
 
-# ----------------------------------------------------------
-# STEP 1 — Keep only geometric means for the 3-part simplex
-# ----------------------------------------------------------
-simplex_df = wide_all.copy()
+# We only use GEOMETRIC means, since compositional data needs closure
+behaviors_simplex = ["Sleep", "SB", "MVPA"]
 
-# Ensure columns exist (some studies may lack one behavior)
-needed_cols = ["G_Sleep", "G_SB", "G_MVPA"]
+# Filter dashboard data to only geometric means for selected behaviors
+df_geo = df_f[
+    (df_f["Mean_Type"] == "Geometric") &
+    (df_f["Behavior"].isin(behaviors_simplex))
+].copy()
 
-available_cols = [c for c in needed_cols if c in simplex_df.columns]
-
-if len(available_cols) < 3:
-    st.warning("Not enough geometric means available to build a simplex.")
+if df_geo.empty:
+    st.info("No geometric mean data available for simplex visualization.")
 else:
 
-    # Remove rows missing ANY of the required values
-    simplex_df = simplex_df.dropna(subset=needed_cols)
+    # ---------------------------------------------------------------
+    # Pivot to get ONE ROW per StudyID + Subgroup with 3 behaviors
+    # ---------------------------------------------------------------
+    wide_geo = (
+        df_geo
+        .pivot_table(
+            index=["StudyID", "Subgroup"],
+            columns="Behavior",
+            values="Minutes",
+            aggfunc="mean"
+        )
+        .reset_index()
+    )
 
-    # If empty after filtering → warn user
+    # Rename columns to G_Sleep, G_SB, G_MVPA for clarity
+    wide_geo = wide_geo.rename(columns={
+        "Sleep": "G_Sleep",
+        "SB": "G_SB",
+        "MVPA": "G_MVPA"
+    })
+
+    # ---------------------------------------------------------------
+    # Keep rows where all three behaviors are present
+    # ---------------------------------------------------------------
+    required_cols = ["G_Sleep", "G_SB", "G_MVPA"]
+    simplex_df = wide_geo.dropna(subset=required_cols).copy()
+
     if simplex_df.empty:
-        st.warning("No studies contain all three geometric means (Sleep, SB, MVPA).")
+        st.warning("Not enough studies with Sleep + SB + MVPA geometric means.")
     else:
 
-        # ----------------------------------------------------------
-        # STEP 2 — Merge metadata (so sidebar filters apply cleanly)
-        # ----------------------------------------------------------
+        # ---------------------------------------------------------------
+        # Add metadata (age group, country, etc.)
+        # ---------------------------------------------------------------
         simplex_df = simplex_df.merge(meta, on="StudyID", how="left")
 
-        # Apply SAME FILTERS as dashboard (so Simplex matches other plots)
-        # Because df_f contains all studies surviving filters:
-        filtered_study_ids = df_f["StudyID"].unique()
-        simplex_df = simplex_df[simplex_df["StudyID"].isin(filtered_study_ids)]
+        # ---------------------------------------------------------------
+        # Compute closure — convert Minutes → proportions
+        # ---------------------------------------------------------------
+        simplex_df["sum_total"] = (
+            simplex_df["G_Sleep"] +
+            simplex_df["G_SB"] +
+            simplex_df["G_MVPA"]
+        )
 
-        if simplex_df.empty:
-            st.warning("After filtering, no studies have complete geometric-composition data.")
-        else:
+        simplex_df["Sleep_cl"] = simplex_df["G_Sleep"] / simplex_df["sum_total"]
+        simplex_df["SB_cl"]    = simplex_df["G_SB"] / simplex_df["sum_total"]
+        simplex_df["MVPA_cl"]  = simplex_df["G_MVPA"] / simplex_df["sum_total"]
 
-            st.success(f"Simplex includes **{len(simplex_df)} study-subgroups**.")
+        # ---------------------------------------------------------------
+        # FIX SUBGROUP COLUMN FOR SYMBOLS (important!)
+        # ---------------------------------------------------------------
+        if "Subgroup_x" in simplex_df.columns:
+            simplex_df = simplex_df.rename(columns={"Subgroup_x": "Subgroup"})
+        if "Subgroup_y" in simplex_df.columns:
+            simplex_df = simplex_df.drop(columns=["Subgroup_y"])
 
-            # ----------------------------------------------------------
-            # STEP 3 — Normalize to closure (sum = 1)
-            # ----------------------------------------------------------
-            comp = simplex_df[["G_Sleep", "G_SB", "G_MVPA"]].copy()
-            comp_sum = comp.sum(axis=1)
-            comp_norm = comp.div(comp_sum, axis=0)
+        # Subgroup values: replace NaN with "Full Sample"
+        simplex_df["Subgroup"] = simplex_df["Subgroup"].fillna("Full Sample")
 
-            simplex_df["Sleep_cl"] = comp_norm["G_Sleep"]
-            simplex_df["SB_cl"]     = comp_norm["G_SB"]
-            simplex_df["MVPA_cl"]   = comp_norm["G_MVPA"]
+        # ---------------------------------------------------------------
+        # BUILD TERNARY SCATTERPLOT
+        # ---------------------------------------------------------------
+        import plotly.express as px
 
-            # ----------------------------------------------------------
-            # STEP 4 — Build ternary figure
-            # ----------------------------------------------------------
-            import plotly.express as px
+        fig_simplex = px.scatter_ternary(
+            simplex_df,
+            a="Sleep_cl",
+            b="SB_cl",
+            c="MVPA_cl",
+            hover_name="StudyID",
+            hover_data={
+                "G_Sleep": True,
+                "G_SB": True,
+                "G_MVPA": True,
+                "Subgroup": True,
+                "Age_Group": True,
+                "Country": True
+            },
+            color="Age_Group",
+            symbol="Subgroup",
+            size_max=12,
+            title="Compositional Triangle (Sleep – SB – MVPA)"
+        )
 
-            fig_simplex = px.scatter_ternary(
-                simplex_df,
-                a="Sleep_cl",
-                b="SB_cl",
-                c="MVPA_cl",
-                hover_name="StudyID",
-                color="Age_Group",
-                size_max=12,
-                title="Geometric Mean Composition Simplex (Sleep / SB / MVPA)",
-                symbol="Subgroup"
-            )
+        fig_simplex.update_traces(marker=dict(size=10, line=dict(width=1, color="black")))
 
-            fig_simplex.update_traces(marker=dict(size=10, opacity=0.8))
+        fig_simplex.update_layout(
+            ternary=dict(
+                sum=1,
+                aaxis_title="Sleep",
+                baxis_title="Sedentary Behavior",
+                caxis_title="MVPA",
+                bgcolor="#f7f7f7"
+            ),
+            legend_title_text="Groups",
+            margin=dict(l=40, r=40, t=80, b=40),
+            paper_bgcolor="white"
+        )
 
-            fig_simplex.update_layout(
-                ternary=dict(
-                    sum=1,
-                    aaxis_title="Sleep",
-                    baxis_title="Sedentary (SB)",
-                    caxis_title="MVPA",
-                    bgcolor="white"
-                ),
-                legend_title="Age Group",
-                height=700,
-                margin=dict(l=20, r=20, t=60, b=20)
-            )
-
-            st.plotly_chart(fig_simplex, use_container_width=True)
-
-            # ----------------------------------------------------------
-            # STEP 5 — Show underlying table (optional)
-            # ----------------------------------------------------------
-            st.write("### Compositional Data Table Used for Simplex")
-            show_cols = ["StudyID", "Subgroup", "G_Sleep", "G_SB", "G_MVPA",
-                         "Sleep_cl", "SB_cl", "MVPA_cl"]
-            st.dataframe(simplex_df[show_cols])
+        st.plotly_chart(fig_simplex, width="stretch")
