@@ -108,7 +108,6 @@ with col2:
         st.plotly_chart(fig_g, width="stretch")
     else:
         st.info("No geometric data available after filtering.")
-
 # ======================================================================
 # NEW FIXED SCATTER — COLLAPSE DUPLICATES & CLEAN FACETS
 # ======================================================================
@@ -122,14 +121,15 @@ selected_behavior = st.selectbox(
 
 df_beh = df_f[df_f["Behavior"] == selected_behavior].copy()
 
+# Remove Unknown age group
+df_beh = df_beh[df_beh["Age_Group"].isin(["Children","Adolescents","Adult"])]
+
 if df_beh.empty:
     st.warning("No data for this behavior with current filters.")
 else:
 
     # ---------------------------------------------------------
     # REMOVE DUPLICATES:
-    # keep 1 row per STUDY × SUBGROUP × BEHAVIOR × MEAN_TYPE
-    # ---------------------------------------------------------
     df_beh = (
         df_beh
         .sort_values("Minutes")
@@ -138,31 +138,30 @@ else:
     )
 
     # --------------------------
-    # Set study order by Minutes
+    # Order studies
     # --------------------------
     df_beh = df_beh.sort_values("Minutes", ascending=True)
     df_beh["row_id"] = df_beh.index
 
-    # Compute means per age group
+    # --------------------------
+    # Ensure ordered facet levels
+    # --------------------------
+    valid_levels = ["Children","Adolescents","Adult"]
+    existing_levels = [lvl for lvl in valid_levels if lvl in df_beh["Age_Group"].unique()]
+
+    df_beh["Age_Group"] = pd.Categorical(df_beh["Age_Group"], categories=existing_levels, ordered=True)
+
+    # Compute means
     mean_df = (
         df_beh.groupby(["Age_Group","Mean_Type"], observed=False)["Minutes"]
-        .mean()
-        .reset_index()
+        .mean().reset_index()
     )
+    mean_df["Age_Group"] = pd.Categorical(mean_df["Age_Group"], categories=existing_levels, ordered=True)
 
-    # Force consistent facet order
-    df_beh["Age_Group"] = pd.Categorical(
-        df_beh["Age_Group"],
-        categories=["Children","Adolescents","Adult"],
-        ordered=True
-    )
-    mean_df["Age_Group"] = pd.Categorical(
-        mean_df["Age_Group"],
-        categories=["Children","Adolescents","Adult"],
-        ordered=True
-    )
-
-    fig = px.scatter(
+    # --------------------------
+    # Build scatter figure
+    # --------------------------
+    fig2 = px.scatter(
         df_beh,
         x="Minutes",
         y="row_id",
@@ -171,46 +170,59 @@ else:
         hover_name="StudyID_display",
         hover_data=["Minutes","Subgroup"],
         facet_col="Age_Group",
-        facet_col_wrap=3,
+        category_orders={"Age_Group": existing_levels},
         height=900,
         color_discrete_map={"Arithmetic":"#1f77b4","Geometric":"#d62728"},
-        title=f"{selected_behavior}: Study-Level Estimates"
+        title=f"{selected_behavior}: Study-Level Arithmetic & Geometric Estimates"
     )
 
-    # Replace row_id ticks with Study names
-    fig.update_yaxes(
+    # Replace row_id ticks with study names
+    fig2.update_yaxes(
         tickvals=df_beh["row_id"],
         ticktext=df_beh["StudyID_display"],
         automargin=True
     )
 
-    # --------------------------
-    # ADD MEAN LINES PER FACET
-    # --------------------------
-    for i, age in enumerate(["Children","Adolescents","Adult"], start=1):
-        xA = mean_df[(mean_df["Age_Group"]==age) & (mean_df["Mean_Type"]=="Arithmetic")]["Minutes"]
-        xG = mean_df[(mean_df["Age_Group"]==age) & (mean_df["Mean_Type"]=="Geometric")]["Minutes"]
+    # ---------------------------------------------------------
+    # ADD MEAN LINES — dynamically map facets
+    # ---------------------------------------------------------
+    # Plotly facet columns: col index 1..N for each age group
+    facet_map = {age: i+1 for i, age in enumerate(existing_levels)}
 
-        xref = f"x{i}" if i>1 else "x"
+    for _, row in mean_df.iterrows():
+        age = row["Age_Group"]
+        mtype = row["Mean_Type"]
+        xval = row["Minutes"]
 
-        if not xA.empty:
-            fig.add_vline(
-                x=xA.values[0],
-                line_dash="dash",
-                line_color="#1f77b4",
-                row=1,
-                col=i
-            )
-        if not xG.empty:
-            fig.add_vline(
-                x=xG.values[0],
-                line_dash="dash",
-                line_color="#d62728",
-                row=1,
-                col=i
-            )
+        col_index = facet_map.get(age)
+        if col_index is None:
+            continue  # Skip if facet doesn't exist
 
-    st.plotly_chart(fig, width="stretch")
+        line_color = "#1f77b4" if mtype == "Arithmetic" else "#d62728"
+        fig2.add_vline(
+            x=xval,
+            line_dash="dash",
+            line_color=line_color,
+            row=1,
+            col=col_index
+        )
+
+    # ---------------------------------------------------------
+    # Light gray background for each facet
+    # ---------------------------------------------------------
+    for i in range(1, len(existing_levels)+1):
+        fig2.layout[f"xaxis{i}"]["showgrid"] = True
+        fig2.layout[f"yaxis{i}"]["showgrid"] = False
+        fig2.layout[f"xaxis{i}"]["domain"]  # just forces layout to compute
+        fig2.update_xaxes(matches=None, row=1, col=i)
+
+    fig2.update_layout(
+        plot_bgcolor="#f7f7f7",
+        paper_bgcolor="white"
+    )
+
+    # ---------------------------------------------------------
+    st.plotly_chart(fig2, width="stretch")
 
 # ======================================================================
 # TABLE OUTPUT — Study-Level Rows
