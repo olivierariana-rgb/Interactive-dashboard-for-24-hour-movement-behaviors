@@ -349,149 +349,129 @@ else:
 
 # ======================================================================
 # ======================================================================
-#  SIMPLEX SECTION — Geometric Means Only (CoDA-style)
+#  TERNARY SIMPLEX (GEOMETRIC MEANS ONLY)
 # ======================================================================
 
 st.header("Ternary Simplex (Geometric Means Only)")
 
-# ---- Step 1: User picks metadata variable to explore ----
+# ---- Choose which variable to explore (Sampling rate, Device brand, etc.) ----
 simplex_var = st.selectbox(
     "Choose a variable to explore:",
-    ["Device_Brand", "Device_Type", "Country", "Sampling_Rate_Hz", "Year"]
+    ["Device_Brand", "Sampling_Rate_Hz", "Country", "Age_Group"]
 )
 
-# ---- Step 2: Build geometric mean wide table (Sleep, SB, MVPA) ----
-behave = ["Sleep", "SB", "MVPA"]
+# ---- Build a geometric-wideset pulled from the wide_all table ----
+# We must recompute wide_all here in case filters changed
+behaviors = ["Sleep", "SB", "LPA", "MVPA"]
+df_beh4 = df_f[df_f["Behavior"].isin(behaviors)].copy()
 
-geo3 = (
-    df_f[(df_f["Behavior"].isin(behave)) & (df_f["Mean_Type"] == "Geometric")]
-    .pivot_table(index=["StudyID", "Subgroup"],
-                 columns="Behavior",
-                 values="Minutes",
-                 aggfunc="mean")
+wide_geo = (
+    df_beh4[df_beh4["Mean_Type"] == "Geometric"]
+    .pivot_table(
+        index=["StudyID", "Subgroup"],
+        columns="Behavior",
+        values="Minutes",
+        aggfunc="mean"
+    )
     .add_prefix("G_")
     .reset_index()
 )
 
-# Rename for clarity
-geo3 = geo3.rename(columns={
-    "G_Sleep": "Sleep",
-    "G_SB": "SB",
-    "G_MVPA": "MVPA"
-})
+# Merge metadata so the simplex can be filtered by the chosen variable
+simplex_df = wide_geo.merge(meta, on="StudyID", how="left")
 
-# Keep only cases where all 3 behaviors exist
-geo3 = geo3.dropna(subset=["Sleep", "SB", "MVPA"])
+# We only keep studies where Sleep + SB + MVPA exist (LPA optional)
+req_cols = ["G_Sleep", "G_SB", "G_MVPA"]
+simplex_df = simplex_df.dropna(subset=req_cols)
 
-# ---- Step 3: Merge metadata info ----
-geo3 = geo3.merge(meta, on="StudyID", how="left")
+# ---- Compute compositions (closure to 1) ----
+simplex_df["sum3"] = (
+    simplex_df["G_Sleep"] +
+    simplex_df["G_SB"] +
+    simplex_df["G_MVPA"]
+)
 
-if simplex_var not in geo3.columns:
-    st.warning(f"Variable {simplex_var} not found in metadata.")
+simplex_df["Sleep_cl"] = simplex_df["G_Sleep"] / simplex_df["sum3"]
+simplex_df["SB_cl"]     = simplex_df["G_SB"]    / simplex_df["sum3"]
+simplex_df["MVPA_cl"]   = simplex_df["G_MVPA"]  / simplex_df["sum3"]
+
+# ---- Slider for the chosen variable ----
+levels = simplex_df[simplex_var].dropna().unique()
+
+# Convert to list to preserve order
+levels = sorted(levels.tolist(), key=lambda x: str(x))
+
+if len(levels) == 0:
+    st.warning("No available levels for this variable.")
 else:
+    idx = st.slider(
+        f"Select {simplex_var} level:",
+        min_value=0,
+        max_value=len(levels) - 1,
+        value=0,
+        step=1,
+        format="%d"
+    )
+    slider_choice = levels[idx]
 
-    # ---- Step 4: Slider to scroll through levels ----
-    levels = sorted(geo3[simplex_var].dropna().astype(str).unique())
-    if len(levels) == 0:
-        st.warning(f"No data available for {simplex_var}.")
+    st.write(f"**Selected level:** {slider_choice}")
+
+    # Filter simplex by selected level
+    df_show = simplex_df[simplex_df[simplex_var] == slider_choice].copy()
+
+    if df_show.empty:
+        st.warning("No simplex data for this selection.")
     else:
-        idx = st.slider(
-            f"Select {simplex_var} level:",
-            min_value=0,
-            max_value=len(levels) - 1,
-            value=0
+        # ------------------------------------------------------------------
+        #  CREATE THE TERNARY SIMPLEX PLOT
+        # ------------------------------------------------------------------
+        import plotly.express as px
+
+        fig_simplex = px.scatter_ternary(
+            df_show,
+            a="Sleep_cl",
+            b="SB_cl",
+            c="MVPA_cl",
+            hover_name="StudyID",
+            color="StudyID",
+            size_max=12,
+            opacity=0.9
         )
-        slider_choice = levels[idx]
 
-        st.write(f"### Selected {simplex_var} level: **{slider_choice}**")
-
-        # ---- Step 5: Filter dataset to match slider ----
-        simplex_df = geo3[geo3[simplex_var].astype(str) == slider_choice].copy()
-
-        if simplex_df.empty:
-            st.warning("No studies available for this selection.")
-        else:
-            # ---- Step 6: Closure (normalize to proportions that sum to 1)
-            S = simplex_df["Sleep"]
-            B = simplex_df["SB"]
-            M = simplex_df["MVPA"]
-
-            total = S + B + M
-            simplex_df["Sleep_cl"] = S / total
-            simplex_df["SB_cl"] = B / total
-            simplex_df["MVPA_cl"] = M / total
-
-            # ---- Step 7: BEAUTIFUL CoDA-STYLE SIMPLEX ----
-            import plotly.express as px
-            import plotly.graph_objects as go
-
-            fig_simplex = px.scatter_ternary(
-                simplex_df,
-                a="Sleep_cl",
-                b="SB_cl",
-                c="MVPA_cl",
-                hover_name="StudyID",
-                color="StudyID",
-                color_discrete_sequence=px.colors.qualitative.Set2,
-                size_max=12,
-            )
-
-            # Improve axis labels + gridlines + background
-            fig_simplex.update_layout(
-                ternary=dict(
-                    sum=1,
-                    aaxis=dict(
-                        title="Sleep",
-                        titlefont=dict(size=16, color="black"),
-                        tickfont=dict(size=14),
-                        linewidth=2,
-                        gridcolor="lightgray",
-                    ),
-                    baxis=dict(
-                        title="Sedentary",
-                        titlefont=dict(size=16, color="black"),
-                        tickfont=dict(size=14),
-                        linewidth=2,
-                        gridcolor="lightgray",
-                    ),
-                    caxis=dict(
-                        title="MVPA",
-                        titlefont=dict(size=16, color="black"),
-                        tickfont=dict(size=14),
-                        linewidth=2,
-                        gridcolor="lightgray",
-                    ),
-                    bgcolor="rgb(245,245,245)"
+        # ------------------------------------------------------------------
+        #  IMPROVED SIMPLEX APPEARANCE (NO titlefont ERRORS)
+        # ------------------------------------------------------------------
+        fig_simplex.update_layout(
+            ternary=dict(
+                sum=1,
+                aaxis=dict(
+                    title=dict(text="Sleep", font=dict(size=16, color="black")),
+                    tickfont=dict(size=13),
+                    linewidth=2,
+                    gridcolor="lightgray",
                 ),
-                paper_bgcolor="white",
-                plot_bgcolor="white",
-                title=dict(
-                    text=f"Ternary Simplex for {simplex_var} = {slider_choice}",
-                    x=0.5,
-                    font=dict(size=20)
-                )
-            )
+                baxis=dict(
+                    title=dict(text="Sedentary", font=dict(size=16, color="black")),
+                    tickfont=dict(size=13),
+                    linewidth=2,
+                    gridcolor="lightgray",
+                ),
+                caxis=dict(
+                    title=dict(text="MVPA", font=dict(size=16, color="black")),
+                    tickfont=dict(size=13),
+                    linewidth=2,
+                    gridcolor="lightgray",
+                ),
+                bgcolor="rgb(245,245,245)"
+            ),
+            paper_bgcolor="white",
+            plot_bgcolor="white",
+            title=dict(
+                text=f"Ternary Simplex for {simplex_var} = {slider_choice}",
+                x=0.5,
+                font=dict(size=20)
+            ),
+            margin=dict(l=40, r=40, t=80, b=40)
+        )
 
-            # Make points bold
-            fig_simplex.update_traces(
-                marker=dict(
-                    size=14,
-                    opacity=0.9,
-                    line=dict(width=1.5, color="black")
-                )
-            )
-
-            # Add triangle border
-            fig_simplex.add_trace(
-                go.Scatterternary(
-                    a=[1, 0, 0, 1],
-                    b=[0, 1, 0, 0],
-                    c=[0, 0, 1, 0],
-                    mode="lines",
-                    line=dict(width=3, color="black"),
-                    hoverinfo="skip",
-                    showlegend=False
-                )
-            )
-
-            st.plotly_chart(fig_simplex, use_container_width=True)
+        st.plotly_chart(fig_simplex, use_container_width=True)
