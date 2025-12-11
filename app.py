@@ -5,7 +5,7 @@ import plotly.express as px
 # --------------------------------------------------
 # Load cleaned dataset (must be in the same repo)
 # --------------------------------------------------
-df = pd.read_csv("dashboard_clean.csv")
+df = pd.read_csv("dashboard_clean (1).csv")
 
 # --------------------------------------------------
 # CLEAN + FIX TYPES
