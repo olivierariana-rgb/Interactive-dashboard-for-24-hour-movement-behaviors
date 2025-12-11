@@ -274,3 +274,44 @@ else:
     )
 
     st.dataframe(subgroup_table)
+
+# --------------------------------------------------
+#  BEHAVIOR SUMMARY TABLE (WIDE FORMAT)
+# --------------------------------------------------
+st.write("### Behavior Summary (Wide Format: 1 row per Study + Subgroup)")
+
+# Keep only the behaviors you want included
+behaviors = ["Sleep", "SB", "LPA", "MVPA"]
+
+# Filter only relevant rows
+df_beh4 = df_f[df_f["Behavior"].isin(behaviors)].copy()
+
+if df_beh4.empty:
+    st.warning("No behavior data available for current filters.")
+else:
+    # Pivot arithmetic and geometric separately
+    wide_arith = (
+        df_beh4[df_beh4["Mean_Type"] == "Arithmetic"]
+        .pivot_table(index=["StudyID", "Subgroup"],
+                     columns="Behavior",
+                     values="Minutes",
+                     aggfunc="mean")
+        .add_prefix("A_")
+        .reset_index()
+    )
+
+    wide_geo = (
+        df_beh4[df_beh4["Mean_Type"] == "Geometric"]
+        .pivot_table(index=["StudyID", "Subgroup"],
+                     columns="Behavior",
+                     values="Minutes",
+                     aggfunc="mean")
+        .add_prefix("G_")
+        .reset_index()
+    )
+
+    # Merge arithmetic + geometric
+    wide_all = pd.merge(wide_arith, wide_geo, on=["StudyID", "Subgroup"], how="outer")
+
+    # Display table 
+    st.dataframe(wide_all)
