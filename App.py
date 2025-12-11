@@ -348,123 +348,83 @@ else:
     st.dataframe(wide_all)
 
 # ======================================================================
-# ============================================================
-# SIMPLEX VISUALIZATION — Sleep / SB / MVPA
-# ============================================================
+# --------------------------------------------------
+#  SIMPLEX WITH SLIDER - GEOMETRIC MEANS ONLY
+# --------------------------------------------------
 
-st.subheader("Geometric Mean Simplex (Sleep – SB – MVPA)")
+st.subheader("Ternary Simplex (Geometric Means Only)")
 
-# We only use GEOMETRIC means, since compositional data needs closure
-behaviors_simplex = ["Sleep", "SB", "MVPA"]
+# === Choose which variable will control the slider ===
+simplex_var = st.selectbox(
+    "Choose a variable to explore:",
+    ["Sampling_Rate_Hz", "Device_Brand", "Device_Type", "Country", "Year"]
+)
 
-# Filter dashboard data to only geometric means for selected behaviors
-df_geo = df_f[
-    (df_f["Mean_Type"] == "Geometric") &
-    (df_f["Behavior"].isin(behaviors_simplex))
-].copy()
+# Get unique categories for slider
+simplex_levels = sorted(meta[simplex_var].dropna().unique())
 
-if df_geo.empty:
-    st.info("No geometric mean data available for simplex visualization.")
+if len(simplex_levels) == 0:
+    st.warning(f"No available categories for {simplex_var}.")
 else:
-
-    # ---------------------------------------------------------------
-    # Pivot to get ONE ROW per StudyID + Subgroup with 3 behaviors
-    # ---------------------------------------------------------------
-    wide_geo = (
-        df_geo
-        .pivot_table(
-            index=["StudyID", "Subgroup"],
-            columns="Behavior",
-            values="Minutes",
-            aggfunc="mean"
-        )
-        .reset_index()
+    # Slider to choose one category at a time
+    slider_choice = st.select_slider(
+        f"Select {simplex_var} level:",
+        options=simplex_levels
     )
 
-    # Rename columns to G_Sleep, G_SB, G_MVPA for clarity
-    wide_geo = wide_geo.rename(columns={
-        "Sleep": "G_Sleep",
-        "SB": "G_SB",
-        "MVPA": "G_MVPA"
-    })
+    # --------------------------------------------------
+    # FILTER DATA: only geometric means + selected level
+    # --------------------------------------------------
+    # Get wide-format table from earlier section
+    # Ensure wide_all exists in this runtime
+    try:
+        wide_df = wide_all.copy()
+    except:
+        st.error("wide_all is not defined yet. Move this block below the Behavior Summary section.")
+        st.stop()
 
-    # ---------------------------------------------------------------
-    # Keep rows where all three behaviors are present
-    # ---------------------------------------------------------------
-    required_cols = ["G_Sleep", "G_SB", "G_MVPA"]
-    simplex_df = wide_geo.dropna(subset=required_cols).copy()
+    # Merge metadata
+    wide_df = wide_df.merge(meta, on="StudyID", how="left")
 
-    if simplex_df.empty:
-        st.warning("Not enough studies with Sleep + SB + MVPA geometric means.")
+    # Keep only rows matching the slider selection
+    wide_sel = wide_df[wide_df[simplex_var] == slider_choice].copy()
+
+    # Must have geometric means
+    needed = ["G_Sleep", "G_SB", "G_MVPA"]
+    wide_sel = wide_sel.dropna(subset=needed)
+
+    if wide_sel.empty:
+        st.warning(f"No studies match {simplex_var} = {slider_choice}.")
     else:
-
-        # ---------------------------------------------------------------
-        # Add metadata (age group, country, etc.)
-        # ---------------------------------------------------------------
-        simplex_df = simplex_df.merge(meta, on="StudyID", how="left")
-
-        # ---------------------------------------------------------------
-        # Compute closure — convert Minutes → proportions
-        # ---------------------------------------------------------------
-        simplex_df["sum_total"] = (
-            simplex_df["G_Sleep"] +
-            simplex_df["G_SB"] +
-            simplex_df["G_MVPA"]
+        # --------------------------------------------------
+        # CLose compositions using geometric means
+        # --------------------------------------------------
+        wide_sel["sum_geo"] = (
+            wide_sel["G_Sleep"] +
+            wide_sel["G_SB"] +
+            wide_sel["G_MVPA"]
         )
 
-        simplex_df["Sleep_cl"] = simplex_df["G_Sleep"] / simplex_df["sum_total"]
-        simplex_df["SB_cl"]    = simplex_df["G_SB"] / simplex_df["sum_total"]
-        simplex_df["MVPA_cl"]  = simplex_df["G_MVPA"] / simplex_df["sum_total"]
+        wide_sel["Sleep_cl"] = wide_sel["G_Sleep"] / wide_sel["sum_geo"]
+        wide_sel["SB_cl"]    = wide_sel["G_SB"]    / wide_sel["sum_geo"]
+        wide_sel["MVPA_cl"]  = wide_sel["G_MVPA"]  / wide_sel["sum_geo"]
 
-        # ---------------------------------------------------------------
-        # FIX SUBGROUP COLUMN FOR SYMBOLS (important!)
-        # ---------------------------------------------------------------
-        if "Subgroup_x" in simplex_df.columns:
-            simplex_df = simplex_df.rename(columns={"Subgroup_x": "Subgroup"})
-        if "Subgroup_y" in simplex_df.columns:
-            simplex_df = simplex_df.drop(columns=["Subgroup_y"])
-
-        # Subgroup values: replace NaN with "Full Sample"
-        simplex_df["Subgroup"] = simplex_df["Subgroup"].fillna("Full Sample")
-
-        # ---------------------------------------------------------------
-        # BUILD TERNARY SCATTERPLOT
-        # ---------------------------------------------------------------
+        # --------------------------------------------------
+        # Plot: Ternary Simplex
+        # --------------------------------------------------
         import plotly.express as px
 
         fig_simplex = px.scatter_ternary(
-            simplex_df,
+            wide_sel,
             a="Sleep_cl",
             b="SB_cl",
             c="MVPA_cl",
             hover_name="StudyID",
-            hover_data={
-                "G_Sleep": True,
-                "G_SB": True,
-                "G_MVPA": True,
-                "Subgroup": True,
-                "Age_Group": True,
-                "Country": True
-            },
-            color="Age_Group",
-            symbol="Subgroup",
-            size_max=12,
-            title="Compositional Triangle (Sleep – SB – MVPA)"
+            hover_data={simplex_var: True},
+            color="StudyID",
+            title=f"Ternary Simplex for {simplex_var} = {slider_choice}"
         )
 
-        fig_simplex.update_traces(marker=dict(size=10, line=dict(width=1, color="black")))
+        fig_simplex.update_traces(marker=dict(size=12, opacity=0.8))
 
-        fig_simplex.update_layout(
-            ternary=dict(
-                sum=1,
-                aaxis_title="Sleep",
-                baxis_title="Sedentary Behavior",
-                caxis_title="MVPA",
-                bgcolor="#f7f7f7"
-            ),
-            legend_title_text="Groups",
-            margin=dict(l=40, r=40, t=80, b=40),
-            paper_bgcolor="white"
-        )
-
-        st.plotly_chart(fig_simplex, width="stretch")
+        st.plotly_chart(fig_simplex, use_container_width=True)
