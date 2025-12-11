@@ -224,13 +224,34 @@ else:
     # ---------------------------------------------------------
     st.plotly_chart(fig2, width="stretch")
 
-# ======================================================================
-# TABLE OUTPUT — Study-Level Rows
-# ======================================================================
-
+# --------------------------------------------------
+# STUDY-LEVEL BREAKDOWN TABLE
+# --------------------------------------------------
 st.subheader("Study-Level Breakdown")
 
 if df_f.empty:
-    st.warning("No rows match your selected filters.")
+    st.warning("No rows match your current filters.")
 else:
-    st.dataframe(df_f.sort_values(["StudyID", "Behavior", "Mean_Type"]))
+
+    # Count unique studies vs subgroup rows
+    num_studies = df_f["StudyID"].nunique()
+    num_rows = len(df_f)
+
+    # Display the counts to the user
+    st.info(
+        f"Showing **{num_rows} rows** from **{num_studies} unique studies** "
+        f"(subgroups included)."
+    )
+
+    # Columns we want to show
+    cols = [
+        "StudyID", "StudyID_display", "Year", "Age_Group", "Subgroup",
+        "Behavior", "Mean_Type", "Minutes", "Device_Brand", "Country",
+        "Sampling_Rate_Hz", "Sleep_Measurement_Type"
+    ]
+
+    existing_cols = [c for c in cols if c in df_f.columns]
+
+    st.dataframe(
+        df_f.sort_values(["StudyID", "Subgroup", "Behavior"])[existing_cols]
+    )
