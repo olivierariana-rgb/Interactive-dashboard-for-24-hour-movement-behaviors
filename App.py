@@ -112,6 +112,8 @@ with col2:
 # IMPROVED SCATTER PANEL — One behavior at a time
 # ============================================================
 
+import plotly.graph_objects as go
+
 st.subheader("Behavior-Level Scatter Plot")
 
 # User selects ONE behavior
@@ -120,32 +122,27 @@ selected_behavior = st.selectbox(
     sorted(df_f["Behavior"].unique())
 )
 
-# Filter to selected behavior
+# Filter dataset
 df_beh = df_f[df_f["Behavior"] == selected_behavior].copy()
 
 if df_beh.empty:
     st.warning("No data available for this behavior under current filters.")
 else:
 
-    # -----------------------------------------------
-    # Compute mean arithmetic and geometric per age
-    # -----------------------------------------------
+    # Compute mean arithmetic and geometric per age group
     mean_table = (
         df_beh.groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
         .mean()
         .reset_index()
     )
 
-    # -----------------------------------------------
-    # Sort studies by minutes for clearer display
-    # -----------------------------------------------
+    # Sort studies for prettier display
     df_beh["StudyID_display"] = df_beh["StudyID_display"].astype(str)
-
     df_beh = df_beh.sort_values("Minutes")
 
-    # -----------------------------------------------
-    # Build scatter facet
-    # -----------------------------------------------
+    # --------------------------
+    # Build scatter — facet by AGE GROUP (rows)
+    # --------------------------
     fig2 = px.scatter(
         df_beh,
         x="Minutes",
@@ -153,59 +150,58 @@ else:
         color="Mean_Type",
         symbol="Mean_Type",
         symbol_map={"Arithmetic": "circle", "Geometric": "triangle-up"},
-        category_orders={
-            "Age_Group": ["Children", "Adolescents", "Adult"],
-            "Mean_Type": ["Arithmetic", "Geometric"]
-        },
         facet_row="Age_Group",
+        category_orders={"Age_Group": ["Children","Adolescents","Adult"]},
         height=900,
         title=f"Study Estimates for {selected_behavior}"
     )
 
-    # -----------------------------------------------
-    # Add mean diamonds on each panel
-    # -----------------------------------------------
-    for age_group in ["Children", "Adolescents", "Adult"]:
-        sub_mean = mean_table[mean_table["Age_Group"] == age_group]
-        if not sub_mean.empty:
-            row_num = ["Children", "Adolescents", "Adult"].index(age_group) + 1
+    # --------------------------
+    # Add MEAN LINES per facet
+    # --------------------------
+    age_order = ["Children", "Adolescents", "Adult"]
 
-            for _, r in sub_mean.iterrows():
-                fig2.add_shape(
-                    type="line",
-                    x0=r["Minutes"], x1=r["Minutes"],
-                    y0=0, y1=1,
-                    xref=f"x{row_num}",
-                    yref=f"y{row_num} domain",
-                    line=dict(color="black", width=2, dash="dot")
-                )
-                fig2.add_trace(go.Scatter(
+    for age_group in age_order:
+        sub_mean = mean_table[mean_table["Age_Group"] == age_group]
+        if sub_mean.empty:
+            continue
+
+        # Determine facet row index
+        row_num = age_order.index(age_group) + 1
+
+        for _, r in sub_mean.iterrows():
+            # Mean vertical line
+            fig2.add_vline(
+                x=r["Minutes"],
+                line=dict(color="black", width=2, dash="dot"),
+                row=row_num,
+                col=1
+            )
+
+            # Mean diamond marker
+            fig2.add_trace(
+                go.Scatter(
                     x=[r["Minutes"]],
-                    y=[None],  # mean marker appears at top
+                    y=[df_beh["StudyID_display"].iloc[-1]],  # place at top row
                     mode="markers",
                     marker=dict(size=14, color="black", symbol="diamond"),
-                    name=f"{age_group} Mean ({r['Mean_Type']})",
-                    xaxis=f"x{row_num}",
-                    showlegend=False
-                ))
+                    showlegend=False,
+                    name=f"{age_group} Mean ({r['Mean_Type']})"
+                ),
+                row=row_num,
+                col=1
+            )
 
-    # -----------------------------------------------
-    # Improve layout / facet appearance
-    # -----------------------------------------------
+    # --------------------------
+    # Style improvements
+    # --------------------------
     fig2.update_layout(
         legend_title="Mean Type",
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1
-        ),
         margin=dict(l=40, r=40, t=80, b=40),
         height=1100
     )
 
-    # Dark facet headers for readability
+    # Dark facet labels
     fig2.for_each_annotation(
         lambda a: a.update(
             font=dict(color="white", size=14),
