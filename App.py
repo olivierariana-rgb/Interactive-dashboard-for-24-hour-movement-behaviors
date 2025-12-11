@@ -347,116 +347,99 @@ else:
     # Display table 
     st.dataframe(wide_all)
 
-# ============================================================
-#  INTERACTIVE SIMPLEX EXPLORER
-# ============================================================
+# ======================================================================
+#  SIMPLEX EXPLORER — Sleep / SB / MVPA (Geometric Means Only)
+# ======================================================================
 
-st.header("Interactive Simplex Explorer")
+st.header("Simplex Explorer (Geometric Means Only)")
 
-st.write("""
-Explore how different preprocessing or study characteristics 
-affect the **composition of Sleep, SB, and MVPA** using a ternary simplex plot.
-""")
+# ----------------------------------------------------------
+# STEP 1 — Keep only geometric means for the 3-part simplex
+# ----------------------------------------------------------
+simplex_df = wide_all.copy()
 
-# We use the wide behavior table already created above
-behaviors = ["Sleep", "SB", "LPA", "MVPA"]
+# Ensure columns exist (some studies may lack one behavior)
+needed_cols = ["G_Sleep", "G_SB", "G_MVPA"]
 
-# Rebuild the wide table (same logic as earlier)
-df_beh4 = df_f[df_f["Behavior"].isin(behaviors)].copy()
+available_cols = [c for c in needed_cols if c in simplex_df.columns]
 
-wide_arith = (
-    df_beh4[df_beh4["Mean_Type"] == "Arithmetic"]
-    .pivot_table(index=["StudyID", "Subgroup"],
-                 columns="Behavior",
-                 values="Minutes",
-                 aggfunc="mean")
-    .add_prefix("A_")
-    .reset_index()
-)
-
-wide_geo = (
-    df_beh4[df_beh4["Mean_Type"] == "Geometric"]
-    .pivot_table(index=["StudyID", "Subgroup"],
-                 columns="Behavior",
-                 values="Minutes",
-                 aggfunc="mean")
-    .add_prefix("G_")
-    .reset_index()
-)
-
-wide_all = pd.merge(wide_arith, wide_geo, on=["StudyID", "Subgroup"], how="outer")
-
-# ------------------------------------------------------------
-# Select mean type for simplex
-# ------------------------------------------------------------
-mean_choice = st.radio(
-    "Select mean type for simplex plot:",
-    ["Arithmetic", "Geometric"],
-    horizontal=True
-)
-
-if mean_choice == "Arithmetic":
-    simplex_sleep = "A_Sleep"
-    simplex_sb    = "A_SB"
-    simplex_mvpa  = "A_MVPA"
+if len(available_cols) < 3:
+    st.warning("Not enough geometric means available to build a simplex.")
 else:
-    simplex_sleep = "G_Sleep"
-    simplex_sb    = "G_SB"
-    simplex_mvpa  = "G_MVPA"
 
-# Remove rows where any needed value is missing
-simplex_df = wide_all.dropna(subset=[simplex_sleep, simplex_sb, simplex_mvpa]).copy()
+    # Remove rows missing ANY of the required values
+    simplex_df = simplex_df.dropna(subset=needed_cols)
 
-# Merge metadata into simplex df for filtering
-simplex_df = simplex_df.merge(meta, on="StudyID", how="left")
+    # If empty after filtering → warn user
+    if simplex_df.empty:
+        st.warning("No studies contain all three geometric means (Sleep, SB, MVPA).")
+    else:
 
-# ------------------------------------------------------------
-# USER CHOOSES FILTER VARIABLE
-# ------------------------------------------------------------
+        # ----------------------------------------------------------
+        # STEP 2 — Merge metadata (so sidebar filters apply cleanly)
+        # ----------------------------------------------------------
+        simplex_df = simplex_df.merge(meta, on="StudyID", how="left")
 
-filter_var = st.selectbox(
-    "Choose a variable to control the simplex explorer:",
-    ["Sampling_Rate_Hz", "Device_Brand", "Year", "Country"]
-)
+        # Apply SAME FILTERS as dashboard (so Simplex matches other plots)
+        # Because df_f contains all studies surviving filters:
+        filtered_study_ids = df_f["StudyID"].unique()
+        simplex_df = simplex_df[simplex_df["StudyID"].isin(filtered_study_ids)]
 
-# ------------------------------------------------------------
-# CREATE THE APPROPRIATE INPUT WIDGET
-# ------------------------------------------------------------
-if pd.api.types.is_numeric_dtype(simplex_df[filter_var]):
-    min_val = int(simplex_df[filter_var].min())
-    max_val = int(simplex_df[filter_var].max())
-    selected_val = st.slider(f"Select {filter_var}", min_val, max_val, value=min_val)
-    simplex_filtered = simplex_df[simplex_df[filter_var] == selected_val]
+        if simplex_df.empty:
+            st.warning("After filtering, no studies have complete geometric-composition data.")
+        else:
 
-else:
-    options = sorted(simplex_df[filter_var].dropna().astype(str).unique())
-    selected_val = st.selectbox(f"Select {filter_var}", options)
-    simplex_filtered = simplex_df[simplex_df[filter_var].astype(str) == selected_val]
+            st.success(f"Simplex includes **{len(simplex_df)} study-subgroups**.")
 
-# ------------------------------------------------------------
-# BUILD SIMPLEX PLOT
-# ------------------------------------------------------------
-import plotly.express as px
+            # ----------------------------------------------------------
+            # STEP 3 — Normalize to closure (sum = 1)
+            # ----------------------------------------------------------
+            comp = simplex_df[["G_Sleep", "G_SB", "G_MVPA"]].copy()
+            comp_sum = comp.sum(axis=1)
+            comp_norm = comp.div(comp_sum, axis=0)
 
-if simplex_filtered.empty:
-    st.warning("No data available for this selection.")
-else:
-    # Rename for ternary plotting
-    tern = simplex_filtered.rename(columns={
-        simplex_sleep: "Sleep",
-        simplex_sb: "SB",
-        simplex_mvpa: "MVPA"
-    })
+            simplex_df["Sleep_cl"] = comp_norm["G_Sleep"]
+            simplex_df["SB_cl"]     = comp_norm["G_SB"]
+            simplex_df["MVPA_cl"]   = comp_norm["G_MVPA"]
 
-    fig_simplex = px.scatter_ternary(
-        tern,
-        a="Sleep",
-        b="SB",
-        c="MVPA",
-        hover_name="StudyID",
-        color="Subgroup",
-        size_max=10,
-        title=f"Simplex Plot for {mean_choice} Means — filtered by {filter_var} = {selected_val}"
-    )
+            # ----------------------------------------------------------
+            # STEP 4 — Build ternary figure
+            # ----------------------------------------------------------
+            import plotly.express as px
 
-    st.plotly_chart(fig_simplex, use_container_width=True)
+            fig_simplex = px.scatter_ternary(
+                simplex_df,
+                a="Sleep_cl",
+                b="SB_cl",
+                c="MVPA_cl",
+                hover_name="StudyID",
+                color="Age_Group",
+                size_max=12,
+                title="Geometric Mean Composition Simplex (Sleep / SB / MVPA)",
+                symbol="Subgroup"
+            )
+
+            fig_simplex.update_traces(marker=dict(size=10, opacity=0.8))
+
+            fig_simplex.update_layout(
+                ternary=dict(
+                    sum=1,
+                    aaxis_title="Sleep",
+                    baxis_title="Sedentary (SB)",
+                    caxis_title="MVPA",
+                    bgcolor="white"
+                ),
+                legend_title="Age Group",
+                height=700,
+                margin=dict(l=20, r=20, t=60, b=20)
+            )
+
+            st.plotly_chart(fig_simplex, use_container_width=True)
+
+            # ----------------------------------------------------------
+            # STEP 5 — Show underlying table (optional)
+            # ----------------------------------------------------------
+            st.write("### Compositional Data Table Used for Simplex")
+            show_cols = ["StudyID", "Subgroup", "G_Sleep", "G_SB", "G_MVPA",
+                         "Sleep_cl", "SB_cl", "MVPA_cl"]
+            st.dataframe(simplex_df[show_cols])
