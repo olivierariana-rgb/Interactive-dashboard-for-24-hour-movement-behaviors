@@ -176,81 +176,82 @@ with col2:
 
 
 # ----------------------------------------------------
-# NEW — CLEAN BEHAVIOR-SPECIFIC SCATTER PLOT
+# INDIVIDUAL DATA POINTS WITH MEANS (FACETED)
 # ----------------------------------------------------
-st.subheader("Behavior-Specific Scatter Plot")
+st.subheader(f"{selected_behavior}: Individual Data Points with Means")
 
-behavior_choice = st.selectbox(
-    "Choose a behavior to visualize",
-    options=["Sleep", "SB", "LPA", "MVPA"]
-)
+# Filter to the selected behavior
+df_beh = df_f[df_f["Behavior"] == selected_behavior].copy()
 
-df_b = df_f[df_f["Behavior"] == behavior_choice].copy()
-
-# Remove Unknown age group
-df_b = df_b[df_b["Age_Group"].isin(["Children", "Adolescents", "Adult"])]
-
-if df_b.empty:
-    st.warning(f"No data available for behavior: {behavior_choice}")
+if df_beh.empty:
+    st.warning("No data available for this behavior with the current filters.")
 else:
+    # Sort studies by value (Minutes)
+    df_beh = df_beh.sort_values("Minutes", ascending=True)
 
-    # Spread points slightly vertically so they don’t overlap
-    df_b["y"] = 0.1
-    df_b.loc[df_b["Mean_Type"] == "Geometric", "y"] = -0.1
+    # Compute means separately for each age group
+    means = (
+        df_beh.groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
+        .mean()
+        .reset_index()
+    )
 
-    # Compute means for each type & age group
-    mean_arith = df_b[df_b["Mean_Type"] == "Arithmetic"].groupby("Age_Group")["Minutes"].mean()
-    mean_geo   = df_b[df_b["Mean_Type"] == "Geometric"].groupby("Age_Group")["Minutes"].mean()
-
-    fig_b = px.scatter(
-        df_b,
+    # Build scatter plot faceted by Age_Group
+    fig2 = px.scatter(
+        df_beh,
         x="Minutes",
-        y="y",
+        y="StudyID_display",
         color="Mean_Type",
         symbol="Mean_Type",
-        symbol_map={"Arithmetic": "circle", "Geometric": "triangle-up"},
         facet_col="Age_Group",
         category_orders={"Age_Group": ["Children", "Adolescents", "Adult"]},
-        opacity=0.7,
-        title=f"{behavior_choice}: Individual Data Points with Mean Markers",
-        height=400
+        labels={"Minutes": "Minutes", "StudyID_display": "Study"},
+        title=None,
+        opacity=0.9
     )
 
-    # Add MEAN POINTS (diamonds)
-    for idx, age in enumerate(["Children", "Adolescents", "Adult"]):
-        col_num = idx + 1
+    # Add MEAN markers: diamonds
+    for age in ["Children", "Adolescents", "Adult"]:
+        for mean_type, color in [("Arithmetic", "black"), ("Geometric", "royalblue")]:
+            mean_row = means[
+                (means["Age_Group"] == age) &
+                (means["Mean_Type"] == mean_type)
+            ]
 
-        if age in mean_arith.index:
-            fig_b.add_scatter(
-                x=[mean_arith[age]],
-                y=[0],
-                mode="markers",
-                marker=dict(size=16, color="black", symbol="diamond"),
-                showlegend=False,
-                row=1, col=col_num
-            )
+            if len(mean_row) == 1:
+                mean_val = mean_row.iloc[0]["Minutes"]
+                # Add a diamond marker
+                fig2.add_scatter(
+                    x=[mean_val],
+                    y=[None],  # Centers in the panel
+                    mode="markers",
+                    marker=dict(
+                        symbol="diamond",
+                        size=14,
+                        color=color,
+                        line=dict(width=1, color="white")
+                    ),
+                    name=f"{mean_type} Mean",
+                    legendgroup=f"{mean_type} Mean",
+                    showlegend=True,
+                    xref=f"x{1 if age=='Children' else 2 if age=='Adolescents' else 3}"
+                )
 
-        if age in mean_geo.index:
-            fig_b.add_scatter(
-                x=[mean_geo[age]],
-                y=[0],
-                mode="markers",
-                marker=dict(size=16, color="blue", symbol="diamond"),
-                showlegend=False,
-                row=1, col=col_num
-            )
-
-    # Beautify axes
-    fig_b.update_yaxes(visible=False)
-    fig_b.update_xaxes(title="Minutes")
-
-    # Make facets clean
-    fig_b.update_layout(
+    # Improve theme for readability
+    fig2.update_layout(
+        height=600,
         legend_title="Mean Type",
-        margin=dict(l=40, r=40, t=60, b=40)
+        margin=dict(l=40, r=40, t=40, b=40),
     )
 
-    st.plotly_chart(fig_b, use_container_width=True)
+    # Increase spacing between facet columns
+    fig2.update_layout(
+        annotations=[
+            ann for ann in fig2.layout.annotations if "Age_Group" in ann.text
+        ]
+    )
+
+    st.plotly_chart(fig2, use_container_width=True)
 
 
 # ----------------------------------------------------
