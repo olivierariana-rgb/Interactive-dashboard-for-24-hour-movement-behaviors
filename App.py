@@ -110,28 +110,37 @@ with col2:
         st.info("No geometric data available after filtering.")
 
 # ======================================================================
-# PLOT 2 — INDIVIDUAL STUDY POINTS + MEAN MARKERS
+# NEW IMPROVED PLOT 2 — INDIVIDUAL STUDY POINTS WITH FACETS
 # ======================================================================
 
 st.subheader("Individual Study Estimates by Behavior")
 
-# Select behavior to display
+# Pick behavior
 selected_behavior = st.selectbox(
     "Choose a behavior to visualize",
     sorted(df_f["Behavior"].dropna().unique())
 )
 
+# Filter to selected behavior
 df_beh = df_f[df_f["Behavior"] == selected_behavior].copy()
 
 if df_beh.empty:
-    st.warning("No data for this behavior with the current filters.")
+    st.warning("No data for this behavior with current filters.")
 else:
 
-    # Sort studies by minutes for cleaner plotting
+    # Ensure sorted points
     df_beh = df_beh.sort_values("Minutes")
 
-    # Compute mean for each Mean_Type × Age_Group
-    mean_df = df_beh.groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"].mean().reset_index()
+    # Compute arithmetic/geometric means per age group
+    mean_df = (
+        df_beh.groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
+        .mean()
+        .reset_index()
+    )
+
+    # Mapping shapes for consistency
+    shape_map = {"Arithmetic": "circle", "Geometric": "triangle-up"}
+    color_map = {"Arithmetic": "#2E86C1", "Geometric": "#C0392B"}
 
     fig = px.scatter(
         df_beh,
@@ -139,31 +148,55 @@ else:
         y="StudyID_display",
         color="Mean_Type",
         symbol="Mean_Type",
-        title=f"{selected_behavior}: Individual Study Points with Means",
-        category_orders={
-            "Age_Group": ["Children", "Adolescents", "Adult"],
-        },
+        color_discrete_map=color_map,
+        symbol_map=shape_map,
         facet_col="Age_Group",
         facet_col_wrap=3,
-        height=600
+        height=650,
+        title=f"{selected_behavior}: Study-Level Arithmetic & Geometric Estimates",
     )
 
-    # Add mean markers
+    # --- Facet styling: darker grey panels ---
+    fig.update_layout(
+        plot_bgcolor="#F0F0F0",
+        paper_bgcolor="white",
+    )
+    fig.for_each_xaxis(lambda a: a.update(showgrid=True, gridcolor="#D0D0D0"))
+    fig.for_each_yaxis(lambda a: a.update(showgrid=False))
+    fig.for_each_annotation(lambda a: a.update(font=dict(size=14, color="#333")))
+
+    # --- Add mean lines ---
     for _, r in mean_df.iterrows():
+
+        # Pick line color
+        mean_color = "#2E86C1" if r["Mean_Type"] == "Arithmetic" else "#C0392B"
+        line_style = "dash"
+
+        # Determine facet index
+        facet_idx = ["Children", "Adolescents", "Adult"].index(r["Age_Group"]) + 1
+        xref_val = f"x{facet_idx}" if facet_idx > 1 else "x"
+
         fig.add_shape(
             type="line",
             x0=r["Minutes"], x1=r["Minutes"],
             y0=0, y1=1,
-            xref=f"x{mean_df['Age_Group'].tolist().index(r['Age_Group'])+1}",
-            yref=f"paper",
-            line=dict(
-                dash="dot",
-                width=2,
-                color="red" if r["Mean_Type"] == "Arithmetic" else "blue"
-            ),
+            xref=xref_val,
+            yref="paper",
+            line=dict(color=mean_color, width=3, dash=line_style),
+            opacity=0.90,
         )
 
-    fig.update_yaxes(matches=None, showticklabels=True)
+    # Update legend labels
+    fig.update_traces(
+        marker=dict(size=12),
+        selector=dict(mode="markers"),
+    )
+
+    fig.update_layout(
+        legend_title="Mean Type",
+        legend=dict(itemsizing="constant")
+    )
+
     st.plotly_chart(fig, width="stretch")
 
 # ======================================================================
