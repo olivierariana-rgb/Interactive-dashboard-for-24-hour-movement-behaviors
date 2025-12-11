@@ -225,33 +225,41 @@ else:
     st.plotly_chart(fig2, width="stretch")
 
 # --------------------------------------------------
-#  STUDY-LEVEL BREAKDOWN (USING METADATA)
+#  STUDY-LEVEL BREAKDOWN (ONE ROW PER STUDY)
 # --------------------------------------------------
 st.subheader("Study-Level Breakdown (1 row per study)")
 
-# 1️⃣ Identify unique StudyIDs in the filtered dashboard data
+# 1️⃣ Identify unique studies from filtered dashboard data
 study_ids = df_f["StudyID"].unique()
 
 if len(study_ids) == 0:
     st.warning("No studies match the current filters.")
 else:
-    st.info(f"Showing **{len(study_ids)} unique studies** after filtering.")
+    st.info(f"Showing **{len(study_ids)} unique studies** based on current filters.")
 
     # 2️⃣ Pull metadata rows for these studies
     meta_filtered = meta[meta["StudyID"].isin(study_ids)].copy()
 
-    # Select useful metadata columns (adjust as you prefer)
+    # 3️⃣ Keep only ONE row per StudyID (first occurrence)
+    meta_unique = (
+        meta_filtered
+        .sort_values("StudyID")
+        .drop_duplicates(subset="StudyID", keep="first")
+        .reset_index(drop=True)
+    )
+
+    # 4️⃣ Choose metadata columns to display
     metadata_cols = [
-        "StudyID", "Year", "title", "Country", "Age_Group",
-        "SampleSize", "Device_Brand", "Device_Type",
+        "StudyID", "Year", "title", "Country",
+        "Age_Group", "SampleSize", "Device_Brand", "Device_Type",
         "Sampling_Rate_Hz", "Sleep_Measurement_Type"
     ]
 
-    # Keep only columns that exist
-    metadata_cols = [c for c in metadata_cols if c in meta_filtered.columns]
+    metadata_cols = [c for c in metadata_cols if c in meta_unique.columns]
 
-    st.write("### Study Characteristics")
-    st.dataframe(meta_filtered[metadata_cols])
+    st.write("### Study Characteristics (1 row per study)")
+    st.dataframe(meta_unique[metadata_cols])
+
 
     # --------------------------------------------------
     #  SUBGROUP SUMMARY TABLE
