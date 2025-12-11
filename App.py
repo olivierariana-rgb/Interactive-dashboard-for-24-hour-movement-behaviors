@@ -175,38 +175,47 @@ with col2:
         st.plotly_chart(fig_g, use_container_width=True)
 
 # --------------------------------------------------
-# STUDY-LEVEL BREAKDOWN TABLES (Separated)
+# WIDE STUDY-LEVEL SUMMARY TABLE
 # --------------------------------------------------
-st.subheader("Study-Level Breakdown (Separated by Mean Type)")
+st.subheader("Study-Level Summary (One Row per Study/Subgroup)")
 
 if df_f.empty:
     st.warning("No rows match your current filters.")
 else:
 
-    # Columns to show
-    cols = [
-        "StudyID_display", "StudyID", "Age_Group", "Subgroup", "Behavior",
-        "Minutes", "Mean_Type", "Device_Brand", "Country",
-        "Sampling_Rate_Hz", "Sleep_Objective_Yes_No"
-    ]
-    cols = [c for c in cols if c in df_f.columns]
+    # -------------------------------
+    # Helper: Pivot to wide format
+    # -------------------------------
+    def make_wide(df_part, prefix):
+        """
+        df_part: arithmetic OR geometric subset
+        prefix: 'A' for arithmetic, 'G' for geometric
+        """
+        if df_part.empty:
+            return pd.DataFrame()
 
-    # ---- Arithmetic table ----
-    st.markdown("### 🔵 Arithmetic Means")
-    if arith.empty:
-        st.info("No arithmetic rows in this filter.")
-    else:
-        st.dataframe(
-            arith.sort_values(["StudyID", "Subgroup", "Behavior"])[cols],
-            use_container_width=True
-        )
+        # Pivot: rows = study/subgroup, columns = behavior
+        wide = df_part.pivot_table(
+            index=["StudyID", "StudyID_display", "Subgroup", "Age_Group",
+                   "Country", "Device_Brand", "Sampling_Rate_Hz",
+                   "Sleep_Objective_Yes_No"],
+            columns="Behavior",
+            values="Minutes",
+            aggfunc="mean"
+        ).reset_index()
 
-    # ---- Geometric table ----
-    st.markdown("### 🟣 Geometric Means")
-    if geo.empty:
-        st.info("No geometric rows in this filter.")
-    else:
-        st.dataframe(
-            geo.sort_values(["StudyID", "Subgroup", "Behavior"])[cols],
-            use_container_width=True
-        )
+        # Rename Behavior columns
+        wide = wide.rename(columns={
+            "Sleep": f"{prefix}_Sleep",
+            "Sedentary": f"{prefix}_SB",
+            "LPA": f"{prefix}_LPA",
+            "MVPA": f"{prefix}_MVPA"
+        })
+
+        return wide
+
+    # Create wide versions
+    wide_arith = make_wide(arith, "A")
+    wide_geo = make_wide(geo, "G")
+
+    # Merge the two (outer join so neither is dropped)
