@@ -2,27 +2,38 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.set_page_config(layout="wide")
+# ------------------------------------------------------------
+# LOAD DATA
+# ------------------------------------------------------------
+df = pd.read_csv("dashboard_clean.csv")
+meta = pd.read_csv("dashboard_meta.csv")
 
-# ---------------------------------------------------
-# LOAD DATASET FILES
-# (Must be uploaded to your Streamlit repo)
-# ---------------------------------------------------
-df = pd.read_csv("dashboard_clean.csv")      # Long, tidy dataset for plotting
-full = pd.read_csv("FullData.csv", encoding="latin1")   # Full study metadata
+# ------------------------------------------------------------
+# FIX STRING COLUMNS → NUMERIC
+# Streamlit Cloud is strict, so this prevents all groupby crashes
+# ------------------------------------------------------------
+numeric_cols = [
+    "Minutes",
+    "Mean_Sleep_Min", "Mean_SB", "Mean_LPA", "Mean_MVPA",
+    "Geo_Mean_Sleep", "Geo_Mean_SB", "Geo_Mean_LPA", "Geo_Mean_MVPA"
+]
 
+for col in numeric_cols:
+    if col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
 
-# ---------------------------------------------------
-# Clean & Prepare
-# ---------------------------------------------------
-# Ordered age groups
+# ------------------------------------------------------------
+# Ensure Age_Group order
+# ------------------------------------------------------------
 df["Age_Group"] = pd.Categorical(
     df["Age_Group"],
     categories=["Children", "Adolescents", "Adult", "Unknown"],
     ordered=True
 )
 
-# Filters in sidebar
+# ------------------------------------------------------------
+# SIDEBAR FILTERS
+# ------------------------------------------------------------
 st.sidebar.header("Filters")
 
 age_filter = st.sidebar.multiselect(
@@ -44,7 +55,7 @@ sampling_filter = st.sidebar.multiselect(
 )
 
 sleep_filter = st.sidebar.multiselect(
-    "Sleep Measurement Type",
+    "Sleep Measurement",
     options=sorted(df["Sleep_Objective_Yes_No"].dropna().unique()),
     default=None
 )
@@ -55,10 +66,9 @@ country_filter = st.sidebar.multiselect(
     default=None
 )
 
-
-# ---------------------------------------------------
+# ------------------------------------------------------------
 # APPLY FILTERS
-# ---------------------------------------------------
+# ------------------------------------------------------------
 df_f = df.copy()
 
 if len(age_filter) > 0:
@@ -76,29 +86,26 @@ if sleep_filter:
 if country_filter:
     df_f = df_f[df_f["Country"].isin(country_filter)]
 
-
-# ---------------------------------------------------
-# TITLE
-# ---------------------------------------------------
+# ------------------------------------------------------------
+# PAGE TITLE
+# ------------------------------------------------------------
 st.title("24-Hour Movement Composition Explorer")
-st.write("Visualize arithmetic vs geometric means, and see detailed study-level information.")
+st.write("Visualize arithmetic and geometric means across studies and subgroups.")
 
-
-# ---------------------------------------------------
-# SPLIT INTO ARITHMETIC VS GEOMETRIC
-# ---------------------------------------------------
+# ------------------------------------------------------------
+# SPLIT DATA: arithmetic vs geometric
+# ------------------------------------------------------------
 arith = df_f[df_f["Mean_Type"] == "Arithmetic"]
 geo = df_f[df_f["Mean_Type"] == "Geometric"]
 
-
-# ---------------------------------------------------
-# COMPUTE GROUP-LEVEL MEANS
-# ---------------------------------------------------
-def compute_means(df_in):
-    if df_in.empty:
+# ------------------------------------------------------------
+# Compute grouped means safely
+# ------------------------------------------------------------
+def compute_means(df_subset):
+    if len(df_subset) == 0:
         return pd.DataFrame(columns=["Age_Group", "Behavior", "Minutes"])
     return (
-        df_in.groupby(["Age_Group", "Behavior"], observed=False)["Minutes"]
+        df_subset.groupby(["Age_Group", "Behavior"], observed=False)["Minutes"]
         .mean()
         .reset_index()
     )
@@ -106,103 +113,79 @@ def compute_means(df_in):
 arith_means = compute_means(arith)
 geo_means = compute_means(geo)
 
-
-# ---------------------------------------------------
-# CLOSURE CHECK (does Mean Sleep + SB + LPA + MVPA = 1440?)
-# ---------------------------------------------------
+# ------------------------------------------------------------
+# 24-HOUR CLOSURE CHECK
+# ------------------------------------------------------------
 st.subheader("24-Hour Closure Check")
 
 if "Data_Closure_24hr_Sum" in df_f.columns:
-    bad_rows = df_f[df_f["Data_Closure_24hr_Sum"] != 1440]
-    if not bad_rows.empty:
-        st.error(f"⚠️ {len(bad_rows)} rows do NOT close to 1440 minutes.")
-        st.dataframe(bad_rows[["StudyID", "Subgroup", "Data_Closure_24hr_Sum"]])
+    df_f["Data_Closure_24hr_Sum"] = pd.to_numeric(df_f["Data_Closure_24hr_Sum"], errors="coerce")
+
+    invalid = df_f[df_f["Data_Closure_24hr_Sum"] != 1440]
+
+    if len(invalid) > 0:
+        st.error(f"⚠️ {len(invalid)} rows do NOT sum to 24h.")
+        st.dataframe(invalid[["StudyID", "Subgroup", "Data_Closure_24hr_Sum"]])
     else:
-        st.success("✔ All filtered rows correctly sum to 24 hours.")
+        st.success("✔ All rows sum to 24 hours.")
 else:
-    st.info("No closure variable found in dataset.")
+    st.info("No closure information found in the dataset.")
 
-
-# ---------------------------------------------------
-# PLOTS (side-by-side)
-# ---------------------------------------------------
+# ------------------------------------------------------------
+# PLOTS — SIDE BY SIDE
+# ------------------------------------------------------------
 col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("Arithmetic Means")
     if arith_means.empty:
-        st.warning("No arithmetic mean data for these filters.")
+        st.warning("No arithmetic mean data available for your filters.")
     else:
-        fig = px.bar(
+        fig_arith = px.bar(
             arith_means,
             x="Minutes",
             y="Age_Group",
             color="Behavior",
-            barmode="stack",
+            title="Arithmetic Means",
             orientation="h",
-            title="Arithmetic Means (Minutes)",
-            category_orders={"Age_Group": ["Children", "Adolescents", "Adult", "Unknown"]},
+            category_orders={"Age_Group": ["Children", "Adolescents", "Adult", "Unknown"]}
         )
-        st.plotly_chart(fig, use_container_width=True)
+        fig_arith.update_layout(barmode="stack")
+        st.plotly_chart(fig_arith, use_container_width=True)
 
 with col2:
     st.subheader("Geometric Means")
     if geo_means.empty:
-        st.warning("No geometric mean data for these filters.")
+        st.warning("No geometric mean data available for your filters.")
     else:
-        fig = px.bar(
+        fig_geo = px.bar(
             geo_means,
             x="Minutes",
             y="Age_Group",
             color="Behavior",
-            barmode="stack",
+            title="Geometric Means",
             orientation="h",
-            title="Geometric Means (Minutes)",
-            category_orders={"Age_Group": ["Children", "Adolescents", "Adult", "Unknown"]},
+            category_orders={"Age_Group": ["Children", "Adolescents", "Adult", "Unknown"]}
         )
-        st.plotly_chart(fig, use_container_width=True)
+        fig_geo.update_layout(barmode="stack")
+        st.plotly_chart(fig_geo, use_container_width=True)
 
-
-# ---------------------------------------------------
-# STUDY-LEVEL SECTION (MERGED WITH FULL METADATA)
-# ---------------------------------------------------
-st.subheader("Study-Level Metadata Table")
+# ------------------------------------------------------------
+# STUDY-LEVEL DATA MERGED WITH METADATA
+# ------------------------------------------------------------
+st.subheader("Study-Level Breakdown")
 
 if df_f.empty:
-    st.info("No studies match your filters.")
+    st.warning("No data matches your filters.")
 else:
-    # Merge filtered dataset with full metadata
-    merged = df_f.merge(full, on="StudyID", how="left")
+    merged = df_f.merge(meta, on="StudyID", how="left")
 
-    # Create ONE row per Study × Subgroup × Mean_Type
-    study_table = merged[
+    merged = merged[
         [
-            "StudyID",
-            "Year",
-            "title",
-            "Age_Group",
-            "Subgroup",
-            "Mean_Type",
-            "Behavior",
-            "Minutes",
-            "Mean_Sleep_Min",
-            "Mean_SB",
-            "Mean_LPA",
-            "Mean_MVPA",
-            "Geo_Mean_Sleep",
-            "Geo_Mean_SB",
-            "Geo_Mean_LPA",
-            "Geo_Mean_MVPA",
-            "Country",
-            "Device_Brand",
-            "Sampling_Rate_Hz",
-            "Sleep_Objective_Yes_No",
-            "SampleSize",
-            "Cutpoint_Type",
-            "SB_Threshold",
-            "LPA_Threshold",
-            "MVPA_Threshold",
+            "StudyID", "StudyID_display", "Subgroup", "Mean_Type",
+            "Age_Group", "Behavior", "Minutes",
+            "Country", "Device_Brand", "Sampling_Rate_Hz", "Sleep_Objective_Yes_No"
         ]
-    ].drop_duplicates()
+    ].sort_values(["StudyID", "Subgroup", "Behavior"])
 
-    st.dataframe(study_table, use_container_width=True)
+    st.dataframe(merged, use_container_width=True)
