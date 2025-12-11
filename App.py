@@ -5,7 +5,7 @@ import plotly.express as px
 # ----------------------------------------------------
 # LOAD DATA
 # ----------------------------------------------------
-df = pd.read_csv("dashboard_clean.csv")        # Behavior-level tidy dataset
+df = pd.read_csv("dashboard_clean_input.csv")        # Behavior-level tidy dataset
 meta = pd.read_csv("full_metadata.csv")        # Study-level metadata   <<< FIXED
 
 # ----------------------------------------------------
