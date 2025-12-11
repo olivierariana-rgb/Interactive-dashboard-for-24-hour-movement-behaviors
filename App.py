@@ -59,7 +59,7 @@ st.sidebar.markdown("### Subgroup Selection")
 
 subgroup_mode = st.sidebar.radio(
     "Choose subgroup filtering mode:",
-    ["All subgroups (default)", "Full sample only", "Specific subgroups"]
+    ["Full sample only", "All subgroups", "Specific subgroups"]
 )
 
 # Copy filtered dataset
