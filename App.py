@@ -219,3 +219,22 @@ else:
     wide_geo = make_wide(geo, "G")
 
     # Merge the two (outer join so neither is dropped)
+    if not wide_arith.empty and not wide_geo.empty:
+        wide = pd.merge(
+            wide_arith, wide_geo,
+            on=["StudyID", "StudyID_display", "Subgroup", "Age_Group",
+                "Country", "Device_Brand", "Sampling_Rate_Hz",
+                "Sleep_Objective_Yes_No"],
+            how="outer"
+        )
+    elif not wide_arith.empty:
+        wide = wide_arith.copy()
+    else:
+        wide = wide_geo.copy()
+
+    # Sort nicely
+    sort_cols = [c for c in ["StudyID", "Subgroup", "Age_Group"] if c in wide.columns]
+    wide = wide.sort_values(sort_cols)
+
+    # Display
+    st.dataframe(wide, use_container_width=True)
