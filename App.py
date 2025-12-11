@@ -1,270 +1,178 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import plotly.express as px
 
-
-# ----------------------------------------------------
+# ======================================================================
 # LOAD DATA
-# ----------------------------------------------------
-df = pd.read_csv("dashboard_clean_input.csv")
-meta = pd.read_csv("full_metadata.csv")
+# ======================================================================
 
+df = pd.read_csv("dashboard_clean_input.csv")      # long format for plotting
+meta = pd.read_csv("full_metadata.csv")            # full metadata if needed later
 
-# ----------------------------------------------------
-# BASIC CLEANING
-# ----------------------------------------------------
-numeric_cols = ["Minutes", "Sampling_Rate_Hz", "Data_Closure_24hr_Sum"]
-for col in numeric_cols:
-    if col in df.columns:
-        df[col] = pd.to_numeric(df[col], errors="coerce")
+# Fix numeric types
+df["Minutes"] = pd.to_numeric(df["Minutes"], errors="coerce")
 
-# Replace NA Age_Group with "Unknown"
-df["Age_Group"] = df["Age_Group"].fillna("Unknown")
+# Remove Unknown age group
+df = df[df["Age_Group"].isin(["Children", "Adolescents", "Adult"])]
 
-# Order age groups consistently
+# Ensure age group ordering
 df["Age_Group"] = pd.Categorical(
     df["Age_Group"],
-    categories=["Children", "Adolescents", "Adult", "Unknown"],
+    categories=["Children", "Adolescents", "Adult"],
     ordered=True
 )
 
-
-# ----------------------------------------------------
+# ======================================================================
 # SIDEBAR FILTERS
-# ----------------------------------------------------
+# ======================================================================
+
 st.sidebar.header("Filters")
 
-age_filter = st.sidebar.multiselect(
-    "Age Group",
-    options=df["Age_Group"].unique().tolist(),
-    default=df["Age_Group"].unique().tolist()
-)
+# All filters automatically adapt to dataset categories
+def auto_multiselect(label, column):
+    options = sorted(df[column].dropna().unique())
+    return st.sidebar.multiselect(label, options=options, default=options)
 
-device_filter = st.sidebar.multiselect(
-    "Device Brand",
-    options=sorted(df["Device_Brand"].dropna().unique()),
-    default=None
-)
+age_filter     = auto_multiselect("Age Group", "Age_Group")
+brand_filter   = auto_multiselect("Device Brand", "Device_Brand")
+type_filter    = auto_multiselect("Device Type", "Device_Type")
+country_filter = auto_multiselect("Country", "Country")
+rate_filter    = auto_multiselect("Sampling Rate (Hz)", "Sampling_Rate_Hz")
+sleep_filter   = auto_multiselect("Sleep Measurement Type", "Sleep_Measurement_Type")
 
-sampling_filter = st.sidebar.multiselect(
-    "Sampling Rate (Hz)",
-    options=sorted(df["Sampling_Rate_Hz"].dropna().unique()),
-    default=None
-)
-
-sleep_filter = st.sidebar.multiselect(
-    "Sleep Measurement Type",
-    options=sorted(df["Sleep_Measurement_Type"].dropna().unique()),
-    default=None
-)
-
-country_filter = st.sidebar.multiselect(
-    "Country",
-    options=sorted(df["Country"].dropna().unique()),
-    default=None
-)
-
-
-# ----------------------------------------------------
-# APPLY FILTERS
-# ----------------------------------------------------
+# Apply filters
 df_f = df.copy()
+if age_filter:     df_f = df_f[df_f["Age_Group"].isin(age_filter)]
+if brand_filter:   df_f = df_f[df_f["Device_Brand"].isin(brand_filter)]
+if type_filter:    df_f = df_f[df_f["Device_Type"].isin(type_filter)]
+if country_filter: df_f = df_f[df_f["Country"].isin(country_filter)]
+if rate_filter:    df_f = df_f[df_f["Sampling_Rate_Hz"].isin(rate_filter)]
+if sleep_filter:   df_f = df_f[df_f["Sleep_Measurement_Type"].isin(sleep_filter)]
 
-if age_filter:
-    df_f = df_f[df_f["Age_Group"].isin(age_filter)]
-
-if device_filter:
-    df_f = df_f[df_f["Device_Brand"].isin(device_filter)]
-
-if sampling_filter:
-    df_f = df_f[df_f["Sampling_Rate_Hz"].isin(sampling_filter)]
-
-if sleep_filter:
-    df_f = df_f[df_f["Sleep_Measurement_Type"].isin(sleep_filter)]
-
-if country_filter:
-    df_f = df_f[df_f["Country"].isin(country_filter)]
-
-df_f["Minutes"] = pd.to_numeric(df_f["Minutes"], errors="coerce")
-
-
-# ----------------------------------------------------
-# SPLIT BY MEAN TYPE
-# ----------------------------------------------------
-arith = df_f[df_f["Mean_Type"] == "Arithmetic"]
-geo = df_f[df_f["Mean_Type"] == "Geometric"]
-
-
-# ----------------------------------------------------
-# FUNCTION TO COMPUTE GROUP MEANS
-# ----------------------------------------------------
-def compute_means(d):
-    if d.empty:
-        return pd.DataFrame(columns=["Age_Group", "Behavior", "Minutes"])
-    return (
-        d.groupby(["Age_Group", "Behavior"], observed=False)["Minutes"]
-        .mean()
-        .reset_index()
-    )
-
-
-arith_means = compute_means(arith)
-geo_means = compute_means(geo)
-
-
-# ----------------------------------------------------
+# ======================================================================
 # TITLE
-# ----------------------------------------------------
+# ======================================================================
+
 st.title("24-Hour Movement Composition Explorer")
-st.write("Visualize arithmetic and geometric means, plus all study-level data points.")
+st.write("Compare arithmetic and geometric means across studies and visualize individual data points.")
 
+# ======================================================================
+# PLOT 1 — STACKED BAR PANELS (Arithmetic vs Geometric)
+# ======================================================================
 
-# ----------------------------------------------------
-# 24-HOUR CLOSURE CHECK
-# ----------------------------------------------------
-st.subheader("24-Hour Closure Check")
-if "Data_Closure_24hr_Sum" in df_f.columns:
-    invalid = df_f[df_f["Data_Closure_24hr_Sum"] != 1440]
-    if len(invalid) > 0:
-        st.error(f"{len(invalid)} rows do NOT close to 24 hours.")
-        st.dataframe(invalid[["StudyID", "Subgroup", "Data_Closure_24hr_Sum"]])
-    else:
-        st.success("All rows sum to 24 hours.")
-else:
-    st.info("No closure information provided.")
+st.subheader("Arithmetic vs Geometric Means (by Age Group)")
 
+arith = df_f[df_f["Mean_Type"] == "Arithmetic"]
+geo   = df_f[df_f["Mean_Type"] == "Geometric"]
 
-# ----------------------------------------------------
-# PLOT 1 & 2 — BAR CHARTS
-# ----------------------------------------------------
+# Compute aggregated means
+arith_means = (
+    arith.groupby(["Age_Group", "Behavior"], observed=False)["Minutes"].mean().reset_index()
+)
+geo_means = (
+    geo.groupby(["Age_Group", "Behavior"], observed=False)["Minutes"].mean().reset_index()
+)
+
 col1, col2 = st.columns(2)
 
+# ---- Arithmetic panel ----
 with col1:
-    st.subheader("Arithmetic Means (Stacked Bar)")
-    if arith_means.empty:
-        st.warning("No arithmetic data matches filters.")
-    else:
+    st.write("**Arithmetic Means**")
+    if not arith_means.empty:
         fig_a = px.bar(
             arith_means,
-            x="Minutes",
-            y="Age_Group",
+            x="Minutes", y="Age_Group",
             color="Behavior",
             orientation="h",
             title="Arithmetic Means",
-            category_orders={"Age_Group": ["Children", "Adolescents", "Adult", "Unknown"]}
+            category_orders={"Age_Group": ["Children","Adolescents","Adult"]}
         )
         fig_a.update_layout(barmode="stack")
-        st.plotly_chart(fig_a, use_container_width=True)
-
-with col2:
-    st.subheader("Geometric Means (Stacked Bar)")
-    if geo_means.empty:
-        st.warning("No geometric data matches filters.")
+        st.plotly_chart(fig_a, width="stretch")
     else:
+        st.info("No arithmetic data available after filtering.")
+
+# ---- Geometric panel ----
+with col2:
+    st.write("**Geometric Means**")
+    if not geo_means.empty:
         fig_g = px.bar(
             geo_means,
-            x="Minutes",
-            y="Age_Group",
+            x="Minutes", y="Age_Group",
             color="Behavior",
             orientation="h",
             title="Geometric Means",
-            category_orders={"Age_Group": ["Children", "Adolescents", "Adult", "Unknown"]}
+            category_orders={"Age_Group": ["Children","Adolescents","Adult"]}
         )
         fig_g.update_layout(barmode="stack")
-        st.plotly_chart(fig_g, use_container_width=True)
+        st.plotly_chart(fig_g, width="stretch")
+    else:
+        st.info("No geometric data available after filtering.")
 
+# ======================================================================
+# PLOT 2 — INDIVIDUAL STUDY POINTS + MEAN MARKERS
+# ======================================================================
 
-# ----------------------------------------------------
-# INDIVIDUAL DATA POINTS WITH MEANS (FACETED)
-# ----------------------------------------------------
-st.subheader(f"{selected_behavior}: Individual Data Points with Means")
+st.subheader("Individual Study Estimates by Behavior")
 
-# Filter to the selected behavior
+# Select behavior to display
+selected_behavior = st.selectbox(
+    "Choose a behavior to visualize",
+    sorted(df_f["Behavior"].dropna().unique())
+)
+
 df_beh = df_f[df_f["Behavior"] == selected_behavior].copy()
 
 if df_beh.empty:
-    st.warning("No data available for this behavior with the current filters.")
+    st.warning("No data for this behavior with the current filters.")
 else:
-    # Sort studies by value (Minutes)
-    df_beh = df_beh.sort_values("Minutes", ascending=True)
 
-    # Compute means separately for each age group
-    means = (
-        df_beh.groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
-        .mean()
-        .reset_index()
-    )
+    # Sort studies by minutes for cleaner plotting
+    df_beh = df_beh.sort_values("Minutes")
 
-    # Build scatter plot faceted by Age_Group
-    fig2 = px.scatter(
+    # Compute mean for each Mean_Type × Age_Group
+    mean_df = df_beh.groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"].mean().reset_index()
+
+    fig = px.scatter(
         df_beh,
         x="Minutes",
         y="StudyID_display",
         color="Mean_Type",
         symbol="Mean_Type",
+        title=f"{selected_behavior}: Individual Study Points with Means",
+        category_orders={
+            "Age_Group": ["Children", "Adolescents", "Adult"],
+        },
         facet_col="Age_Group",
-        category_orders={"Age_Group": ["Children", "Adolescents", "Adult"]},
-        labels={"Minutes": "Minutes", "StudyID_display": "Study"},
-        title=None,
-        opacity=0.9
+        facet_col_wrap=3,
+        height=600
     )
 
-    # Add MEAN markers: diamonds
-    for age in ["Children", "Adolescents", "Adult"]:
-        for mean_type, color in [("Arithmetic", "black"), ("Geometric", "royalblue")]:
-            mean_row = means[
-                (means["Age_Group"] == age) &
-                (means["Mean_Type"] == mean_type)
-            ]
+    # Add mean markers
+    for _, r in mean_df.iterrows():
+        fig.add_shape(
+            type="line",
+            x0=r["Minutes"], x1=r["Minutes"],
+            y0=0, y1=1,
+            xref=f"x{mean_df['Age_Group'].tolist().index(r['Age_Group'])+1}",
+            yref=f"paper",
+            line=dict(
+                dash="dot",
+                width=2,
+                color="red" if r["Mean_Type"] == "Arithmetic" else "blue"
+            ),
+        )
 
-            if len(mean_row) == 1:
-                mean_val = mean_row.iloc[0]["Minutes"]
-                # Add a diamond marker
-                fig2.add_scatter(
-                    x=[mean_val],
-                    y=[None],  # Centers in the panel
-                    mode="markers",
-                    marker=dict(
-                        symbol="diamond",
-                        size=14,
-                        color=color,
-                        line=dict(width=1, color="white")
-                    ),
-                    name=f"{mean_type} Mean",
-                    legendgroup=f"{mean_type} Mean",
-                    showlegend=True,
-                    xref=f"x{1 if age=='Children' else 2 if age=='Adolescents' else 3}"
-                )
+    fig.update_yaxes(matches=None, showticklabels=True)
+    st.plotly_chart(fig, width="stretch")
 
-    # Improve theme for readability
-    fig2.update_layout(
-        height=600,
-        legend_title="Mean Type",
-        margin=dict(l=40, r=40, t=40, b=40),
-    )
+# ======================================================================
+# TABLE OUTPUT — Study-Level Rows
+# ======================================================================
 
-    # Increase spacing between facet columns
-    fig2.update_layout(
-        annotations=[
-            ann for ann in fig2.layout.annotations if "Age_Group" in ann.text
-        ]
-    )
+st.subheader("Study-Level Breakdown")
 
-    st.plotly_chart(fig2, use_container_width=True)
-
-
-# ----------------------------------------------------
-# STUDY-LEVEL TABLE
-# ----------------------------------------------------
-st.subheader("Study-Level Rows (After Filters)")
-
-cols = [
-    "StudyID", "StudyID_display", "Age_Group", "Subgroup",
-    "Behavior", "Mean_Type", "Minutes",
-    "Device_Type", "Device_Brand", "Country",
-    "Sampling_Rate_Hz", "Sleep_Measurement_Type"
-]
-cols = [c for c in cols if c in df_f.columns]
-
-st.dataframe(df_f[cols].sort_values(["StudyID", "Behavior"]))
+if df_f.empty:
+    st.warning("No rows match your selected filters.")
+else:
+    st.dataframe(df_f.sort_values(["StudyID", "Behavior", "Mean_Type"]))
