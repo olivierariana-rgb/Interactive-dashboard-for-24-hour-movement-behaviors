@@ -46,19 +46,19 @@ country_filter = st.sidebar.multiselect(
 # --------------------------------------------
 df_f = df.copy()
 
-if age_filter:
+if len(age_filter) > 0:
     df_f = df_f[df_f["Age_Group"].isin(age_filter)]
 
-if device_filter:
+if len(device_filter) > 0:
     df_f = df_f[df_f["Device_Brand"].isin(device_filter)]
 
-if sampling_filter:
+if len(sampling_filter) > 0:
     df_f = df_f[df_f["Sampling_Rate_Hz"].isin(sampling_filter)]
 
-if sleep_filter:
+if len(sleep_filter) > 0:
     df_f = df_f[df_f["Sleep_Objective_Yes_No"].isin(sleep_filter)]
 
-if country_filter:
+if len(country_filter) > 0:
     df_f = df_f[df_f["Country"].isin(country_filter)]
 
 # --------------------------------------------
