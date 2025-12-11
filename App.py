@@ -40,14 +40,59 @@ country_filter = auto_multiselect("Country", "Country")
 rate_filter    = auto_multiselect("Sampling Rate (Hz)", "Sampling_Rate_Hz")
 sleep_filter   = auto_multiselect("Sleep Measurement Type", "Sleep_Measurement_Type")
 
-# Apply filters
+
+# ======================================================================
+# NEW SUBGROUP FILTER
+# ======================================================================
+
+# Normalize subgroup variable
+df["Subgroup_clean"] = (
+    df["Subgroup"]
+    .fillna("Full")
+    .replace({"": "Full", "full": "Full", "FULL": "Full", "NA": "Full"})
+)
+
+# Unique subgroup list (excluding "Full")
+subgroups_available = sorted([s for s in df["Subgroup_clean"].unique() if s != "Full"])
+
+st.sidebar.markdown("### Subgroup Selection")
+
+subgroup_mode = st.sidebar.radio(
+    "Choose subgroup filtering mode:",
+    ["All subgroups (default)", "Full sample only", "Specific subgroups"]
+)
+
+# Copy filtered dataset
 df_f = df.copy()
+
+# Apply basic filters first
 if age_filter:     df_f = df_f[df_f["Age_Group"].isin(age_filter)]
 if brand_filter:   df_f = df_f[df_f["Device_Brand"].isin(brand_filter)]
 if type_filter:    df_f = df_f[df_f["Device_Type"].isin(type_filter)]
 if country_filter: df_f = df_f[df_f["Country"].isin(country_filter)]
 if rate_filter:    df_f = df_f[df_f["Sampling_Rate_Hz"].isin(rate_filter)]
 if sleep_filter:   df_f = df_f[df_f["Sleep_Measurement_Type"].isin(sleep_filter)]
+
+# Add normalized subgroup column to df_f as well
+df_f["Subgroup_clean"] = (
+    df_f["Subgroup"]
+    .fillna("Full")
+    .replace({"": "Full", "full": "Full", "FULL": "Full", "NA": "Full"})
+)
+
+# Apply subgroup mode
+if subgroup_mode == "Full sample only":
+    df_f = df_f[df_f["Subgroup_clean"] == "Full"]
+
+elif subgroup_mode == "Specific subgroups":
+    chosen_groups = st.sidebar.multiselect(
+        "Choose one or more subgroups:",
+        options=subgroups_available
+    )
+    if len(chosen_groups) > 0:
+        df_f = df_f[df_f["Subgroup_clean"].isin(chosen_groups)]
+    else:
+        st.sidebar.warning("Select at least one subgroup or switch mode.")
 
 # ======================================================================
 # TITLE
