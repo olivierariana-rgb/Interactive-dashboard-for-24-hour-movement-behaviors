@@ -174,57 +174,59 @@ with col2:
         fig_g.update_layout(barmode="stack")
         st.plotly_chart(fig_g, use_container_width=True)
 
-# --------------------------------------------------
+ # --------------------------------------------------
 # WIDE STUDY-LEVEL SUMMARY TABLE
 # --------------------------------------------------
 st.subheader("Study-Level Summary (One Row per Study/Subgroup)")
 
 if df_f.empty:
     st.warning("No rows match your current filters.")
+
 else:
 
-    # -------------------------------
-    # Helper: Pivot to wide format
-    # -------------------------------
+    # ---- Helper to pivot arithmetic or geometric into wide format ----
     def make_wide(df_part, prefix):
         """
-        df_part: arithmetic OR geometric subset
-        prefix: 'A' for arithmetic, 'G' for geometric
+        df_part = arithmetic or geometric subset
+        prefix = 'A' for arithmetic, 'G' for geometric
         """
         if df_part.empty:
             return pd.DataFrame()
 
-        # Pivot: rows = study/subgroup, columns = behavior
         wide = df_part.pivot_table(
-            index=["StudyID", "StudyID_display", "Subgroup", "Age_Group",
-                   "Country", "Device_Brand", "Sampling_Rate_Hz",
-                   "Sleep_Objective_Yes_No"],
+            index=[
+                "StudyID", "StudyID_display", "Subgroup", "Age_Group",
+                "Country", "Device_Brand", "Sampling_Rate_Hz",
+                "Sleep_Objective_Yes_No"
+            ],
             columns="Behavior",
             values="Minutes",
             aggfunc="mean"
         ).reset_index()
 
-        # Rename Behavior columns
+        # Rename behavior columns
         wide = wide.rename(columns={
-            "Sleep": f"{prefix}_Sleep",
+            "Sleep":     f"{prefix}_Sleep",
             "Sedentary": f"{prefix}_SB",
-            "LPA": f"{prefix}_LPA",
-            "MVPA": f"{prefix}_MVPA"
+            "LPA":       f"{prefix}_LPA",
+            "MVPA":      f"{prefix}_MVPA"
         })
 
         return wide
 
-    # Create wide versions
+    # Make wide arithmetic and geometric tables
     wide_arith = make_wide(arith, "A")
-    wide_geo = make_wide(geo, "G")
+    wide_geo   = make_wide(geo, "G")
 
-    # Merge the two (outer join so neither is dropped)
+    # Merge them (outer join keeps everything)
     if not wide_arith.empty and not wide_geo.empty:
         wide = pd.merge(
             wide_arith, wide_geo,
-            on=["StudyID", "StudyID_display", "Subgroup", "Age_Group",
+            on=[
+                "StudyID", "StudyID_display", "Subgroup", "Age_Group",
                 "Country", "Device_Brand", "Sampling_Rate_Hz",
-                "Sleep_Objective_Yes_No"],
+                "Sleep_Objective_Yes_No"
+            ],
             how="outer"
         )
     elif not wide_arith.empty:
@@ -233,8 +235,6 @@ else:
         wide = wide_geo.copy()
 
     # Sort nicely
-    sort_cols = [c for c in ["StudyID", "Subgroup", "Age_Group"] if c in wide.columns]
-    wide = wide.sort_values(sort_cols)
+    wide = wide.sort_values(["StudyID", "Subgroup", "Age_Group"])
 
-    # Display
     st.dataframe(wide, use_container_width=True)
