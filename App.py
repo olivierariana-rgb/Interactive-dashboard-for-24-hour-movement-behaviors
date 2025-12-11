@@ -346,3 +346,117 @@ else:
 
     # Display table 
     st.dataframe(wide_all)
+
+# ============================================================
+#  INTERACTIVE SIMPLEX EXPLORER
+# ============================================================
+
+st.header("Interactive Simplex Explorer")
+
+st.write("""
+Explore how different preprocessing or study characteristics 
+affect the **composition of Sleep, SB, and MVPA** using a ternary simplex plot.
+""")
+
+# We use the wide behavior table already created above
+behaviors = ["Sleep", "SB", "LPA", "MVPA"]
+
+# Rebuild the wide table (same logic as earlier)
+df_beh4 = df_f[df_f["Behavior"].isin(behaviors)].copy()
+
+wide_arith = (
+    df_beh4[df_beh4["Mean_Type"] == "Arithmetic"]
+    .pivot_table(index=["StudyID", "Subgroup"],
+                 columns="Behavior",
+                 values="Minutes",
+                 aggfunc="mean")
+    .add_prefix("A_")
+    .reset_index()
+)
+
+wide_geo = (
+    df_beh4[df_beh4["Mean_Type"] == "Geometric"]
+    .pivot_table(index=["StudyID", "Subgroup"],
+                 columns="Behavior",
+                 values="Minutes",
+                 aggfunc="mean")
+    .add_prefix("G_")
+    .reset_index()
+)
+
+wide_all = pd.merge(wide_arith, wide_geo, on=["StudyID", "Subgroup"], how="outer")
+
+# ------------------------------------------------------------
+# Select mean type for simplex
+# ------------------------------------------------------------
+mean_choice = st.radio(
+    "Select mean type for simplex plot:",
+    ["Arithmetic", "Geometric"],
+    horizontal=True
+)
+
+if mean_choice == "Arithmetic":
+    simplex_sleep = "A_Sleep"
+    simplex_sb    = "A_SB"
+    simplex_mvpa  = "A_MVPA"
+else:
+    simplex_sleep = "G_Sleep"
+    simplex_sb    = "G_SB"
+    simplex_mvpa  = "G_MVPA"
+
+# Remove rows where any needed value is missing
+simplex_df = wide_all.dropna(subset=[simplex_sleep, simplex_sb, simplex_mvpa]).copy()
+
+# Merge metadata into simplex df for filtering
+simplex_df = simplex_df.merge(meta, on="StudyID", how="left")
+
+# ------------------------------------------------------------
+# USER CHOOSES FILTER VARIABLE
+# ------------------------------------------------------------
+
+filter_var = st.selectbox(
+    "Choose a variable to control the simplex explorer:",
+    ["Sampling_Rate_Hz", "Device_Brand", "Year", "Country"]
+)
+
+# ------------------------------------------------------------
+# CREATE THE APPROPRIATE INPUT WIDGET
+# ------------------------------------------------------------
+if pd.api.types.is_numeric_dtype(simplex_df[filter_var]):
+    min_val = int(simplex_df[filter_var].min())
+    max_val = int(simplex_df[filter_var].max())
+    selected_val = st.slider(f"Select {filter_var}", min_val, max_val, value=min_val)
+    simplex_filtered = simplex_df[simplex_df[filter_var] == selected_val]
+
+else:
+    options = sorted(simplex_df[filter_var].dropna().astype(str).unique())
+    selected_val = st.selectbox(f"Select {filter_var}", options)
+    simplex_filtered = simplex_df[simplex_df[filter_var].astype(str) == selected_val]
+
+# ------------------------------------------------------------
+# BUILD SIMPLEX PLOT
+# ------------------------------------------------------------
+import plotly.express as px
+
+if simplex_filtered.empty:
+    st.warning("No data available for this selection.")
+else:
+    # Rename for ternary plotting
+    tern = simplex_filtered.rename(columns={
+        simplex_sleep: "Sleep",
+        simplex_sb: "SB",
+        simplex_mvpa: "MVPA"
+    })
+
+    fig_simplex = px.scatter_ternary(
+        tern,
+        a="Sleep",
+        b="SB",
+        c="MVPA",
+        hover_name="StudyID",
+        color="Subgroup",
+        size_max=10,
+        title=f"Simplex Plot for {mean_choice} Means — filtered by {filter_var} = {selected_val}"
+    )
+
+    st.plotly_chart(fig_simplex, use_container_width=True)
