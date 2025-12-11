@@ -108,122 +108,112 @@ with col2:
         st.plotly_chart(fig_g, width="stretch")
     else:
         st.info("No geometric data available after filtering.")
-# ======================================================================
-# NEW FIXED SCATTER — COLLAPSE DUPLICATES & CLEAN FACETS
-# ======================================================================
+# ============================================================
+# IMPROVED SCATTER PANEL — One behavior at a time
+# ============================================================
 
-st.subheader("Individual Study Estimates by Behavior")
+st.subheader("Behavior-Level Scatter Plot")
 
+# User selects ONE behavior
 selected_behavior = st.selectbox(
-    "Choose a behavior to visualize",
-    sorted(df_f["Behavior"].dropna().unique())
+    "Select a behavior to visualize:",
+    sorted(df_f["Behavior"].unique())
 )
 
+# Filter to selected behavior
 df_beh = df_f[df_f["Behavior"] == selected_behavior].copy()
 
-# Remove Unknown age group
-df_beh = df_beh[df_beh["Age_Group"].isin(["Children","Adolescents","Adult"])]
-
 if df_beh.empty:
-    st.warning("No data for this behavior with current filters.")
+    st.warning("No data available for this behavior under current filters.")
 else:
 
-    # ---------------------------------------------------------
-    # REMOVE DUPLICATES:
-    df_beh = (
-        df_beh
-        .sort_values("Minutes")
-        .drop_duplicates(subset=["StudyID","Subgroup","Behavior","Mean_Type"])
-        .reset_index(drop=True)
+    # -----------------------------------------------
+    # Compute mean arithmetic and geometric per age
+    # -----------------------------------------------
+    mean_table = (
+        df_beh.groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
+        .mean()
+        .reset_index()
     )
 
-    # --------------------------
-    # Order studies
-    # --------------------------
-    df_beh = df_beh.sort_values("Minutes", ascending=True)
-    df_beh["row_id"] = df_beh.index
+    # -----------------------------------------------
+    # Sort studies by minutes for clearer display
+    # -----------------------------------------------
+    df_beh["StudyID_display"] = df_beh["StudyID_display"].astype(str)
 
-    # --------------------------
-    # Ensure ordered facet levels
-    # --------------------------
-    valid_levels = ["Children","Adolescents","Adult"]
-    existing_levels = [lvl for lvl in valid_levels if lvl in df_beh["Age_Group"].unique()]
+    df_beh = df_beh.sort_values("Minutes")
 
-    df_beh["Age_Group"] = pd.Categorical(df_beh["Age_Group"], categories=existing_levels, ordered=True)
-
-    # Compute means
-    mean_df = (
-        df_beh.groupby(["Age_Group","Mean_Type"], observed=False)["Minutes"]
-        .mean().reset_index()
-    )
-    mean_df["Age_Group"] = pd.Categorical(mean_df["Age_Group"], categories=existing_levels, ordered=True)
-
-    # --------------------------
-    # Build scatter figure
-    # --------------------------
+    # -----------------------------------------------
+    # Build scatter facet
+    # -----------------------------------------------
     fig2 = px.scatter(
         df_beh,
         x="Minutes",
-        y="row_id",
+        y="StudyID_display",
         color="Mean_Type",
         symbol="Mean_Type",
-        hover_name="StudyID_display",
-        hover_data=["Minutes","Subgroup"],
-        facet_col="Age_Group",
-        category_orders={"Age_Group": existing_levels},
+        symbol_map={"Arithmetic": "circle", "Geometric": "triangle-up"},
+        category_orders={
+            "Age_Group": ["Children", "Adolescents", "Adult"],
+            "Mean_Type": ["Arithmetic", "Geometric"]
+        },
+        facet_row="Age_Group",
         height=900,
-        color_discrete_map={"Arithmetic":"#1f77b4","Geometric":"#d62728"},
-        title=f"{selected_behavior}: Study-Level Arithmetic & Geometric Estimates"
+        title=f"Study Estimates for {selected_behavior}"
     )
 
-    # Replace row_id ticks with study names
-    fig2.update_yaxes(
-        tickvals=df_beh["row_id"],
-        ticktext=df_beh["StudyID_display"],
-        automargin=True
-    )
+    # -----------------------------------------------
+    # Add mean diamonds on each panel
+    # -----------------------------------------------
+    for age_group in ["Children", "Adolescents", "Adult"]:
+        sub_mean = mean_table[mean_table["Age_Group"] == age_group]
+        if not sub_mean.empty:
+            row_num = ["Children", "Adolescents", "Adult"].index(age_group) + 1
 
-    # ---------------------------------------------------------
-    # ADD MEAN LINES — dynamically map facets
-    # ---------------------------------------------------------
-    # Plotly facet columns: col index 1..N for each age group
-    facet_map = {age: i+1 for i, age in enumerate(existing_levels)}
+            for _, r in sub_mean.iterrows():
+                fig2.add_shape(
+                    type="line",
+                    x0=r["Minutes"], x1=r["Minutes"],
+                    y0=0, y1=1,
+                    xref=f"x{row_num}",
+                    yref=f"y{row_num} domain",
+                    line=dict(color="black", width=2, dash="dot")
+                )
+                fig2.add_trace(go.Scatter(
+                    x=[r["Minutes"]],
+                    y=[None],  # mean marker appears at top
+                    mode="markers",
+                    marker=dict(size=14, color="black", symbol="diamond"),
+                    name=f"{age_group} Mean ({r['Mean_Type']})",
+                    xaxis=f"x{row_num}",
+                    showlegend=False
+                ))
 
-    for _, row in mean_df.iterrows():
-        age = row["Age_Group"]
-        mtype = row["Mean_Type"]
-        xval = row["Minutes"]
-
-        col_index = facet_map.get(age)
-        if col_index is None:
-            continue  # Skip if facet doesn't exist
-
-        line_color = "#1f77b4" if mtype == "Arithmetic" else "#d62728"
-        fig2.add_vline(
-            x=xval,
-            line_dash="dash",
-            line_color=line_color,
-            row=1,
-            col=col_index
-        )
-
-    # ---------------------------------------------------------
-    # Light gray background for each facet
-    # ---------------------------------------------------------
-    for i in range(1, len(existing_levels)+1):
-        fig2.layout[f"xaxis{i}"]["showgrid"] = True
-        fig2.layout[f"yaxis{i}"]["showgrid"] = False
-        fig2.layout[f"xaxis{i}"]["domain"]  # just forces layout to compute
-        fig2.update_xaxes(matches=None, row=1, col=i)
-
+    # -----------------------------------------------
+    # Improve layout / facet appearance
+    # -----------------------------------------------
     fig2.update_layout(
-        plot_bgcolor="#f7f7f7",
-        paper_bgcolor="white"
+        legend_title="Mean Type",
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        ),
+        margin=dict(l=40, r=40, t=80, b=40),
+        height=1100
     )
 
-    # ---------------------------------------------------------
-    st.plotly_chart(fig2, width="stretch")
+    # Dark facet headers for readability
+    fig2.for_each_annotation(
+        lambda a: a.update(
+            font=dict(color="white", size=14),
+            bgcolor="#444444"
+        )
+    )
 
+    st.plotly_chart(fig2, width="stretch")
 # --------------------------------------------------
 #  STUDY-LEVEL BREAKDOWN (ONE ROW PER STUDY)
 # --------------------------------------------------
