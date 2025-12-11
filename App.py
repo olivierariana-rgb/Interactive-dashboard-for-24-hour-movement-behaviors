@@ -225,33 +225,44 @@ else:
     st.plotly_chart(fig2, width="stretch")
 
 # --------------------------------------------------
-# STUDY-LEVEL BREAKDOWN TABLE
+#  STUDY-LEVEL BREAKDOWN (USING METADATA)
 # --------------------------------------------------
-st.subheader("Study-Level Breakdown")
+st.subheader("Study-Level Breakdown (1 row per study)")
 
-if df_f.empty:
-    st.warning("No rows match your current filters.")
+# 1️⃣ Identify unique StudyIDs in the filtered dashboard data
+study_ids = df_f["StudyID"].unique()
+
+if len(study_ids) == 0:
+    st.warning("No studies match the current filters.")
 else:
+    st.info(f"Showing **{len(study_ids)} unique studies** after filtering.")
 
-    # Count unique studies vs subgroup rows
-    num_studies = df_f["StudyID"].nunique()
-    num_rows = len(df_f)
+    # 2️⃣ Pull metadata rows for these studies
+    meta_filtered = meta[meta["StudyID"].isin(study_ids)].copy()
 
-    # Display the counts to the user
-    st.info(
-        f"Showing **{num_rows} rows** from **{num_studies} unique studies** "
-        f"(subgroups included)."
-    )
-
-    # Columns we want to show
-    cols = [
-        "StudyID", "StudyID_display", "Year", "Age_Group", "Subgroup",
-        "Behavior", "Mean_Type", "Minutes", "Device_Brand", "Country",
+    # Select useful metadata columns (adjust as you prefer)
+    metadata_cols = [
+        "StudyID", "Year", "title", "Country", "Age_Group",
+        "SampleSize", "Device_Brand", "Device_Type",
         "Sampling_Rate_Hz", "Sleep_Measurement_Type"
     ]
 
-    existing_cols = [c for c in cols if c in df_f.columns]
+    # Keep only columns that exist
+    metadata_cols = [c for c in metadata_cols if c in meta_filtered.columns]
 
-    st.dataframe(
-        df_f.sort_values(["StudyID", "Subgroup", "Behavior"])[existing_cols]
+    st.write("### Study Characteristics")
+    st.dataframe(meta_filtered[metadata_cols])
+
+    # --------------------------------------------------
+    #  SUBGROUP SUMMARY TABLE
+    # --------------------------------------------------
+    st.write("### Subgroups Available Per Study")
+
+    subgroup_table = (
+        df_f.groupby("StudyID")["Subgroup"]
+            .unique()
+            .reset_index()
+            .rename(columns={"Subgroup": "Available_Subgroups"})
     )
+
+    st.dataframe(subgroup_table)
