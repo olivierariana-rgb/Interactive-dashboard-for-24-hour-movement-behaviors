@@ -184,23 +184,20 @@ if df_f.empty:
 
 else:
 
-    # --------------------------------------------------
-    # Helper: wide format for a given mean type
-    # --------------------------------------------------
-    def make_wide(df_part, prefix):
+    def make_wide(df_subset, prefix):
         """
-        df_part = arithmetic or geometric subset
-        prefix = 'A' or 'G'
+        df_subset = arithmetic or geometric rows
+        prefix = "A" or "G"
         """
 
-        # 1. Drop rows with missing Minutes (these are non-reported means)
-        df_part = df_part.dropna(subset=["Minutes"])
+        # Drop missing Minutes (unreported values)
+        df_subset = df_subset.dropna(subset=["Minutes"])
 
-        if df_part.empty:
+        if df_subset.empty:
             return pd.DataFrame()
 
-        # 2. Pivot valid rows only
-        wide = df_part.pivot_table(
+        # Pivot behaviors to columns
+        wide = df_subset.pivot_table(
             index=[
                 "StudyID", "StudyID_display", "Subgroup", "Age_Group",
                 "Country", "Device_Brand", "Sampling_Rate_Hz",
@@ -211,44 +208,36 @@ else:
             aggfunc="mean"
         ).reset_index()
 
-        # 3. Rename behavior columns with prefix
-        rename_dict = {}
-        if "Sleep" in wide.columns:
-            rename_dict["Sleep"] = f"{prefix}_Sleep"
-        if "Sedentary" in wide.columns:
-            rename_dict["Sedentary"] = f"{prefix}_SB"
-        if "LPA" in wide.columns:
-            rename_dict["LPA"] = f"{prefix}_LPA"
-        if "MVPA" in wide.columns:
-            rename_dict["MVPA"] = f"{prefix}_MVPA"
-
-        wide = wide.rename(columns=rename_dict)
+        # Add prefix to behavior columns
+        rename_map = {
+            "Sleep": f"{prefix}_Sleep",
+            "Sedentary": f"{prefix}_SB",
+            "LPA": f"{prefix}_LPA",
+            "MVPA": f"{prefix}_MVPA",
+        }
+        wide = wide.rename(columns=rename_map)
 
         return wide
 
-    # --------------------------------------------------
-    # Build arithmetic and geometric tables separately
-    # --------------------------------------------------
-    wide_arith = make_wide(arith, "A")
-    wide_geo   = make_wide(geo, "G")
+    # Build arithmetic + geometric tables
+    wide_A = make_wide(arith, "A")
+    wide_G = make_wide(geo, "G")
 
-    # --------------------------------------------------
-    # Merge them together
-    # --------------------------------------------------
+    # Merge them
     merge_keys = [
         "StudyID", "StudyID_display", "Subgroup", "Age_Group",
         "Country", "Device_Brand", "Sampling_Rate_Hz",
         "Sleep_Objective_Yes_No"
     ]
 
-    if not wide_arith.empty and not wide_geo.empty:
-        wide = pd.merge(wide_arith, wide_geo, on=merge_keys, how="outer")
-    elif not wide_arith.empty:
-        wide = wide_arith.copy()
+    if not wide_A.empty and not wide_G.empty:
+        wide = pd.merge(wide_A, wide_G, on=merge_keys, how="outer")
+    elif not wide_A.empty:
+        wide = wide_A.copy()
     else:
-        wide = wide_geo.copy()
+        wide = wide_G.copy()
 
-    # Sort nicely
+    # Sort
     wide = wide.sort_values(["StudyID", "Subgroup", "Age_Group"])
 
     st.dataframe(wide, use_container_width=True)
