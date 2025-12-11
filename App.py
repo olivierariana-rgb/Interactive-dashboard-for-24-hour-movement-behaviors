@@ -115,39 +115,53 @@ with col2:
 
 st.subheader("Individual Study Estimates by Behavior")
 
-# Pick behavior
 selected_behavior = st.selectbox(
     "Choose a behavior to visualize",
     sorted(df_f["Behavior"].dropna().unique())
 )
 
-# Filter to selected behavior
 df_beh = df_f[df_f["Behavior"] == selected_behavior].copy()
 
 if df_beh.empty:
     st.warning("No data for this behavior with current filters.")
 else:
+    # Make row index for visual spacing
+    df_beh = df_beh.sort_values("Minutes").reset_index(drop=True)
+    df_beh["row_id"] = df_beh.index.astype(str)
 
-    # Ensure sorted points
-    df_beh = df_beh.sort_values("Minutes")
-
-    # Compute arithmetic/geometric means per age group
+    # Compute arithmetic and geometric means per age group
     mean_df = (
         df_beh.groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
         .mean()
         .reset_index()
     )
 
-    # Mapping shapes for consistency
+    # Force all three facets to exist even if empty
+    df_beh["Age_Group"] = pd.Categorical(
+        df_beh["Age_Group"],
+        categories=["Children", "Adolescents", "Adult"],
+        ordered=True
+    )
+    mean_df["Age_Group"] = pd.Categorical(
+        mean_df["Age_Group"],
+        categories=["Children", "Adolescents", "Adult"],
+        ordered=True
+    )
+
     shape_map = {"Arithmetic": "circle", "Geometric": "triangle-up"}
     color_map = {"Arithmetic": "#2E86C1", "Geometric": "#C0392B"}
 
+    # --------------------------
+    # BUILD SCATTER WITH FACETS
+    # --------------------------
     fig = px.scatter(
         df_beh,
         x="Minutes",
-        y="StudyID_display",
+        y="row_id",
         color="Mean_Type",
         symbol="Mean_Type",
+        hover_name="StudyID_display",
+        hover_data=["StudyID_display", "Minutes"],
         color_discrete_map=color_map,
         symbol_map=shape_map,
         facet_col="Age_Group",
@@ -156,45 +170,41 @@ else:
         title=f"{selected_behavior}: Study-Level Arithmetic & Geometric Estimates",
     )
 
-    # --- Facet styling: darker grey panels ---
-    fig.update_layout(
-        plot_bgcolor="#F0F0F0",
-        paper_bgcolor="white",
-    )
-    fig.for_each_xaxis(lambda a: a.update(showgrid=True, gridcolor="#D0D0D0"))
+    # Make facet backgrounds distinct
+    fig.for_each_xaxis(lambda a: a.update(showgrid=True, gridcolor="#CCCCCC"))
     fig.for_each_yaxis(lambda a: a.update(showgrid=False))
-    fig.for_each_annotation(lambda a: a.update(font=dict(size=14, color="#333")))
+    fig.update_layout(plot_bgcolor="white")
 
-    # --- Add mean lines ---
+    # --------------------------
+    # ADD MEAN LINES PER FACET
+    # --------------------------
     for _, r in mean_df.iterrows():
 
-        # Pick line color
-        mean_color = "#2E86C1" if r["Mean_Type"] == "Arithmetic" else "#C0392B"
-        line_style = "dash"
+        x_mean = r["Minutes"]
+        mean_type = r["Mean_Type"]
+        age = r["Age_Group"]
 
-        # Determine facet index
-        facet_idx = ["Children", "Adolescents", "Adult"].index(r["Age_Group"]) + 1
-        xref_val = f"x{facet_idx}" if facet_idx > 1 else "x"
+        # Which facet this belongs to
+        facet_index = ["Children", "Adolescents", "Adult"].index(age) + 1
+        xref = f"x{facet_index}" if facet_index > 1 else "x"
+
+        line_color = color_map[mean_type]
 
         fig.add_shape(
             type="line",
-            x0=r["Minutes"], x1=r["Minutes"],
+            x0=x_mean, x1=x_mean,
             y0=0, y1=1,
-            xref=xref_val,
-            yref="paper",
-            line=dict(color=mean_color, width=3, dash=line_style),
-            opacity=0.90,
+            xref=xref,
+            yref="paper",  # stays within facet
+            line=dict(color=line_color, width=3, dash="dash"),
+            opacity=0.9,
         )
 
-    # Update legend labels
-    fig.update_traces(
-        marker=dict(size=12),
-        selector=dict(mode="markers"),
-    )
-
-    fig.update_layout(
-        legend_title="Mean Type",
-        legend=dict(itemsizing="constant")
+    # Replace row_id ticks with StudyID labels
+    fig.update_yaxes(
+        ticktext=df_beh["StudyID_display"].tolist(),
+        tickvals=df_beh["row_id"].tolist(),
+        automargin=True,
     )
 
     st.plotly_chart(fig, width="stretch")
