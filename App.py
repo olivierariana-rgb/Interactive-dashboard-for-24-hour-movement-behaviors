@@ -441,64 +441,41 @@ st.caption(
 )
 
 # --------------------------------------------------
-# Base metadata (1 row per included study)
+# Base metadata: ONE row per study
+# Prefer Subgroup == Full when available
 # --------------------------------------------------
 
-# Keep only studies included for full-text extraction
 meta_base = meta.copy()
 
-# If FullTextExtraction_Number exists, ensure uniqueness
-if "FullTextExtraction_Number" in meta_base.columns:
-    meta_base = (
-        meta_base
-        .sort_values("FullTextExtraction_Number")
-        .drop_duplicates(subset="FullTextExtraction_Number", keep="first")
-        .reset_index(drop=True)
-    )
+# Normalize subgroup
+meta_base["Subgroup_clean"] = (
+    meta_base["Subgroup"]
+    .fillna("Full")
+    .replace({"": "Full", "full": "Full", "FULL": "Full", "NA": "Full"})
+)
+
+# Prefer Full rows
+meta_base["is_full"] = (meta_base["Subgroup_clean"] == "Full").astype(int)
+
+meta_base = (
+    meta_base
+    .sort_values(["StudyID", "is_full"], ascending=[True, False])
+    .drop_duplicates(subset="StudyID", keep="first")
+    .reset_index(drop=True)
+)
 
 st.write(f"📊 **Total included studies:** {len(meta_base)}")
 
 # --------------------------------------------------
-# Helper function: top N values by age group
+# MOST COMMON METHODOLOGICAL CHOICES (by age group)
 # --------------------------------------------------
 
-def top_n_by_age_group(df, column, n=3):
-    out = []
-    for age in ["Children", "Adolescents", "Adult"]:
-        sub = df[df["Age_Group"] == age]
-        if sub.empty or column not in sub.columns:
-            continue
-
-        counts = (
-            sub[column]
-            .dropna()
-            .value_counts()
-            .head(n)
-        )
-
-        for rank, (val, cnt) in enumerate(counts.items(), start=1):
-            out.append({
-                "Age_Group": age,
-                "Rank": rank,
-                "Category": column,
-                "Value": val,
-                "Number_of_Studies": cnt
-            })
-
-    return pd.DataFrame(out)
-
-# --------------------------------------------------
-# MOST COMMON METHODOLOGICAL CHOICES 
-# --------------------------------------------------
-
-st.subheader("Most Common Methodological Choices")
-
+st.subheader("Most Common Methodological Choices by Age Group")
 st.caption(
-    "Summary of the most frequently reported methodological decisions. "
-    "Percentages are calculated within each age group using metadata only."
+    "Top methodological decisions within each age group. "
+    "Percentages are calculated within age group using metadata only."
 )
 
-# Age group selector
 age_choice = st.radio(
     "Select age group:",
     ["Children", "Adolescents", "Adult"],
@@ -517,8 +494,14 @@ else:
         "Device Brand": "Device_Brand",
         "Device Type": "Device_Type",
         "Sampling Rate (Hz)": "Sampling_Rate_Hz",
+        "Sleep Measurement Type": "Sleep_Measurement_Type",
         "Cutpoint Type": "Cutpoint_Type",
-        "Sleep Measurement": "Sleep_Measurement_Type",
+        "Primary Analysis Type": "Primary_Analysis_Type",
+        "Isotemporal Substitution Applied": "Compositional_Isotemporal_Substitution_Applied_Yes_No",
+        "Time Reallocation Increment (min)": "Time_Reallocation_Increment_minutes",
+        "Stratified Analyses": "Stratified_Analyses",
+        "Sensitivity Analyses": "Sensitivity_Analyses",
+        "Bootstrap": "Bootstrap",
     }
 
     for label, col in method_vars.items():
@@ -528,18 +511,18 @@ else:
         st.markdown(f"### {label}")
 
         counts = meta_age[col].fillna("NR").value_counts()
-        top3 = counts.head(3)
-
         total = counts.sum()
-        nr_count = counts.get("NR", 0)
+        top3 = counts.head(3)
 
         for val, cnt in top3.items():
             pct = round(100 * cnt / total, 1)
             st.write(f"• **{val}** — {cnt} studies ({pct}%)")
 
-        if "NR" not in top3.index and nr_count > 0:
-            pct_nr = round(100 * nr_count / total, 1)
-            st.write(f"• **NR** — {nr_count} studies ({pct_nr}%)")
+        # Explicit NR if not already shown
+        if "NR" not in top3.index and "NR" in counts.index:
+            nr_cnt = counts["NR"]
+            pct_nr = round(100 * nr_cnt / total, 1)
+            st.write(f"• **NR** — {nr_cnt} studies ({pct_nr}%)")
 
         st.divider()
 
@@ -556,7 +539,10 @@ report_vars = [
     "Sleep_Measurement_Type",
     "Cutpoint_Type",
     "Wear_Days_Instructed",
-    "Valid_Hours_Per_Day"
+    "Valid_Hours_Per_Day",
+    "Primary_Analysis_Type",
+    "Bootstrap",
+    "Sensitivity_Analyses"
 ]
 
 missing_summary = []
@@ -586,12 +572,14 @@ st.subheader("Methodological Heterogeneity")
 
 heterogeneity = []
 
-for var in method_vars:
-    if var in meta_base.columns:
-        heterogeneity.append({
-            "Methodological Dimension": var,
-            "Number of Unique Choices": meta_base[var].dropna().nunique()
-        })
+for col in method_vars.values():
+    if col not in meta_base.columns:
+        continue
+
+    heterogeneity.append({
+        "Methodological Dimension": col,
+        "Number of Unique Choices": meta_base[col].dropna().nunique()
+    })
 
 hetero_df = pd.DataFrame(heterogeneity)
 
