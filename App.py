@@ -554,33 +554,53 @@ else:
     }
 
     for label, col in method_vars.items():
-        if col not in meta_age.columns:
-            continue
+    if col not in meta_age.columns:
+        continue
 
-        st.markdown(f"### {label}")
+    st.markdown(f"### {label}")
 
-        counts = meta_age[col].fillna("NR").value_counts()
-        total = counts.sum()
+    counts = meta_age[col].fillna("NR").value_counts()
+    total = counts.sum()
 
-        if total == 0:
-            st.write("• No data available")
-            st.divider()
-            continue
-
-        top3 = counts.head(3)
-
-        for val, cnt in top3.items():
-            pct = round(100 * cnt / total, 1)
-            st.write(f"• **{val}** — {cnt} studies ({pct}%)")
-
-        # Explicitly report NR if it exists but is not in top 3
-        if "NR" in counts.index and "NR" not in top3.index:
-            nr_cnt = counts["NR"]
-            pct_nr = round(100 * nr_cnt / total, 1)
-            st.write(f"• **NR** — {nr_cnt} studies ({pct_nr}%)")
-
+    if total == 0:
+        st.write("• No data available")
         st.divider()
+        continue
 
+    top3 = counts.head(3)
+
+    for val, cnt in top3.items():
+        pct = round(100 * cnt / total, 1)
+        st.write(f"• **{val}** — {cnt} studies ({pct}%)")
+
+    # Explicit NR if needed
+    if "NR" in counts.index and "NR" not in top3.index:
+        nr_cnt = counts["NR"]
+        pct_nr = round(100 * nr_cnt / total, 1)
+        st.write(f"• **NR** — {nr_cnt} studies ({pct_nr}%)")
+
+    # =================================================
+    # 🔹 DEVICE MODEL BREAKDOWN (ONLY FOR DEVICE BRAND)
+    # =================================================
+    if label == "Device Brand" and "Device_Model" in meta_age.columns:
+        st.markdown("**Device models used (within brand):**")
+
+        for brand, brand_n in counts.items():
+            st.markdown(f"*{brand}* (n = {brand_n})")
+
+            sub_brand = meta_age[meta_age["Device_Brand"] == brand]
+
+            model_counts = (
+                sub_brand["Device_Model"]
+                .fillna("NR")
+                .value_counts()
+            )
+
+            for model, m_cnt in model_counts.items():
+                pct_m = round(100 * m_cnt / brand_n, 1)
+                st.write(f"• {model} — {m_cnt} studies ({pct_m}%)")
+
+    st.divider()
 # --------------------------------------------------
 # REPORTING COMPLETENESS (Missingness)
 # --------------------------------------------------
