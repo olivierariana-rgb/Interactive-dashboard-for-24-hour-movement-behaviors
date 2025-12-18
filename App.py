@@ -199,42 +199,65 @@ with col2:
 
 
 # ============================================================
-# BEHAVIOR-LEVEL SCATTER PLOT — One behavior at a time
+# BEHAVIOR-LEVEL SCATTER PLOT (ORDERED BY YEAR)
 # ============================================================
 
 import plotly.graph_objects as go
 
-st.subheader("Behavior-Level Scatter Plot")
+st.subheader("Behavior-Level Scatter Plot (Ordered by Year)")
 
-# User selects ONE behavior
 selected_behavior = st.selectbox(
     "Select a behavior to visualize:",
     sorted(df_f["Behavior"].unique())
 )
 
-# Filter dataset
+# --------------------------------------------------
+# Filter to selected behavior
+# --------------------------------------------------
 df_beh = df_f[df_f["Behavior"] == selected_behavior].copy()
 
 if df_beh.empty:
     st.warning("No data available for this behavior under current filters.")
-
 else:
     # --------------------------------------------------
-    # Compute mean arithmetic and geometric per age group
+    # Merge Year info
+    # --------------------------------------------------
+    df_beh = df_beh.merge(
+        meta[["StudyID", "Year"]],
+        on="StudyID",
+        how="left"
+    )
+
+    # --------------------------------------------------
+    # Order studies by Year (oldest → newest)
+    # --------------------------------------------------
+    df_beh["StudyID_display"] = df_beh["StudyID_display"].astype(str)
+
+    study_order = (
+        df_beh[["StudyID_display", "Year"]]
+        .drop_duplicates()
+        .sort_values("Year")
+        ["StudyID_display"]
+        .tolist()
+    )
+
+    df_beh["StudyID_display"] = pd.Categorical(
+        df_beh["StudyID_display"],
+        categories=study_order,
+        ordered=True
+    )
+
+    # --------------------------------------------------
+    # Compute mean values (correctly)
     # --------------------------------------------------
     mean_table = (
-        df_beh
-        .groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
+        df_beh.groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
         .mean()
         .reset_index()
     )
 
-    # Sort studies for cleaner y-axis ordering
-    df_beh["StudyID_display"] = df_beh["StudyID_display"].astype(str)
-    df_beh = df_beh.sort_values("Minutes")
-
     # --------------------------------------------------
-    # Build scatter — facet by AGE GROUP (rows)
+    # Scatter plot (facet by age group)
     # --------------------------------------------------
     fig2 = px.scatter(
         df_beh,
@@ -242,47 +265,38 @@ else:
         y="StudyID_display",
         color="Mean_Type",
         symbol="Mean_Type",
-        symbol_map={
-            "Arithmetic": "circle",
-            "Geometric": "triangle-up"
-        },
+        symbol_map={"Arithmetic": "circle", "Geometric": "triangle-up"},
         facet_row="Age_Group",
-        category_orders={"Age_Group": ["Children", "Adolescents", "Adult"]},
+        category_orders={
+            "Age_Group": ["Children", "Adolescents", "Adult"]
+        },
         height=900,
-        title=f"Study Estimates for {selected_behavior}"
+        title=f"Study Estimates for {selected_behavior} (Ordered by Year)"
     )
 
     # --------------------------------------------------
-    # Add MEAN LINES per facet (corrected)
+    # Add correct mean lines
     # --------------------------------------------------
     age_order = ["Children", "Adolescents", "Adult"]
 
-    line_styles = {
-        "Arithmetic": dict(color="black", dash="dot"),
-        "Geometric": dict(color="black", dash="solid")
-    }
-
     for age_group in age_order:
-        sub_mean = mean_table[mean_table["Age_Group"] == age_group]
-
-        if sub_mean.empty:
-            continue
-
         row_num = age_order.index(age_group) + 1
+        sub_means = mean_table[mean_table["Age_Group"] == age_group]
 
-        for _, r in sub_mean.iterrows():
+        for _, r in sub_means.iterrows():
             fig2.add_vline(
                 x=r["Minutes"],
                 line=dict(
+                    color="black" if r["Mean_Type"] == "Arithmetic" else "gray",
                     width=2,
-                    **line_styles.get(r["Mean_Type"], {})
+                    dash="dot" if r["Mean_Type"] == "Geometric" else "solid"
                 ),
                 row=row_num,
                 col=1
             )
 
     # --------------------------------------------------
-    # Style improvements
+    # Styling
     # --------------------------------------------------
     fig2.update_layout(
         legend_title="Mean Type",
@@ -290,12 +304,17 @@ else:
         height=1100
     )
 
-    # Dark facet labels
     fig2.for_each_annotation(
         lambda a: a.update(
             font=dict(color="white", size=14),
             bgcolor="#444444"
         )
+    )
+
+    st.caption(
+        "Studies are ordered by publication year (oldest to newest). "
+        "Vertical lines indicate age-group means for arithmetic (solid) "
+        "and geometric (dotted) estimates."
     )
 
     st.plotly_chart(fig2, use_container_width=True)
