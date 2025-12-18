@@ -3,6 +3,23 @@ import pandas as pd
 import plotly.express as px
 
 # ======================================================================
+# HELPER FUNCTION — FILTER SUMMARY
+# ======================================================================
+
+def summarize_filter(label, selected, all_options):
+    selected = list(selected) if selected is not None else []
+    all_options = list(all_options) if all_options is not None else []
+
+    if len(selected) == 0:
+        return f"{label}: none"
+
+    # If everything is selected
+    if set(map(str, selected)) == set(map(str, all_options)):
+        return f"{label}: all"
+
+    return f"{label}: {', '.join(map(str, selected))}"
+
+# ======================================================================
 # LOAD DATA
 # ======================================================================
 
