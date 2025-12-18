@@ -174,7 +174,6 @@ with col1:
             x="Minutes", y="Age_Group",
             color="Behavior",
             orientation="h",
-            title="Arithmetic Means",
             category_orders={"Age_Group": ["Children","Adolescents","Adult"]}
         )
         fig_a.update_layout(barmode="stack")
@@ -191,7 +190,6 @@ with col2:
             x="Minutes", y="Age_Group",
             color="Behavior",
             orientation="h",
-            title="Geometric Means",
             category_orders={"Age_Group": ["Children","Adolescents","Adult"]}
         )
         fig_g.update_layout(barmode="stack")
