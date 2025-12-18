@@ -6,8 +6,8 @@ import plotly.express as px
 # LOAD DATA
 # ======================================================================
 
-df = pd.read_csv("dashboard_clean_input.csv")      # long format for plotting
-meta = pd.read_csv("full_metadata.csv")            # full metadata if needed later
+df = pd.read_csv("dashboard_clean_input (1).csv")      # long format for plotting
+meta = pd.read_csv("full_metadata (1).csv")            # full metadata if needed later
 
 # Fix numeric types
 df["Minutes"] = pd.to_numeric(df["Minutes"], errors="coerce")
