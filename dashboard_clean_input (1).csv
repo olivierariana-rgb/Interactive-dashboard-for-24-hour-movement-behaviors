@@ -1,0 +1,445 @@
+StudyID,StudyID_display,Year,Age_Group,Subgroup,Device_Brand,Device_Type,Country,Sampling_Rate_Hz,Sleep_Measurement_Type,Behavior,Mean_Type,Minutes
+"Chastin, Palarea-Albaladejo, Dontje (2015)","Chastin, Palarea-Albaladejo, Dontje (2015)",2015,Adult,,Actigraph,Accelorometer,USA,NR,Subjective only,Sleep,Arithmetic,407.66
+"Chastin, Palarea-Albaladejo, Dontje (2015)","Chastin, Palarea-Albaladejo, Dontje (2015)",2015,Adult,,Actigraph,Accelorometer,USA,NR,Subjective only,Sleep,Geometric,413.424
+"Chastin, Palarea-Albaladejo, Dontje (2015)","Chastin, Palarea-Albaladejo, Dontje (2015)",2015,Adult,,Actigraph,Accelorometer,USA,NR,Subjective only,SB,Arithmetic,579.02
+"Chastin, Palarea-Albaladejo, Dontje (2015)","Chastin, Palarea-Albaladejo, Dontje (2015)",2015,Adult,,Actigraph,Accelorometer,USA,NR,Subjective only,SB,Geometric,584.352
+"Chastin, Palarea-Albaladejo, Dontje (2015)","Chastin, Palarea-Albaladejo, Dontje (2015)",2015,Adult,,Actigraph,Accelorometer,USA,NR,Subjective only,LPA,Arithmetic,422.21
+"Chastin, Palarea-Albaladejo, Dontje (2015)","Chastin, Palarea-Albaladejo, Dontje (2015)",2015,Adult,,Actigraph,Accelorometer,USA,NR,Subjective only,LPA,Geometric,420.912
+"Chastin, Palarea-Albaladejo, Dontje (2015)","Chastin, Palarea-Albaladejo, Dontje (2015)",2015,Adult,,Actigraph,Accelorometer,USA,NR,Subjective only,MVPA,Arithmetic,31.1
+"Chastin, Palarea-Albaladejo, Dontje (2015)","Chastin, Palarea-Albaladejo, Dontje (2015)",2015,Adult,,Actigraph,Accelorometer,USA,NR,Subjective only,MVPA,Geometric,21.312
+"Carson, Tremblay, Chaput (2016)","Carson, Tremblay, Chaput (2016)",2016,,,Actical,Accelorometer,Canada,NR,Subjective only,Sleep,Arithmetic,
+"Carson, Tremblay, Chaput (2016)","Carson, Tremblay, Chaput (2016)",2016,,,Actical,Accelorometer,Canada,NR,Subjective only,Sleep,Geometric,578.6
+"Carson, Tremblay, Chaput (2016)","Carson, Tremblay, Chaput (2016)",2016,,,Actical,Accelorometer,Canada,NR,Subjective only,SB,Arithmetic,
+"Carson, Tremblay, Chaput (2016)","Carson, Tremblay, Chaput (2016)",2016,,,Actical,Accelorometer,Canada,NR,Subjective only,SB,Geometric,547.3
+"Carson, Tremblay, Chaput (2016)","Carson, Tremblay, Chaput (2016)",2016,,,Actical,Accelorometer,Canada,NR,Subjective only,LPA,Arithmetic,
+"Carson, Tremblay, Chaput (2016)","Carson, Tremblay, Chaput (2016)",2016,,,Actical,Accelorometer,Canada,NR,Subjective only,LPA,Geometric,263.4
+"Carson, Tremblay, Chaput (2016)","Carson, Tremblay, Chaput (2016)",2016,,,Actical,Accelorometer,Canada,NR,Subjective only,MVPA,Arithmetic,
+"Carson, Tremblay, Chaput (2016)","Carson, Tremblay, Chaput (2016)",2016,,,Actical,Accelorometer,Canada,NR,Subjective only,MVPA,Geometric,50.7
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Full,ActiGraph,Accelorometer,England,30,Objective only,Sleep,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Full,ActiGraph,Accelorometer,England,30,Objective only,Sleep,Geometric,548.6
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Full,ActiGraph,Accelorometer,England,30,Objective only,SB,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Full,ActiGraph,Accelorometer,England,30,Objective only,SB,Geometric,510.3
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Full,ActiGraph,Accelorometer,England,30,Objective only,LPA,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Full,ActiGraph,Accelorometer,England,30,Objective only,LPA,Geometric,354.8
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Full,ActiGraph,Accelorometer,England,30,Objective only,MVPA,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Full,ActiGraph,Accelorometer,England,30,Objective only,MVPA,Geometric,26.4
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Underweight,ActiGraph,Accelorometer,England,30,Objective only,Sleep,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Underweight,ActiGraph,Accelorometer,England,30,Objective only,Sleep,Geometric,546.0
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Underweight,ActiGraph,Accelorometer,England,30,Objective only,SB,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Underweight,ActiGraph,Accelorometer,England,30,Objective only,SB,Geometric,488.1
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Underweight,ActiGraph,Accelorometer,England,30,Objective only,LPA,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Underweight,ActiGraph,Accelorometer,England,30,Objective only,LPA,Geometric,370.9
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Underweight,ActiGraph,Accelorometer,England,30,Objective only,MVPA,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Underweight,ActiGraph,Accelorometer,England,30,Objective only,MVPA,Geometric,35.0
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Normal weight,ActiGraph,Accelorometer,England,30,Objective only,Sleep,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Normal weight,ActiGraph,Accelorometer,England,30,Objective only,Sleep,Geometric,545.6
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Normal weight,ActiGraph,Accelorometer,England,30,Objective only,SB,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Normal weight,ActiGraph,Accelorometer,England,30,Objective only,SB,Geometric,509.3
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Normal weight,ActiGraph,Accelorometer,England,30,Objective only,LPA,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Normal weight,ActiGraph,Accelorometer,England,30,Objective only,LPA,Geometric,356.2
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Normal weight,ActiGraph,Accelorometer,England,30,Objective only,MVPA,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Normal weight,ActiGraph,Accelorometer,England,30,Objective only,MVPA,Geometric,28.9
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Overweight/obese,ActiGraph,Accelorometer,England,30,Objective only,Sleep,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Overweight/obese,ActiGraph,Accelorometer,England,30,Objective only,Sleep,Geometric,557.1
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Overweight/obese,ActiGraph,Accelorometer,England,30,Objective only,SB,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Overweight/obese,ActiGraph,Accelorometer,England,30,Objective only,SB,Geometric,520.9
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Overweight/obese,ActiGraph,Accelorometer,England,30,Objective only,LPA,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Overweight/obese,ActiGraph,Accelorometer,England,30,Objective only,LPA,Geometric,343.9
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Overweight/obese,ActiGraph,Accelorometer,England,30,Objective only,MVPA,Arithmetic,
+"Fairclough, Dumuid, Taylor (2017)","Fairclough, Dumuid, Taylor (2017)",2017,Children,Overweight/obese,ActiGraph,Accelorometer,England,30,Objective only,MVPA,Geometric,18.1
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Full,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Full,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Geometric,558.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Full,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Full,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Geometric,516.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Full,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Full,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Geometric,304.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Full,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Full,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Geometric,62.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Geometric,564.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Geometric,520.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Geometric,301.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Geometric,55.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Geometric,550.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Geometric,510.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Geometric,308.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Geometric,72.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Geometric,551.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Geometric,506.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Geometric,307.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Geometric,75.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Geometric,549.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Geometric,515.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Geometric,307.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Geometric,70.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Geometric,541.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Geometric,526.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Geometric,313.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese boys,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Geometric,61.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Geometric,567.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Geometric,515.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Geometric,301.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Normal weight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Geometric,57.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Geometric,562.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Geometric,526.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Geometric,298.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Overweight girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Geometric,54.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,Sleep,Geometric,543.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,SB,Geometric,545.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,LPA,Geometric,307.0
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Arithmetic,
+"Dumuid, Stanford, Pedi_i_ (2018)","Dumuid, Stanford, Pedi_i_ (2018)",2018,Children,Obese girls,Actigraph,Accelorometer,"Australia, Canada, United Kingdom, Finland",NR,Objective only,MVPA,Geometric,45.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Australia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Australia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Geometric,577.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Australia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Australia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Geometric,486.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Australia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Australia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Geometric,314.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Australia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Australia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Geometric,63.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,England,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,England,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Geometric,579.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,England,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,England,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Geometric,508.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,England,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,England,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Geometric,291.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,England,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,England,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Geometric,62.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Canada,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Canada,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Geometric,555.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Canada,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Canada,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Geometric,521.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Canada,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Canada,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Geometric,308.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Canada,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Canada,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Geometric,56.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Finland,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Finland,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Geometric,523.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Finland,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Finland,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Geometric,547.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Finland,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Finland,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Geometric,301.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Finland,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Finland,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Geometric,69.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Portugal,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Portugal,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Geometric,508.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Portugal,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Portugal,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Geometric,571.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Portugal,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Portugal,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Geometric,308.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Portugal,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Portugal,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Geometric,53.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,USA,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,USA,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Geometric,542.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,USA,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,USA,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Geometric,531.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,USA,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,USA,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Geometric,320.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,USA,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,USA,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Geometric,48.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Brazil,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Brazil,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Geometric,526.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Brazil,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Brazil,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Geometric,514.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Brazil,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Brazil,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Geometric,345.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Brazil,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Brazil,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Geometric,55.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Colombia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Colombia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Geometric,531.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Colombia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Colombia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Geometric,508.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Colombia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Colombia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Geometric,337.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Colombia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Colombia,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Geometric,65.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,China,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,China,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Geometric,531.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,China,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,China,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Geometric,573.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,China,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,China,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Geometric,293.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,China,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,China,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Geometric,43.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,India,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,India,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Geometric,523.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,India,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,India,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Geometric,526.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,India,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,India,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Geometric,345.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,India,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,India,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Geometric,45.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,South Africa,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,South Africa,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Geometric,561.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,South Africa,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,South Africa,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Geometric,495.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,South Africa,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,South Africa,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Geometric,324.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,South Africa,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,South Africa,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Geometric,60.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Kenya,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Kenya,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,Sleep,Geometric,525.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Kenya,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Kenya,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,SB,Geometric,508.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Kenya,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Kenya,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,LPA,Geometric,339.0
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Kenya,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Arithmetic,
+"Dumuid, Maher, Lewis (2018)","Dumuid, Maher, Lewis (2018)",2018,Children,Kenya,Actigraph,Accelorometer,"Australia, Brazil, Canada, China, Colombia, England, Finland, India, Kenya, Portugal, South Africa, and the United States (12 nations)",80,Objective only,MVPA,Geometric,67.0
+"Talarico, Janssen (2018) ","Talarico, Janssen (2018) ",2018,Children,,Philips Respironics,Accelorometer,Canada,NR,Objective + Subjective,Sleep,Arithmetic,
+"Talarico, Janssen (2018) ","Talarico, Janssen (2018) ",2018,Children,,Philips Respironics,Accelorometer,Canada,NR,Objective + Subjective,Sleep,Geometric,577.0
+"Talarico, Janssen (2018) ","Talarico, Janssen (2018) ",2018,Children,,Philips Respironics,Accelorometer,Canada,NR,Objective + Subjective,SB,Arithmetic,
+"Talarico, Janssen (2018) ","Talarico, Janssen (2018) ",2018,Children,,Philips Respironics,Accelorometer,Canada,NR,Objective + Subjective,SB,Geometric,630.0
+"Talarico, Janssen (2018) ","Talarico, Janssen (2018) ",2018,Children,,Philips Respironics,Accelorometer,Canada,NR,Objective + Subjective,LPA,Arithmetic,
+"Talarico, Janssen (2018) ","Talarico, Janssen (2018) ",2018,Children,,Philips Respironics,Accelorometer,Canada,NR,Objective + Subjective,LPA,Geometric,178.0
+"Talarico, Janssen (2018) ","Talarico, Janssen (2018) ",2018,Children,,Philips Respironics,Accelorometer,Canada,NR,Objective + Subjective,MVPA,Arithmetic,
+"Talarico, Janssen (2018) ","Talarico, Janssen (2018) ",2018,Children,,Philips Respironics,Accelorometer,Canada,NR,Objective + Subjective,MVPA,Geometric,55.0
+"Janurek, Abdel Hadi, Mojzisch (2018)","Janurek, Abdel Hadi, Mojzisch (2018)",2018,Adult,,ActiGraph,Accelorometer,Germany,30,Objective only,Sleep,Arithmetic,401.9
+"Janurek, Abdel Hadi, Mojzisch (2018)","Janurek, Abdel Hadi, Mojzisch (2018)",2018,Adult,,ActiGraph,Accelorometer,Germany,30,Objective only,Sleep,Geometric,399.9
+"Janurek, Abdel Hadi, Mojzisch (2018)","Janurek, Abdel Hadi, Mojzisch (2018)",2018,Adult,,ActiGraph,Accelorometer,Germany,30,Objective only,MVPA,Arithmetic,184.6
+"Janurek, Abdel Hadi, Mojzisch (2018)","Janurek, Abdel Hadi, Mojzisch (2018)",2018,Adult,,ActiGraph,Accelorometer,Germany,30,Objective only,MVPA,Geometric,176.4
+"Dumuid, Wake, Clifford (2019)","Dumuid, Wake, Clifford (2019)",2019,Children,,Activinsights Ltd,Accelorometer,Australia,50,Objective only,Sleep,Arithmetic,568.0
+"Dumuid, Wake, Clifford (2019)","Dumuid, Wake, Clifford (2019)",2019,Children,,Activinsights Ltd,Accelorometer,Australia,50,Objective only,Sleep,Geometric,579.0
+"Dumuid, Wake, Clifford (2019)","Dumuid, Wake, Clifford (2019)",2019,Children,,Activinsights Ltd,Accelorometer,Australia,50,Objective only,SB,Arithmetic,551.0
+"Dumuid, Wake, Clifford (2019)","Dumuid, Wake, Clifford (2019)",2019,Children,,Activinsights Ltd,Accelorometer,Australia,50,Objective only,SB,Geometric,558.0
+"Dumuid, Wake, Clifford (2019)","Dumuid, Wake, Clifford (2019)",2019,Children,,Activinsights Ltd,Accelorometer,Australia,50,Objective only,LPA,Arithmetic,250.0
+"Dumuid, Wake, Clifford (2019)","Dumuid, Wake, Clifford (2019)",2019,Children,,Activinsights Ltd,Accelorometer,Australia,50,Objective only,LPA,Geometric,249.0
+"Dumuid, Wake, Clifford (2019)","Dumuid, Wake, Clifford (2019)",2019,Children,,Activinsights Ltd,Accelorometer,Australia,50,Objective only,MVPA,Arithmetic,63.0
+"Dumuid, Wake, Clifford (2019)","Dumuid, Wake, Clifford (2019)",2019,Children,,Activinsights Ltd,Accelorometer,Australia,50,Objective only,MVPA,Geometric,54.0
+"Powell, Browne, Carson (2020)","Powell, Browne, Carson (2020)",2020,,,PAL Technologies,Accelorometer,Ireland,20,Objective only,Sleep,Arithmetic,
+"Powell, Browne, Carson (2020)","Powell, Browne, Carson (2020)",2020,,,PAL Technologies,Accelorometer,Ireland,20,Objective only,Sleep,Geometric,515.3
+"Powell, Browne, Carson (2020)","Powell, Browne, Carson (2020)",2020,,,PAL Technologies,Accelorometer,Ireland,20,Objective only,SB,Arithmetic,
+"Powell, Browne, Carson (2020)","Powell, Browne, Carson (2020)",2020,,,PAL Technologies,Accelorometer,Ireland,20,Objective only,SB,Geometric,468.3
+"Powell, Browne, Carson (2020)","Powell, Browne, Carson (2020)",2020,,,PAL Technologies,Accelorometer,Ireland,20,Objective only,LPA,Arithmetic,
+"Powell, Browne, Carson (2020)","Powell, Browne, Carson (2020)",2020,,,PAL Technologies,Accelorometer,Ireland,20,Objective only,LPA,Geometric,101.1
+"Powell, Browne, Carson (2020)","Powell, Browne, Carson (2020)",2020,,,PAL Technologies,Accelorometer,Ireland,20,Objective only,MVPA,Arithmetic,
+"Powell, Browne, Carson (2020)","Powell, Browne, Carson (2020)",2020,,,PAL Technologies,Accelorometer,Ireland,20,Objective only,MVPA,Geometric,39.1
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2019,,Children,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,Sleep,Arithmetic,
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2019,,Children,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,Sleep,Geometric,520.4
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2019,,Children,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,SB,Arithmetic,
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2019,,Children,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,SB,Geometric,623.8
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2019,,Children,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,LPA,Arithmetic,
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2019,,Children,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,LPA,Geometric,241.2
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2019,,Children,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,MVPA,Arithmetic,
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2019,,Children,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,MVPA,Geometric,54.7
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2020,,Adolescents,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,Sleep,Arithmetic,
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2020,,Adolescents,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,Sleep,Geometric,453.7
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2020,,Adolescents,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,SB,Arithmetic,
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2020,,Adolescents,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,SB,Geometric,735.1
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2020,,Adolescents,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,LPA,Arithmetic,
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2020,,Adolescents,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,LPA,Geometric,215.4
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2020,,Adolescents,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,MVPA,Arithmetic,
+"Gba, Dygr_n, _tefelov (2020)","Gba, Dygr_n, _tefelov (2020)",2020,,Adolescents,ActiGraph,Accelerometer,Czechia,100,Objective + Subjective,MVPA,Geometric,35.6
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Complete Sample,Activinsights,Accelerometer,Australia,50,Objective + Subjective,Sleep,Arithmetic,569.1
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Complete Sample,Activinsights,Accelerometer,Australia,50,Objective + Subjective,Sleep,Geometric,578.9
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Complete Sample,Activinsights,Accelerometer,Australia,50,Objective + Subjective,SB,Arithmetic,672.4
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Complete Sample,Activinsights,Accelerometer,Australia,50,Objective + Subjective,SB,Geometric,682.5
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Complete Sample,Activinsights,Accelerometer,Australia,50,Objective + Subjective,LPA,Arithmetic,162.3
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Complete Sample,Activinsights,Accelerometer,Australia,50,Objective + Subjective,LPA,Geometric,158.5
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Complete Sample,Activinsights,Accelerometer,Australia,50,Objective + Subjective,MVPA,Arithmetic,28.7
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Complete Sample,Activinsights,Accelerometer,Australia,50,Objective + Subjective,MVPA,Geometric,20.0
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Boys,Activinsights,Accelerometer,Australia,50,Objective + Subjective,Sleep,Arithmetic,567.5
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Boys,Activinsights,Accelerometer,Australia,50,Objective + Subjective,Sleep,Geometric,576.8
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Boys,Activinsights,Accelerometer,Australia,50,Objective + Subjective,SB,Arithmetic,667.9
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Boys,Activinsights,Accelerometer,Australia,50,Objective + Subjective,SB,Geometric,677.0
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Boys,Activinsights,Accelerometer,Australia,50,Objective + Subjective,LPA,Arithmetic,163.6
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Boys,Activinsights,Accelerometer,Australia,50,Objective + Subjective,LPA,Geometric,160.1
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Boys,Activinsights,Accelerometer,Australia,50,Objective + Subjective,MVPA,Arithmetic,35.7
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Boys,Activinsights,Accelerometer,Australia,50,Objective + Subjective,MVPA,Geometric,26.1
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Girls,Activinsights,Accelerometer,Australia,50,Objective + Subjective,Sleep,Arithmetic,570.6
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Girls,Activinsights,Accelerometer,Australia,50,Objective + Subjective,Sleep,Geometric,580.5
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Girls,Activinsights,Accelerometer,Australia,50,Objective + Subjective,SB,Arithmetic,676.8
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Girls,Activinsights,Accelerometer,Australia,50,Objective + Subjective,SB,Geometric,687.2
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Girls,Activinsights,Accelerometer,Australia,50,Objective + Subjective,LPA,Arithmetic,161.0
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Girls,Activinsights,Accelerometer,Australia,50,Objective + Subjective,LPA,Geometric,156.8
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Girls,Activinsights,Accelerometer,Australia,50,Objective + Subjective,MVPA,Arithmetic,21.8
+"Dumuid, Simm, Wake (2020)","Dumuid, Simm, Wake (2020)",2020,Children,Girls,Activinsights,Accelerometer,Australia,50,Objective + Subjective,MVPA,Geometric,15.4
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Workday,Omron,Accelerometer,Japan,NR,Subjective only,Sleep,Arithmetic,
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Workday,Omron,Accelerometer,Japan,NR,Subjective only,Sleep,Geometric,344.4
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Workday,Omron,Accelerometer,Japan,NR,Subjective only,SB,Arithmetic,
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Workday,Omron,Accelerometer,Japan,NR,Subjective only,SB,Geometric,699.8
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Workday,Omron,Accelerometer,Japan,NR,Subjective only,LPA,Arithmetic,
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Workday,Omron,Accelerometer,Japan,NR,Subjective only,LPA,Geometric,315.0
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Workday,Omron,Accelerometer,Japan,NR,Subjective only,MVPA,Arithmetic,
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Workday,Omron,Accelerometer,Japan,NR,Subjective only,MVPA,Geometric,80.8
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Non-workday,Omron,Accelerometer,Japan,NR,Subjective only,Sleep,Arithmetic,
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Non-workday,Omron,Accelerometer,Japan,NR,Subjective only,Sleep,Geometric,426.8
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Non-workday,Omron,Accelerometer,Japan,NR,Subjective only,SB,Arithmetic,
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Non-workday,Omron,Accelerometer,Japan,NR,Subjective only,SB,Geometric,585.2
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Non-workday,Omron,Accelerometer,Japan,NR,Subjective only,LPA,Arithmetic,
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Non-workday,Omron,Accelerometer,Japan,NR,Subjective only,LPA,Geometric,362.2
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Non-workday,Omron,Accelerometer,Japan,NR,Subjective only,MVPA,Arithmetic,
+"Kitano, Kai, Jindo (2020)","Kitano, Kai, Jindo (2020)",2020,,Non-workday,Omron,Accelerometer,Japan,NR,Subjective only,MVPA,Geometric,65.8
+"Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)","Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)",2020,,,ActiGraph,Accelerometer,USA,NR,Subjective only,Sleep,Arithmetic,
+"Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)","Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)",2020,,,ActiGraph,Accelerometer,USA,NR,Subjective only,Sleep,Geometric,521.14
+"Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)","Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)",2020,,,ActiGraph,Accelerometer,USA,NR,Subjective only,SB,Arithmetic,
+"Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)","Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)",2020,,,ActiGraph,Accelerometer,USA,NR,Subjective only,SB,Geometric,582.77
+"Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)","Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)",2020,,,ActiGraph,Accelerometer,USA,NR,Subjective only,LPA,Arithmetic,
+"Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)","Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)",2020,,,ActiGraph,Accelerometer,USA,NR,Subjective only,LPA,Geometric,308.88
+"Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)","Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)",2020,,,ActiGraph,Accelerometer,USA,NR,Subjective only,MVPA,Arithmetic,
+"Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)","Del Pozo Cruz, Alfonso-Rosa, McGregor (2020)",2020,,,ActiGraph,Accelerometer,USA,NR,Subjective only,MVPA,Geometric,27.07
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Depression,ActiGraph,Accelerometer,Sweden,30,Subjective only,Sleep,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Depression,ActiGraph,Accelerometer,Sweden,30,Subjective only,Sleep,Geometric,475.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Depression,ActiGraph,Accelerometer,Sweden,30,Subjective only,SB,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Depression,ActiGraph,Accelerometer,Sweden,30,Subjective only,SB,Geometric,577.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Depression,ActiGraph,Accelerometer,Sweden,30,Subjective only,LPA,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Depression,ActiGraph,Accelerometer,Sweden,30,Subjective only,LPA,Geometric,326.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Depression,ActiGraph,Accelerometer,Sweden,30,Subjective only,MVPA,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Depression,ActiGraph,Accelerometer,Sweden,30,Subjective only,MVPA,Geometric,62.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Anxiety,ActiGraph,Accelerometer,Sweden,30,Subjective only,Sleep,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Anxiety,ActiGraph,Accelerometer,Sweden,30,Subjective only,Sleep,Geometric,476.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Anxiety,ActiGraph,Accelerometer,Sweden,30,Subjective only,SB,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Anxiety,ActiGraph,Accelerometer,Sweden,30,Subjective only,SB,Geometric,576.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Anxiety,ActiGraph,Accelerometer,Sweden,30,Subjective only,LPA,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Anxiety,ActiGraph,Accelerometer,Sweden,30,Subjective only,LPA,Geometric,326.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Anxiety,ActiGraph,Accelerometer,Sweden,30,Subjective only,MVPA,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Anxiety,ActiGraph,Accelerometer,Sweden,30,Subjective only,MVPA,Geometric,62.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Burnout,ActiGraph,Accelerometer,Sweden,30,Subjective only,Sleep,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Burnout,ActiGraph,Accelerometer,Sweden,30,Subjective only,Sleep,Geometric,475.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Burnout,ActiGraph,Accelerometer,Sweden,30,Subjective only,SB,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Burnout,ActiGraph,Accelerometer,Sweden,30,Subjective only,SB,Geometric,576.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Burnout,ActiGraph,Accelerometer,Sweden,30,Subjective only,LPA,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Burnout,ActiGraph,Accelerometer,Sweden,30,Subjective only,LPA,Geometric,327.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Burnout,ActiGraph,Accelerometer,Sweden,30,Subjective only,MVPA,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Burnout,ActiGraph,Accelerometer,Sweden,30,Subjective only,MVPA,Geometric,61.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Mental Wellbeing,ActiGraph,Accelerometer,Sweden,30,Subjective only,Sleep,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Mental Wellbeing,ActiGraph,Accelerometer,Sweden,30,Subjective only,Sleep,Geometric,476.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Mental Wellbeing,ActiGraph,Accelerometer,Sweden,30,Subjective only,SB,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Mental Wellbeing,ActiGraph,Accelerometer,Sweden,30,Subjective only,SB,Geometric,575.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Mental Wellbeing,ActiGraph,Accelerometer,Sweden,30,Subjective only,LPA,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Mental Wellbeing,ActiGraph,Accelerometer,Sweden,30,Subjective only,LPA,Geometric,327.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Mental Wellbeing,ActiGraph,Accelerometer,Sweden,30,Subjective only,MVPA,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Mental Wellbeing,ActiGraph,Accelerometer,Sweden,30,Subjective only,MVPA,Geometric,62.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Stress,ActiGraph,Accelerometer,Sweden,30,Subjective only,Sleep,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Stress,ActiGraph,Accelerometer,Sweden,30,Subjective only,Sleep,Geometric,476.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Stress,ActiGraph,Accelerometer,Sweden,30,Subjective only,SB,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Stress,ActiGraph,Accelerometer,Sweden,30,Subjective only,SB,Geometric,575.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Stress,ActiGraph,Accelerometer,Sweden,30,Subjective only,LPA,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Stress,ActiGraph,Accelerometer,Sweden,30,Subjective only,LPA,Geometric,327.0
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Stress,ActiGraph,Accelerometer,Sweden,30,Subjective only,MVPA,Arithmetic,
+"Larisch, Kallings, Hagstrmer (2020)","Larisch, Kallings, Hagstrmer (2020)",2020,,Stress,ActiGraph,Accelerometer,Sweden,30,Subjective only,MVPA,Geometric,62.0
+"Curtis, Dumuid, Olds (2020)","Curtis, Dumuid, Olds (2020)",2020,,,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,Sleep,Arithmetic,
+"Curtis, Dumuid, Olds (2020)","Curtis, Dumuid, Olds (2020)",2020,,,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,Sleep,Geometric,494.0
+"Curtis, Dumuid, Olds (2020)","Curtis, Dumuid, Olds (2020)",2020,,,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,SB,Arithmetic,
+"Curtis, Dumuid, Olds (2020)","Curtis, Dumuid, Olds (2020)",2020,,,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,SB,Geometric,601.0
+"Curtis, Dumuid, Olds (2020)","Curtis, Dumuid, Olds (2020)",2020,,,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,LPA,Arithmetic,
+"Curtis, Dumuid, Olds (2020)","Curtis, Dumuid, Olds (2020)",2020,,,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,LPA,Geometric,238.0
+"Curtis, Dumuid, Olds (2020)","Curtis, Dumuid, Olds (2020)",2020,,,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,MVPA,Arithmetic,
+"Curtis, Dumuid, Olds (2020)","Curtis, Dumuid, Olds (2020)",2020,,,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,MVPA,Geometric,107.0
+"Chastin, McGregor, Palarea-Albaladejo (2021)","Chastin, McGregor, Palarea-Albaladejo (2021)",2021,,UK Biobank,Axivity,Accelerometer,United Kingdom,NR,Subjective only,Sleep,Arithmetic,
+"Chastin, McGregor, Palarea-Albaladejo (2021)","Chastin, McGregor, Palarea-Albaladejo (2021)",2021,,UK Biobank,Axivity,Accelerometer,United Kingdom,NR,Subjective only,Sleep,Geometric,437.3
+"Chastin, McGregor, Palarea-Albaladejo (2021)","Chastin, McGregor, Palarea-Albaladejo (2021)",2021,,UK Biobank,Axivity,Accelerometer,United Kingdom,NR,Subjective only,SB,Arithmetic,
+"Chastin, McGregor, Palarea-Albaladejo (2021)","Chastin, McGregor, Palarea-Albaladejo (2021)",2021,,UK Biobank,Axivity,Accelerometer,United Kingdom,NR,Subjective only,SB,Geometric,818.3
+"Chastin, McGregor, Palarea-Albaladejo (2021)","Chastin, McGregor, Palarea-Albaladejo (2021)",2021,,UK Biobank,Axivity,Accelerometer,United Kingdom,NR,Subjective only,LPA,Arithmetic,
+"Chastin, McGregor, Palarea-Albaladejo (2021)","Chastin, McGregor, Palarea-Albaladejo (2021)",2021,,UK Biobank,Axivity,Accelerometer,United Kingdom,NR,Subjective only,LPA,Geometric,122.6
+"Chastin, McGregor, Palarea-Albaladejo (2021)","Chastin, McGregor, Palarea-Albaladejo (2021)",2021,,UK Biobank,Axivity,Accelerometer,United Kingdom,NR,Subjective only,MVPA,Arithmetic,
+"Chastin, McGregor, Palarea-Albaladejo (2021)","Chastin, McGregor, Palarea-Albaladejo (2021)",2021,,UK Biobank,Axivity,Accelerometer,United Kingdom,NR,Subjective only,MVPA,Geometric,61.8
+"Clarke, Janssen (2021)","Clarke, Janssen (2021)",2021,,NR,ActiGraph,Accelerometer,USA,NR,Subjective only,Sleep,Arithmetic,418.0
+"Clarke, Janssen (2021)","Clarke, Janssen (2021)",2021,,NR,ActiGraph,Accelerometer,USA,NR,Subjective only,Sleep,Geometric,
+"Clarke, Janssen (2021)","Clarke, Janssen (2021)",2021,,NR,ActiGraph,Accelerometer,USA,NR,Subjective only,SB,Arithmetic,
+"Clarke, Janssen (2021)","Clarke, Janssen (2021)",2021,,NR,ActiGraph,Accelerometer,USA,NR,Subjective only,SB,Geometric,
+"Clarke, Janssen (2021)","Clarke, Janssen (2021)",2021,,NR,ActiGraph,Accelerometer,USA,NR,Subjective only,LPA,Arithmetic,
+"Clarke, Janssen (2021)","Clarke, Janssen (2021)",2021,,NR,ActiGraph,Accelerometer,USA,NR,Subjective only,LPA,Geometric,
+"Clarke, Janssen (2021)","Clarke, Janssen (2021)",2021,,NR,ActiGraph,Accelerometer,USA,NR,Subjective only,MVPA,Arithmetic,
+"Clarke, Janssen (2021)","Clarke, Janssen (2021)",2021,,NR,ActiGraph,Accelerometer,USA,NR,Subjective only,MVPA,Geometric,
+"Dumuid, Wake, Burgner (2021)","Dumuid, Wake, Burgner (2021)",2021,,NR,GENEActiv,Accelerometer,Australia,50 Hz,Objective + Subjective,Sleep,Arithmetic,575.0
+"Dumuid, Wake, Burgner (2021)","Dumuid, Wake, Burgner (2021)",2021,,NR,GENEActiv,Accelerometer,Australia,50 Hz,Objective + Subjective,Sleep,Geometric,685.0
+"Dumuid, Wake, Burgner (2021)","Dumuid, Wake, Burgner (2021)",2021,,NR,GENEActiv,Accelerometer,Australia,50 Hz,Objective + Subjective,SB,Arithmetic,685.0
+"Dumuid, Wake, Burgner (2021)","Dumuid, Wake, Burgner (2021)",2021,,NR,GENEActiv,Accelerometer,Australia,50 Hz,Objective + Subjective,SB,Geometric,160.0
+"Dumuid, Wake, Burgner (2021)","Dumuid, Wake, Burgner (2021)",2021,,NR,GENEActiv,Accelerometer,Australia,50 Hz,Objective + Subjective,LPA,Arithmetic,160.0
+"Dumuid, Wake, Burgner (2021)","Dumuid, Wake, Burgner (2021)",2021,,NR,GENEActiv,Accelerometer,Australia,50 Hz,Objective + Subjective,LPA,Geometric,20.0
+"Dumuid, Wake, Burgner (2021)","Dumuid, Wake, Burgner (2021)",2021,,NR,GENEActiv,Accelerometer,Australia,50 Hz,Objective + Subjective,MVPA,Arithmetic,20.0
+"Dumuid, Wake, Burgner (2021)","Dumuid, Wake, Burgner (2021)",2021,,NR,GENEActiv,Accelerometer,Australia,50 Hz,Objective + Subjective,MVPA,Geometric,
+"Matricciani, Dumuid, Paquet (2021)","Matricciani, Dumuid, Paquet (2021)",2021,,Children,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,Sleep,Arithmetic,571.0
+"Matricciani, Dumuid, Paquet (2021)","Matricciani, Dumuid, Paquet (2021)",2021,,Children,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,Sleep,Geometric,688.0
+"Matricciani, Dumuid, Paquet (2021)","Matricciani, Dumuid, Paquet (2021)",2021,,Children,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,SB,Arithmetic,688.0
+"Matricciani, Dumuid, Paquet (2021)","Matricciani, Dumuid, Paquet (2021)",2021,,Children,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,SB,Geometric,159.0
+"Matricciani, Dumuid, Paquet (2021)","Matricciani, Dumuid, Paquet (2021)",2021,,Children,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,LPA,Arithmetic,159.0
+"Matricciani, Dumuid, Paquet (2021)","Matricciani, Dumuid, Paquet (2021)",2021,,Children,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,LPA,Geometric,23.0
+"Matricciani, Dumuid, Paquet (2021)","Matricciani, Dumuid, Paquet (2021)",2021,,Children,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,MVPA,Arithmetic,23.0
+"Matricciani, Dumuid, Paquet (2021)","Matricciani, Dumuid, Paquet (2021)",2021,,Children,GENEActiv,Accelerometer,Australia,50,Objective + Subjective,MVPA,Geometric,
+"Chong, Parrish, Cliff (2021)","Chong, Parrish, Cliff (2021)",2021,,Children T1 cross-sectional sample,GENEActiv,Accelerometer,Australia,75,Objective + Subjective,Sleep,Arithmetic,544.0
+"Chong, Parrish, Cliff (2021)","Chong, Parrish, Cliff (2021)",2021,,Children T1 cross-sectional sample,GENEActiv,Accelerometer,Australia,75,Objective + Subjective,Sleep,Geometric,544.0
+"Chong, Parrish, Cliff (2021)","Chong, Parrish, Cliff (2021)",2021,,Children T1 cross-sectional sample,GENEActiv,Accelerometer,Australia,75,Objective + Subjective,SB,Arithmetic,614.0
+"Chong, Parrish, Cliff (2021)","Chong, Parrish, Cliff (2021)",2021,,Children T1 cross-sectional sample,GENEActiv,Accelerometer,Australia,75,Objective + Subjective,SB,Geometric,614.0
+"Chong, Parrish, Cliff (2021)","Chong, Parrish, Cliff (2021)",2021,,Children T1 cross-sectional sample,GENEActiv,Accelerometer,Australia,75,Objective + Subjective,LPA,Arithmetic,213.0
+"Chong, Parrish, Cliff (2021)","Chong, Parrish, Cliff (2021)",2021,,Children T1 cross-sectional sample,GENEActiv,Accelerometer,Australia,75,Objective + Subjective,LPA,Geometric,213.0
+"Chong, Parrish, Cliff (2021)","Chong, Parrish, Cliff (2021)",2021,,Children T1 cross-sectional sample,GENEActiv,Accelerometer,Australia,75,Objective + Subjective,MVPA,Arithmetic,69.0
+"Chong, Parrish, Cliff (2021)","Chong, Parrish, Cliff (2021)",2021,,Children T1 cross-sectional sample,GENEActiv,Accelerometer,Australia,75,Objective + Subjective,MVPA,Geometric,69.0
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,,Primary school children,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,Sleep,Arithmetic,
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,,Primary school children,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,Sleep,Geometric,580.6
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,,Primary school children,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,SB,Arithmetic,
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,,Primary school children,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,SB,Geometric,211.2
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,,Primary school children,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,LPA,Arithmetic,
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,,Primary school children,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,LPA,Geometric,60.1
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,,Primary school children,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,MVPA,Arithmetic,
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,,Primary school children,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,MVPA,Geometric,
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,Adolescents,Secondary school adolescents,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,Sleep,Arithmetic,
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,Adolescents,Secondary school adolescents,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,Sleep,Geometric,693.6
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,Adolescents,Secondary school adolescents,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,SB,Arithmetic,
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,Adolescents,Secondary school adolescents,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,SB,Geometric,205.6
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,Adolescents,Secondary school adolescents,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,LPA,Arithmetic,
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,Adolescents,Secondary school adolescents,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,LPA,Geometric,41.6
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,Adolescents,Secondary school adolescents,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,MVPA,Arithmetic,
+"Fairclough, Tyler, Dainty (2021)","Fairclough, Tyler, Dainty (2021)",2021,Adolescents,Secondary school adolescents,ActiGraph,Triaxial accelerometer,United Kingdom,100,Objective + Subjective,MVPA,Geometric,
+"McGregor, Palarea-Albaladejo, Dall (2021)","McGregor, Palarea-Albaladejo, Dall (2021)",2021,,Complete Sample,Actigraph,Accelerometer,USA,NR,Subjective only,Sleep,Arithmetic,414.0
+"McGregor, Palarea-Albaladejo, Dall (2021)","McGregor, Palarea-Albaladejo, Dall (2021)",2021,,Complete Sample,Actigraph,Accelerometer,USA,NR,Subjective only,Sleep,Geometric,420.0
+"McGregor, Palarea-Albaladejo, Dall (2021)","McGregor, Palarea-Albaladejo, Dall (2021)",2021,,Complete Sample,Actigraph,Accelerometer,USA,NR,Subjective only,SB,Arithmetic,624.0
+"McGregor, Palarea-Albaladejo, Dall (2021)","McGregor, Palarea-Albaladejo, Dall (2021)",2021,,Complete Sample,Actigraph,Accelerometer,USA,NR,Subjective only,SB,Geometric,630.0
+"McGregor, Palarea-Albaladejo, Dall (2021)","McGregor, Palarea-Albaladejo, Dall (2021)",2021,,Complete Sample,Actigraph,Accelerometer,USA,NR,Subjective only,LPA,Arithmetic,384.0
+"McGregor, Palarea-Albaladejo, Dall (2021)","McGregor, Palarea-Albaladejo, Dall (2021)",2021,,Complete Sample,Actigraph,Accelerometer,USA,NR,Subjective only,LPA,Geometric,378.0
+"McGregor, Palarea-Albaladejo, Dall (2021)","McGregor, Palarea-Albaladejo, Dall (2021)",2021,,Complete Sample,Actigraph,Accelerometer,USA,NR,Subjective only,MVPA,Arithmetic,18.0
+"McGregor, Palarea-Albaladejo, Dall (2021)","McGregor, Palarea-Albaladejo, Dall (2021)",2021,,Complete Sample,Actigraph,Accelerometer,USA,NR,Subjective only,MVPA,Geometric,12.0
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,Sleep,Arithmetic,
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,Sleep,Geometric,515.7
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,SB,Arithmetic,
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,SB,Geometric,496.9
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,LPA,Arithmetic,
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,LPA,Geometric,381.8
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,MVPA,Arithmetic,
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,MVPA,Geometric,45.6
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,Sleep,Arithmetic,
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,Sleep,Geometric,483.8
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,SB,Arithmetic,
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,SB,Geometric,512.9
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,LPA,Arithmetic,
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,LPA,Geometric,395.9
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,MVPA,Arithmetic,
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,MVPA,Geometric,47.4
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,Sleep,Arithmetic,
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,Sleep,Geometric,558.2
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,SB,Arithmetic,
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,SB,Geometric,475.6
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,LPA,Arithmetic,
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,LPA,Geometric,363.2
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,MVPA,Arithmetic,
+"Farrahi, Kangas, Walmsley (2020)","Farrahi, Kangas, Walmsley (2020)",2020,,compositions; robCompositions,Hookie,Triaxial accelerometer,Finland,100,Subjective only,MVPA,Geometric,43.0
