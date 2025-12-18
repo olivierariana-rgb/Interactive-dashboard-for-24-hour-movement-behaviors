@@ -102,6 +102,34 @@ st.title("24-Hour Movement Composition Explorer")
 st.write("Compare arithmetic and geometric means across studies and visualize individual data points.")
 
 # ======================================================================
+# FILTER SUMMARY
+# ======================================================================
+
+st.markdown("### Current Selection Summary")
+
+# Number of unique studies after all filters
+n_studies = df_f["StudyID"].nunique()
+
+st.write(f"📊 **Number of studies meeting these criteria:** {n_studies}")
+
+# Build readable filter descriptions
+filter_summaries = [
+    summarize_filter("Age group", age_filter, df["Age_Group"].unique()),
+    summarize_filter("Device brand", brand_filter, df["Device_Brand"].unique()),
+    summarize_filter("Device type", type_filter, df["Device_Type"].unique()),
+    summarize_filter("Country", country_filter, df["Country"].unique()),
+    summarize_filter("Sampling rate", rate_filter, df["Sampling_Rate_Hz"].unique()),
+    summarize_filter("Sleep measurement", sleep_filter, df["Sleep_Measurement_Type"].unique()),
+    f"Subgroup mode: {subgroup_mode}"
+]
+
+st.write(
+    "**Filters applied:**  \n" +
+    " • " + "  \n • ".join(filter_summaries)
+)
+
+st.markdown("---")
+# ======================================================================
 # PLOT 1 — STACKED BAR PANELS (Arithmetic vs Geometric)
 # ======================================================================
 
