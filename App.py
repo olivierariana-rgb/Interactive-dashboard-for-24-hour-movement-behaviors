@@ -196,8 +196,10 @@ with col2:
         st.plotly_chart(fig_g, width="stretch")
     else:
         st.info("No geometric data available after filtering.")
+
+
 # ============================================================
-# IMPROVED SCATTER PANEL — One behavior at a time
+# BEHAVIOR-LEVEL SCATTER PLOT — One behavior at a time
 # ============================================================
 
 import plotly.graph_objects as go
@@ -215,67 +217,73 @@ df_beh = df_f[df_f["Behavior"] == selected_behavior].copy()
 
 if df_beh.empty:
     st.warning("No data available for this behavior under current filters.")
-else:
 
+else:
+    # --------------------------------------------------
     # Compute mean arithmetic and geometric per age group
+    # --------------------------------------------------
     mean_table = (
-        df_beh.groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
+        df_beh
+        .groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
         .mean()
         .reset_index()
     )
 
-    # Sort studies for prettier display
+    # Sort studies for cleaner y-axis ordering
     df_beh["StudyID_display"] = df_beh["StudyID_display"].astype(str)
     df_beh = df_beh.sort_values("Minutes")
 
-    # --------------------------
+    # --------------------------------------------------
     # Build scatter — facet by AGE GROUP (rows)
-    # --------------------------
+    # --------------------------------------------------
     fig2 = px.scatter(
         df_beh,
         x="Minutes",
         y="StudyID_display",
         color="Mean_Type",
         symbol="Mean_Type",
-        symbol_map={"Arithmetic": "circle", "Geometric": "triangle-up"},
+        symbol_map={
+            "Arithmetic": "circle",
+            "Geometric": "triangle-up"
+        },
         facet_row="Age_Group",
-        category_orders={"Age_Group": ["Children","Adolescents","Adult"]},
+        category_orders={"Age_Group": ["Children", "Adolescents", "Adult"]},
         height=900,
         title=f"Study Estimates for {selected_behavior}"
     )
 
-    # --------------------------
-# Add MEAN LINES per facet (corrected)
-# --------------------------
-age_order = ["Children", "Adolescents", "Adult"]
+    # --------------------------------------------------
+    # Add MEAN LINES per facet (corrected)
+    # --------------------------------------------------
+    age_order = ["Children", "Adolescents", "Adult"]
 
-line_styles = {
-    "Arithmetic": dict(color="black", dash="dot"),
-    "Geometric": dict(color="black", dash="solid")
-}
+    line_styles = {
+        "Arithmetic": dict(color="black", dash="dot"),
+        "Geometric": dict(color="black", dash="solid")
+    }
 
-for age_group in age_order:
-    sub_mean = mean_table[mean_table["Age_Group"] == age_group]
-    if sub_mean.empty:
-        continue
+    for age_group in age_order:
+        sub_mean = mean_table[mean_table["Age_Group"] == age_group]
 
-    row_num = age_order.index(age_group) + 1
+        if sub_mean.empty:
+            continue
 
-    for _, r in sub_mean.iterrows():
-        fig2.add_vline(
-            x=r["Minutes"],
-            line=dict(
-                width=2,
-                **line_styles.get(r["Mean_Type"], {})
-            ),
-            row=row_num,
-            col=1
-        )
+        row_num = age_order.index(age_group) + 1
 
+        for _, r in sub_mean.iterrows():
+            fig2.add_vline(
+                x=r["Minutes"],
+                line=dict(
+                    width=2,
+                    **line_styles.get(r["Mean_Type"], {})
+                ),
+                row=row_num,
+                col=1
+            )
 
-    # --------------------------
+    # --------------------------------------------------
     # Style improvements
-    # --------------------------
+    # --------------------------------------------------
     fig2.update_layout(
         legend_title="Mean Type",
         margin=dict(l=40, r=40, t=80, b=40),
@@ -290,7 +298,7 @@ for age_group in age_order:
         )
     )
 
-    st.plotly_chart(fig2, width="stretch")
+    st.plotly_chart(fig2, use_container_width=True)
 # --------------------------------------------------
 #  STUDY-LEVEL BREAKDOWN (ONE ROW PER STUDY)
 # --------------------------------------------------
