@@ -245,40 +245,33 @@ else:
     )
 
     # --------------------------
-    # Add MEAN LINES per facet
-    # --------------------------
-    age_order = ["Children", "Adolescents", "Adult"]
+# Add MEAN LINES per facet (corrected)
+# --------------------------
+age_order = ["Children", "Adolescents", "Adult"]
 
-    for age_group in age_order:
-        sub_mean = mean_table[mean_table["Age_Group"] == age_group]
-        if sub_mean.empty:
-            continue
+line_styles = {
+    "Arithmetic": dict(color="black", dash="dot"),
+    "Geometric": dict(color="black", dash="solid")
+}
 
-        # Determine facet row index
-        row_num = age_order.index(age_group) + 1
+for age_group in age_order:
+    sub_mean = mean_table[mean_table["Age_Group"] == age_group]
+    if sub_mean.empty:
+        continue
 
-        for _, r in sub_mean.iterrows():
-            # Mean vertical line
-            fig2.add_vline(
-                x=r["Minutes"],
-                line=dict(color="black", width=2, dash="dot"),
-                row=row_num,
-                col=1
-            )
+    row_num = age_order.index(age_group) + 1
 
-            # Mean diamond marker
-            fig2.add_trace(
-                go.Scatter(
-                    x=[r["Minutes"]],
-                    y=[df_beh["StudyID_display"].iloc[-1]],  # place at top row
-                    mode="markers",
-                    marker=dict(size=14, color="black", symbol="diamond"),
-                    showlegend=False,
-                    name=f"{age_group} Mean ({r['Mean_Type']})"
-                ),
-                row=row_num,
-                col=1
-            )
+    for _, r in sub_mean.iterrows():
+        fig2.add_vline(
+            x=r["Minutes"],
+            line=dict(
+                width=2,
+                **line_styles.get(r["Mean_Type"], {})
+            ),
+            row=row_num,
+            col=1
+        )
+
 
     # --------------------------
     # Style improvements
