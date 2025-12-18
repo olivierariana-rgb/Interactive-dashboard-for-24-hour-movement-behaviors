@@ -470,23 +470,29 @@ st.write(f"📊 **Total included studies:** {len(meta_base)}")
 # MOST COMMON METHODOLOGICAL CHOICES (by age group)
 # --------------------------------------------------
 
-st.subheader("Most Common Methodological Choices by Age Group")
+st.subheader("Most Common Methodological Choices")
 st.caption(
-    "Top methodological decisions within each age group. "
-    "Percentages are calculated within age group using metadata only."
+    "Top methodological decisions within the selected age group. "
+    "Percentages are calculated within the selection using metadata only."
 )
 
+# Age group selector (includes ALL)
 age_choice = st.radio(
     "Select age group:",
-    ["Children", "Adolescents", "Adult"],
+    ["All", "Children", "Adolescents", "Adults"],
     horizontal=True
 )
 
-meta_age = meta_base[meta_base["Age_Group"] == age_choice].copy()
+# Apply age filter
+if age_choice == "All":
+    meta_age = meta_base.copy()
+else:
+    meta_age = meta_base[meta_base["Age_Group"] == age_choice].copy()
+
 n_studies = len(meta_age)
 
 if n_studies == 0:
-    st.warning(f"No studies available for {age_choice}.")
+    st.warning(f"No studies available for **{age_choice}**.")
 else:
     st.info(f"📊 {n_studies} studies included for **{age_choice}**")
 
@@ -512,14 +518,20 @@ else:
 
         counts = meta_age[col].fillna("NR").value_counts()
         total = counts.sum()
+
+        if total == 0:
+            st.write("• No data available")
+            st.divider()
+            continue
+
         top3 = counts.head(3)
 
         for val, cnt in top3.items():
             pct = round(100 * cnt / total, 1)
             st.write(f"• **{val}** — {cnt} studies ({pct}%)")
 
-        # Explicit NR if not already shown
-        if "NR" not in top3.index and "NR" in counts.index:
+        # Explicitly report NR if it exists but is not in top 3
+        if "NR" in counts.index and "NR" not in top3.index:
             nr_cnt = counts["NR"]
             pct_nr = round(100 * nr_cnt / total, 1)
             st.write(f"• **NR** — {nr_cnt} studies ({pct_nr}%)")
