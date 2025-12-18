@@ -428,3 +428,147 @@ else:
         fig_simplex.update_traces(marker=dict(size=12, opacity=0.8))
 
         st.plotly_chart(fig_simplex, use_container_width=True)
+
+# ======================================================================
+# METADATA BASE (for Results Engine only)
+# ======================================================================
+
+st.markdown("---")
+st.header("Results Engine — Study Methodology Overview")
+st.caption(
+    "This section summarizes methodological patterns across all included studies. "
+    "It is based on metadata only and is not affected by interactive filters above."
+)
+
+# --------------------------------------------------
+# Base metadata (1 row per included study)
+# --------------------------------------------------
+
+# Keep only studies included for full-text extraction
+meta_base = meta.copy()
+
+# If FullTextExtraction_Number exists, ensure uniqueness
+if "FullTextExtraction_Number" in meta_base.columns:
+    meta_base = (
+        meta_base
+        .sort_values("FullTextExtraction_Number")
+        .drop_duplicates(subset="FullTextExtraction_Number", keep="first")
+        .reset_index(drop=True)
+    )
+
+st.write(f"📊 **Total included studies:** {len(meta_base)}")
+
+# --------------------------------------------------
+# Helper function: top N values by age group
+# --------------------------------------------------
+
+def top_n_by_age_group(df, column, n=3):
+    out = []
+    for age in ["Children", "Adolescents", "Adult"]:
+        sub = df[df["Age_Group"] == age]
+        if sub.empty or column not in sub.columns:
+            continue
+
+        counts = (
+            sub[column]
+            .dropna()
+            .value_counts()
+            .head(n)
+        )
+
+        for rank, (val, cnt) in enumerate(counts.items(), start=1):
+            out.append({
+                "Age_Group": age,
+                "Rank": rank,
+                "Category": column,
+                "Value": val,
+                "Number_of_Studies": cnt
+            })
+
+    return pd.DataFrame(out)
+
+# --------------------------------------------------
+# MOST POPULAR SETUP BY AGE GROUP
+# --------------------------------------------------
+
+st.subheader("Most Common Methodological Choices by Age Group")
+
+method_vars = [
+    "Device_Brand",
+    "Device_Type",
+    "Sampling_Rate_Hz",
+    "Sleep_Measurement_Type",
+    "Cutpoint_Type"
+]
+
+popular_tables = []
+
+for var in method_vars:
+    if var in meta_base.columns:
+        tbl = top_n_by_age_group(meta_base, var, n=3)
+        if not tbl.empty:
+            popular_tables.append(tbl)
+
+if popular_tables:
+    popular_df = pd.concat(popular_tables, ignore_index=True)
+
+    st.dataframe(
+        popular_df.sort_values(["Category", "Age_Group", "Rank"]),
+        use_container_width=True
+    )
+else:
+    st.info("No methodological variables available for summary.")
+
+# --------------------------------------------------
+# REPORTING COMPLETENESS (Missingness)
+# --------------------------------------------------
+
+st.subheader("Reporting Completeness")
+
+report_vars = [
+    "Device_Brand",
+    "Device_Type",
+    "Sampling_Rate_Hz",
+    "Sleep_Measurement_Type",
+    "Cutpoint_Type",
+    "Wear_Days_Instructed",
+    "Valid_Hours_Per_Day"
+]
+
+missing_summary = []
+
+for var in report_vars:
+    if var not in meta_base.columns:
+        continue
+
+    total = len(meta_base)
+    missing = meta_base[var].isna().sum()
+
+    missing_summary.append({
+        "Variable": var,
+        "Reported (%)": round(100 * (total - missing) / total, 1),
+        "Missing (%)": round(100 * missing / total, 1)
+    })
+
+missing_df = pd.DataFrame(missing_summary)
+
+st.dataframe(missing_df, use_container_width=True)
+
+# --------------------------------------------------
+# HETEROGENEITY SUMMARY
+# --------------------------------------------------
+
+st.subheader("Methodological Heterogeneity")
+
+heterogeneity = []
+
+for var in method_vars:
+    if var in meta_base.columns:
+        heterogeneity.append({
+            "Methodological Dimension": var,
+            "Number of Unique Choices": meta_base[var].dropna().nunique()
+        })
+
+hetero_df = pd.DataFrame(heterogeneity)
+
+st.dataframe(hetero_df, use_container_width=True)
