@@ -553,7 +553,7 @@ else:
         "Bootstrap": "Bootstrap",
     }
 
-    for label, col in method_vars.items():
+for label, col in method_vars.items():
     if col not in meta_age.columns:
         continue
 
