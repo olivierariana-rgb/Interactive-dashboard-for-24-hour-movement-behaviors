@@ -488,36 +488,60 @@ def top_n_by_age_group(df, column, n=3):
     return pd.DataFrame(out)
 
 # --------------------------------------------------
-# MOST POPULAR SETUP BY AGE GROUP
+# MOST COMMON METHODOLOGICAL CHOICES 
 # --------------------------------------------------
 
-st.subheader("Most Common Methodological Choices by Age Group")
+st.subheader("Most Common Methodological Choices")
 
-method_vars = [
-    "Device_Brand",
-    "Device_Type",
-    "Sampling_Rate_Hz",
-    "Sleep_Measurement_Type",
-    "Cutpoint_Type"
-]
+st.caption(
+    "Summary of the most frequently reported methodological decisions. "
+    "Percentages are calculated within each age group using metadata only."
+)
 
-popular_tables = []
+# Age group selector
+age_choice = st.radio(
+    "Select age group:",
+    ["Children", "Adolescents", "Adult"],
+    horizontal=True
+)
 
-for var in method_vars:
-    if var in meta_base.columns:
-        tbl = top_n_by_age_group(meta_base, var, n=3)
-        if not tbl.empty:
-            popular_tables.append(tbl)
+meta_age = meta_base[meta_base["Age_Group"] == age_choice].copy()
+n_studies = len(meta_age)
 
-if popular_tables:
-    popular_df = pd.concat(popular_tables, ignore_index=True)
-
-    st.dataframe(
-        popular_df.sort_values(["Category", "Age_Group", "Rank"]),
-        use_container_width=True
-    )
+if n_studies == 0:
+    st.warning(f"No studies available for {age_choice}.")
 else:
-    st.info("No methodological variables available for summary.")
+    st.info(f"📊 {n_studies} studies included for **{age_choice}**")
+
+    method_vars = {
+        "Device Brand": "Device_Brand",
+        "Device Type": "Device_Type",
+        "Sampling Rate (Hz)": "Sampling_Rate_Hz",
+        "Cutpoint Type": "Cutpoint_Type",
+        "Sleep Measurement": "Sleep_Measurement_Type",
+    }
+
+    for label, col in method_vars.items():
+        if col not in meta_age.columns:
+            continue
+
+        st.markdown(f"### {label}")
+
+        counts = meta_age[col].fillna("NR").value_counts()
+        top3 = counts.head(3)
+
+        total = counts.sum()
+        nr_count = counts.get("NR", 0)
+
+        for val, cnt in top3.items():
+            pct = round(100 * cnt / total, 1)
+            st.write(f"• **{val}** — {cnt} studies ({pct}%)")
+
+        if "NR" not in top3.index and nr_count > 0:
+            pct_nr = round(100 * nr_count / total, 1)
+            st.write(f"• **NR** — {nr_count} studies ({pct_nr}%)")
+
+        st.divider()
 
 # --------------------------------------------------
 # REPORTING COMPLETENESS (Missingness)
