@@ -199,32 +199,40 @@ with col2:
 
 
 # ============================================================
-# BEHAVIOR-LEVEL SCATTER PLOT — Behavior + Age Group
+# BEHAVIOR-LEVEL SCATTER PLOT — Zoomed View
 # ============================================================
-
-import plotly.express as px
 
 st.subheader("Behavior-Level Scatter Plot")
 
-# --- User controls ---
+st.caption(
+    "This view provides a focused look within the currently selected studies. "
+    "Changing the behavior or age group here does not affect the global filters above."
+)
+
+# --------------------------------------------------
+# Local (zoom) controls
+# --------------------------------------------------
+
 selected_behavior = st.selectbox(
-    "Select a behavior:",
+    "Zoom in on behavior:",
     sorted(df_f["Behavior"].dropna().unique())
 )
 
 selected_age = st.radio(
-    "Select age group:",
+    "Zoom in on age group:",
     ["Children", "Adolescents", "Adult"],
     horizontal=True
 )
 
-# --- Filter data ---
+# --------------------------------------------------
+# Filtered data (local only)
+# --------------------------------------------------
+
 df_beh = df_f[
     (df_f["Behavior"] == selected_behavior) &
     (df_f["Age_Group"] == selected_age)
 ].copy()
 
-# Clean numeric
 df_beh["Minutes"] = pd.to_numeric(
     df_beh["Minutes"].astype(str).str.replace(",", "", regex=False),
     errors="coerce"
@@ -236,13 +244,17 @@ if df_beh.empty:
     st.warning("No data available for this selection.")
 
 else:
-    # Sort studies by year if available
+    # --------------------------------------------------
+    # Order studies by year (if available)
+    # --------------------------------------------------
     if "Year" in df_beh.columns:
-        df_beh = df_beh.sort_values("Year")
+        df_beh = df_beh.sort_values(["Year", "StudyID_display"])
     else:
         df_beh = df_beh.sort_values("StudyID_display")
 
-    # --- Summary stats (median is safer than mean) ---
+    # --------------------------------------------------
+    # Median summary (only what exists)
+    # --------------------------------------------------
     summary = (
         df_beh
         .groupby("Mean_Type")["Minutes"]
@@ -251,16 +263,9 @@ else:
         .rename(columns={"Minutes": "Median"})
     )
 
-    # Optional debug table (keep for now)
-    with st.expander("Debug: study distribution"):
-        st.dataframe(
-            df_beh.groupby("Mean_Type")["Minutes"]
-            .agg(n="count", min="min", median="median", max="max")
-            .reset_index(),
-            use_container_width=True
-        )
-
-    # --- Scatter plot ---
+    # --------------------------------------------------
+    # Scatter plot
+    # --------------------------------------------------
     fig = px.scatter(
         df_beh,
         x="Minutes",
@@ -275,20 +280,47 @@ else:
         height=700
     )
 
-    # --- Add median lines ---
+    # --------------------------------------------------
+    # Add median reference lines + labels
+    # --------------------------------------------------
     for _, row in summary.iterrows():
+        mean_type = row["Mean_Type"]
+        median_val = row["Median"]
+
+        if mean_type == "Arithmetic":
+            dash = "dot"
+            label = f"Arithmetic median = {median_val:.1f} min"
+        else:
+            dash = "solid"
+            label = f"Geometric median = {median_val:.1f} min"
+
+        # Vertical line
         fig.add_vline(
-            x=row["Median"],
+            x=median_val,
             line_width=2,
-            line_dash="dot" if row["Mean_Type"] == "Arithmetic" else "solid",
+            line_dash=dash,
             line_color="black",
         )
 
+        # Annotation (top of plot)
+        fig.add_annotation(
+            x=median_val,
+            y=1.02,
+            yref="paper",
+            text=label,
+            showarrow=False,
+            font=dict(size=12),
+            align="center"
+        )
+
+    # --------------------------------------------------
+    # Layout polish
+    # --------------------------------------------------
     fig.update_layout(
         xaxis_title="Minutes per day",
         yaxis_title="Study",
-        legend_title="Mean Type",
-        margin=dict(l=40, r=40, t=80, b=40),
+        legend_title="Mean type",
+        margin=dict(l=40, r=40, t=110, b=40),
     )
 
     st.plotly_chart(fig, use_container_width=True)
