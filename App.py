@@ -199,105 +199,96 @@ with col2:
 
 
 # ============================================================
-# BEHAVIOR-LEVEL SCATTER PLOT — One behavior at a time
+# BEHAVIOR-LEVEL SCATTER PLOT — Behavior + Age Group
 # ============================================================
 
-import plotly.graph_objects as go
 import plotly.express as px
 
 st.subheader("Behavior-Level Scatter Plot")
 
+# --- User controls ---
 selected_behavior = st.selectbox(
-    "Select a behavior to visualize:",
+    "Select a behavior:",
     sorted(df_f["Behavior"].dropna().unique())
 )
 
-df_beh = df_f[df_f["Behavior"] == selected_behavior].copy()
+selected_age = st.radio(
+    "Select age group:",
+    ["Children", "Adolescents", "Adult"],
+    horizontal=True
+)
 
-# Clean Minutes
+# --- Filter data ---
+df_beh = df_f[
+    (df_f["Behavior"] == selected_behavior) &
+    (df_f["Age_Group"] == selected_age)
+].copy()
+
+# Clean numeric
 df_beh["Minutes"] = pd.to_numeric(
     df_beh["Minutes"].astype(str).str.replace(",", "", regex=False),
     errors="coerce"
 )
 
-df_beh = df_beh.dropna(subset=["Minutes", "Age_Group", "Mean_Type", "StudyID_display"])
+df_beh = df_beh.dropna(subset=["Minutes", "StudyID_display", "Mean_Type"])
 
 if df_beh.empty:
-    st.warning("No data available for this behavior under current filters.")
+    st.warning("No data available for this selection.")
 
 else:
-    # Stable ordering
-    df_beh["StudyID_display"] = df_beh["StudyID_display"].astype(str)
-    df_beh = df_beh.sort_values("StudyID_display")
+    # Sort studies by year if available
+    if "Year" in df_beh.columns:
+        df_beh = df_beh.sort_values("Year")
+    else:
+        df_beh = df_beh.sort_values("StudyID_display")
 
-    # Use MEDIAN (more defensible than mean for scoping review)
-    summary_table = (
+    # --- Summary stats (median is safer than mean) ---
+    summary = (
         df_beh
-        .groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
+        .groupby("Mean_Type")["Minutes"]
         .median()
-        .reset_index(name="median_minutes")
+        .reset_index()
+        .rename(columns={"Minutes": "Median"})
     )
 
-    # Optional debug table (keep this!)
-    with st.expander("Debug: check summary vs plotted range"):
-        debug = (
-            df_beh.groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
+    # Optional debug table (keep for now)
+    with st.expander("Debug: study distribution"):
+        st.dataframe(
+            df_beh.groupby("Mean_Type")["Minutes"]
             .agg(n="count", min="min", median="median", max="max")
-            .reset_index()
+            .reset_index(),
+            use_container_width=True
         )
-        st.dataframe(debug, use_container_width=True)
 
+    # --- Scatter plot ---
     fig = px.scatter(
         df_beh,
         x="Minutes",
         y="StudyID_display",
         color="Mean_Type",
         symbol="Mean_Type",
-        symbol_map={"Arithmetic": "circle", "Geometric": "triangle-up"},
-        facet_row="Age_Group",
-        category_orders={"Age_Group": ["Children", "Adolescents", "Adult"]},
-        height=900,
-        title=f"Study-Level Estimates for {selected_behavior}"
+        symbol_map={
+            "Arithmetic": "circle",
+            "Geometric": "triangle-up"
+        },
+        title=f"{selected_behavior} — {selected_age}",
+        height=700
     )
 
-    age_order = ["Children", "Adolescents", "Adult"]
-    line_styles = {
-        "Arithmetic": dict(dash="dot"),
-        "Geometric": dict(dash="solid"),
-    }
-
-    # ---- FACET-SAFE median lines (this is the key fix)
-    for age in age_order:
-        row_idx = age_order.index(age) + 1
-        sub = summary_table[summary_table["Age_Group"] == age]
-
-        for _, r in sub.iterrows():
-            fig.add_shape(
-                type="line",
-                x0=r["median_minutes"],
-                x1=r["median_minutes"],
-                y0=0,
-                y1=1,
-                xref=f"x{row_idx}",
-                yref="paper",   # <-- THIS fixes the error
-                line=dict(
-                    color="black",
-                    width=2,
-                    **line_styles.get(r["Mean_Type"], {})
-                )
-            )
+    # --- Add median lines ---
+    for _, row in summary.iterrows():
+        fig.add_vline(
+            x=row["Median"],
+            line_width=2,
+            line_dash="dot" if row["Mean_Type"] == "Arithmetic" else "solid",
+            line_color="black",
+        )
 
     fig.update_layout(
+        xaxis_title="Minutes per day",
+        yaxis_title="Study",
         legend_title="Mean Type",
         margin=dict(l=40, r=40, t=80, b=40),
-        height=1100
-    )
-
-    fig.for_each_annotation(
-        lambda a: a.update(
-            font=dict(color="white", size=14),
-            bgcolor="#444444"
-        )
     )
 
     st.plotly_chart(fig, use_container_width=True)
