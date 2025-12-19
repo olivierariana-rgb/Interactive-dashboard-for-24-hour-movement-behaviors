@@ -263,64 +263,62 @@ else:
         .rename(columns={"Minutes": "Median"})
     )
 
-# --------------------------------------------------
-# Scatter plot
-# --------------------------------------------------
-fig = px.scatter(
-    df_beh,
-    x="Minutes",
-    y="StudyID_display",
-    color="Mean_Type",
-    symbol="Mean_Type",
-    symbol_map={
-        "Arithmetic": "circle",
-        "Geometric": "triangle-up"
-    },
-    title=f"{selected_behavior} — {selected_age}",
-    height=700
-)
-
-# --------------------------------------------------
-# Add median reference lines + labels
-# --------------------------------------------------
-for _, row in summary.iterrows():
-    mean_type = row["Mean_Type"]
-    median_val = row["Median"]
-
-    # Skip if median is missing
-    if pd.isna(median_val):
-        continue
-
-    if mean_type == "Arithmetic":
-        dash = "dot"
-        label = f"Arithmetic median = {median_val:.1f} min"
-        y_offset = 1.02
-    else:
-        dash = "solid"
-        label = f"Geometric median = {median_val:.1f} min"
-        y_offset = 1.06
-
-    # Vertical reference line
-    fig.add_vline(
-        x=median_val,
-        line_width=2,
-        line_dash=dash,
-        line_color="black",
-    )
-
-    # Annotation (properly INSIDE loop)
-    fig.add_annotation(
-        x=median_val,
-        y=y_offset,
-        yref="paper",
-        text=label,
-        showarrow=False,
-        font=dict(size=12),
-        align="center",
-        bgcolor="rgba(255,255,255,0.8)"
-    )
     # --------------------------------------------------
-    # Layout polish
+    # Scatter plot
+    # --------------------------------------------------
+    fig = px.scatter(
+        df_beh,
+        x="Minutes",
+        y="StudyID_display",
+        color="Mean_Type",
+        symbol="Mean_Type",
+        symbol_map={
+            "Arithmetic": "circle",
+            "Geometric": "triangle-up"
+        },
+        title=f"{selected_behavior} — {selected_age}",
+        height=700
+    )
+
+    # --------------------------------------------------
+    # Add median reference lines + labels
+    # --------------------------------------------------
+    for _, row in summary.iterrows():
+        mean_type = row["Mean_Type"]
+        median_val = row["Median"]
+
+        if pd.isna(median_val):
+            continue
+
+        if mean_type == "Arithmetic":
+            dash = "dot"
+            label = f"Arithmetic median = {median_val:.1f} min"
+            y_offset = 1.02
+        else:
+            dash = "solid"
+            label = f"Geometric median = {median_val:.1f} min"
+            y_offset = 1.06
+
+        fig.add_vline(
+            x=median_val,
+            line_width=2,
+            line_dash=dash,
+            line_color="black",
+        )
+
+        fig.add_annotation(
+            x=median_val,
+            y=y_offset,
+            yref="paper",
+            text=label,
+            showarrow=False,
+            font=dict(size=12),
+            align="center",
+            bgcolor="rgba(255,255,255,0.8)"
+        )
+
+    # --------------------------------------------------
+    # Layout polish (ONCE)
     # --------------------------------------------------
     fig.update_layout(
         xaxis_title="Minutes per day",
@@ -329,6 +327,9 @@ for _, row in summary.iterrows():
         margin=dict(l=40, r=40, t=110, b=40),
     )
 
+    # --------------------------------------------------
+    # Display (ONCE)
+    # --------------------------------------------------
     st.plotly_chart(fig, use_container_width=True)
 # --------------------------------------------------
 #  STUDY-LEVEL BREAKDOWN (ONE ROW PER STUDY)
