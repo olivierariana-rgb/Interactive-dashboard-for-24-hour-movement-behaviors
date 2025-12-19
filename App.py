@@ -214,7 +214,7 @@ selected_behavior = st.selectbox(
 
 df_beh = df_f[df_f["Behavior"] == selected_behavior].copy()
 
-# Ensure Minutes is numeric
+# Clean Minutes
 df_beh["Minutes"] = pd.to_numeric(
     df_beh["Minutes"].astype(str).str.replace(",", "", regex=False),
     errors="coerce"
@@ -230,7 +230,7 @@ else:
     df_beh["StudyID_display"] = df_beh["StudyID_display"].astype(str)
     df_beh = df_beh.sort_values("StudyID_display")
 
-    # Summary statistics (median is safer for scoping review)
+    # Use MEDIAN (more defensible than mean for scoping review)
     summary_table = (
         df_beh
         .groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
@@ -238,14 +238,14 @@ else:
         .reset_index(name="median_minutes")
     )
 
-    # ---- Debug table (keep this, it's useful)
+    # Optional debug table (keep this!)
     with st.expander("Debug: check summary vs plotted range"):
-        check = (
+        debug = (
             df_beh.groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
             .agg(n="count", min="min", median="median", max="max")
             .reset_index()
         )
-        st.dataframe(check, use_container_width=True)
+        st.dataframe(debug, use_container_width=True)
 
     fig = px.scatter(
         df_beh,
@@ -266,7 +266,7 @@ else:
         "Geometric": dict(dash="solid"),
     }
 
-    # ---- FACET-SAFE vertical median lines
+    # ---- FACET-SAFE median lines (this is the key fix)
     for age in age_order:
         row_idx = age_order.index(age) + 1
         sub = summary_table[summary_table["Age_Group"] == age]
@@ -279,7 +279,7 @@ else:
                 y0=0,
                 y1=1,
                 xref=f"x{row_idx}",
-                yref=f"y{row_idx} domain",
+                yref="paper",   # <-- THIS fixes the error
                 line=dict(
                     color="black",
                     width=2,
@@ -294,7 +294,10 @@ else:
     )
 
     fig.for_each_annotation(
-        lambda a: a.update(font=dict(color="white", size=14), bgcolor="#444444")
+        lambda a: a.update(
+            font=dict(color="white", size=14),
+            bgcolor="#444444"
+        )
     )
 
     st.plotly_chart(fig, use_container_width=True)
