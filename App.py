@@ -212,33 +212,33 @@ selected_behavior = st.selectbox(
     sorted(df_f["Behavior"].dropna().unique())
 )
 
-# Filter to the behavior
 df_beh = df_f[df_f["Behavior"] == selected_behavior].copy()
 
-# Ensure Minutes is truly numeric (fix commas like "1,020")
+# Ensure Minutes is numeric
 df_beh["Minutes"] = pd.to_numeric(
     df_beh["Minutes"].astype(str).str.replace(",", "", regex=False),
     errors="coerce"
 )
 
-# Drop rows that can't be plotted / summarized
 df_beh = df_beh.dropna(subset=["Minutes", "Age_Group", "Mean_Type", "StudyID_display"])
 
 if df_beh.empty:
     st.warning("No data available for this behavior under current filters.")
+
 else:
-    # Optional: keep a stable y ordering (not by minutes)
+    # Stable ordering
     df_beh["StudyID_display"] = df_beh["StudyID_display"].astype(str)
     df_beh = df_beh.sort_values("StudyID_display")
 
-    # Summary table computed from EXACTLY what you're plotting
+    # Summary statistics (median is safer for scoping review)
     summary_table = (
-        df_beh.groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
-        .median()   # or .mean() if you prefer
-        .reset_index(name="summary_value")
+        df_beh
+        .groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
+        .median()
+        .reset_index(name="median_minutes")
     )
 
-    # Quick sanity check (so you can see if the line should be inside the points)
+    # ---- Debug table (keep this, it's useful)
     with st.expander("Debug: check summary vs plotted range"):
         check = (
             df_beh.groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
@@ -247,7 +247,7 @@ else:
         )
         st.dataframe(check, use_container_width=True)
 
-    fig2 = px.scatter(
+    fig = px.scatter(
         df_beh,
         x="Minutes",
         y="StudyID_display",
@@ -260,36 +260,44 @@ else:
         title=f"Study-Level Estimates for {selected_behavior}"
     )
 
-    # Add median lines per facet, only if that Mean_Type exists in that facet
     age_order = ["Children", "Adolescents", "Adult"]
     line_styles = {
-        "Arithmetic": dict(color="black", dash="dot"),
-        "Geometric": dict(color="black", dash="solid"),
+        "Arithmetic": dict(dash="dot"),
+        "Geometric": dict(dash="solid"),
     }
 
-    for age_group in age_order:
-        row_num = age_order.index(age_group) + 1
-        sub = summary_table[summary_table["Age_Group"] == age_group]
+    # ---- FACET-SAFE vertical median lines
+    for age in age_order:
+        row_idx = age_order.index(age) + 1
+        sub = summary_table[summary_table["Age_Group"] == age]
 
         for _, r in sub.iterrows():
-            fig2.add_vline(
-                x=r["summary_value"],
-                line=dict(width=2, **line_styles.get(r["Mean_Type"], {})),
-                row=row_num,
-                col=1
+            fig.add_shape(
+                type="line",
+                x0=r["median_minutes"],
+                x1=r["median_minutes"],
+                y0=0,
+                y1=1,
+                xref=f"x{row_idx}",
+                yref=f"y{row_idx} domain",
+                line=dict(
+                    color="black",
+                    width=2,
+                    **line_styles.get(r["Mean_Type"], {})
+                )
             )
 
-    fig2.update_layout(
+    fig.update_layout(
         legend_title="Mean Type",
         margin=dict(l=40, r=40, t=80, b=40),
         height=1100
     )
 
-    fig2.for_each_annotation(
+    fig.for_each_annotation(
         lambda a: a.update(font=dict(color="white", size=14), bgcolor="#444444")
     )
 
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True)
 # --------------------------------------------------
 #  STUDY-LEVEL BREAKDOWN (ONE ROW PER STUDY)
 # --------------------------------------------------
