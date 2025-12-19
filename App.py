@@ -203,6 +203,7 @@ with col2:
 # ============================================================
 
 import plotly.graph_objects as go
+import plotly.express as px
 
 st.subheader("Behavior-Level Scatter Plot")
 
@@ -220,21 +221,23 @@ if df_beh.empty:
 
 else:
     # --------------------------------------------------
-    # Compute mean arithmetic and geometric per age group
+    # Ensure stable study ordering (by StudyID)
     # --------------------------------------------------
-    mean_table = (
+    df_beh["StudyID_display"] = df_beh["StudyID_display"].astype(str)
+    df_beh = df_beh.sort_values("StudyID_display")
+
+    # --------------------------------------------------
+    # Compute MEDIAN per age group & mean type
+    # --------------------------------------------------
+    summary_table = (
         df_beh
         .groupby(["Age_Group", "Mean_Type"], observed=False)["Minutes"]
-        .mean()
+        .median()
         .reset_index()
     )
 
-    # Sort studies for cleaner y-axis ordering
-    df_beh["StudyID_display"] = df_beh["StudyID_display"].astype(str)
-    df_beh = df_beh.sort_values("Minutes")
-
     # --------------------------------------------------
-    # Build scatter — facet by AGE GROUP (rows)
+    # Build scatter — facet by AGE GROUP
     # --------------------------------------------------
     fig2 = px.scatter(
         df_beh,
@@ -249,11 +252,11 @@ else:
         facet_row="Age_Group",
         category_orders={"Age_Group": ["Children", "Adolescents", "Adult"]},
         height=900,
-        title=f"Study Estimates for {selected_behavior}"
+        title=f"Study-Level Estimates for {selected_behavior}"
     )
 
     # --------------------------------------------------
-    # Add MEAN LINES per facet (corrected)
+    # Add MEDIAN reference lines
     # --------------------------------------------------
     age_order = ["Children", "Adolescents", "Adult"]
 
@@ -263,26 +266,22 @@ else:
     }
 
     for age_group in age_order:
-        sub_mean = mean_table[mean_table["Age_Group"] == age_group]
-
-        if sub_mean.empty:
+        sub = summary_table[summary_table["Age_Group"] == age_group]
+        if sub.empty:
             continue
 
         row_num = age_order.index(age_group) + 1
 
-        for _, r in sub_mean.iterrows():
+        for _, r in sub.iterrows():
             fig2.add_vline(
                 x=r["Minutes"],
-                line=dict(
-                    width=2,
-                    **line_styles.get(r["Mean_Type"], {})
-                ),
+                line=dict(width=2, **line_styles[r["Mean_Type"]]),
                 row=row_num,
                 col=1
             )
 
     # --------------------------------------------------
-    # Style improvements
+    # Styling
     # --------------------------------------------------
     fig2.update_layout(
         legend_title="Mean Type",
@@ -290,7 +289,6 @@ else:
         height=1100
     )
 
-    # Dark facet labels
     fig2.for_each_annotation(
         lambda a: a.update(
             font=dict(color="white", size=14),
