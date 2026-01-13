@@ -803,10 +803,54 @@ def mc_forest_plot(summary, row_label, behavior, mean_type):
         )
         fig.add_annotation(
             text="No data",
-            x=0.5, y=0.5, xref="paper", yref="paper",
+            x=0.5, y=0.5,
+            xref="paper", yref="paper",
             showarrow=False
         )
         return fig
+
+    # IQR bars
+    for _, r in summary.iterrows():
+        fig.add_shape(
+            type="line",
+            x0=r["q25"], x1=r["q75"],
+            y0=r["Category"], y1=r["Category"],
+            xref="x", yref="y",
+            line=dict(width=6),
+            opacity=0.3
+        )
+
+    # Median dots
+    fig.add_trace(
+        go.Scatter(
+            x=summary["median"],
+            y=summary["Category"],
+            mode="markers",
+            marker=dict(size=10),
+            customdata=np.stack(
+                [summary["q25"], summary["q75"], summary["n"]], axis=1
+            ),
+            hovertemplate=(
+                f"{row_label}: " + "%{y}<br>"
+                f"{behavior} ({mean_type})<br>"
+                "Median: %{x:.1f} min<br>"
+                "IQR: [%{customdata[0]:.1f}, %{customdata[1]:.1f}]<br>"
+                "n studies: %{customdata[2]}<extra></extra>"
+            ),
+            showlegend=False
+        )
+    )
+
+    fig.update_layout(
+        title=behavior,
+        xaxis_title="Minutes/day",
+        yaxis_title="",
+        margin=dict(l=90, r=10, t=50, b=40),
+        height=max(420, 26 * len(summary) + 160),
+    )
+
+    return fig
+
 
     # IQR bars (q25 -> q75)
     for _, r in summary.iterrows():
