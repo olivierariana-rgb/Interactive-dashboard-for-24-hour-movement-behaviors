@@ -694,225 +694,202 @@ hetero_df = pd.DataFrame(heterogeneity)
 st.dataframe(hetero_df, use_container_width=True)
 
 # ============================================================
-# METHOD COMPARISON — Forest-plot style grid (like your professor)
-# Rows = method choice, Columns = behaviors
-# Each cell: median (dot) + IQR (bar) across studies in df_f
+# METHOD COMPARISON — Forest-plot style (1 line per behavior)
 # ============================================================
 
 import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
+import streamlit as st
 
-st.markdown("---")
-st.header("Method Comparison (Forest-Plot Style)")
-st.caption(
-    "Each row is a methodological choice (e.g., device brand). "
-    "Each column is a behavior (Sleep, SB, LPA, MVPA). "
-    "Within each cell, the dot is the median across studies and the bar is the IQR (25th–75th percentile)."
-)
+# ---------------------------
+# Helpers
+# ---------------------------
 
-# ------------------------------------------------------------
-# Minimal control: mean type
-# (Does NOT change your global filters; it only changes what is summarized)
-# ------------------------------------------------------------
-mc_mean_type = st.radio(
-    "Mean type used for this comparison:",
-    ["Geometric", "Arithmetic"],
-    horizontal=True,
-    index=0
-)
-
-# Behaviors to display as columns
-mc_behaviors = ["Sleep", "SB", "LPA", "MVPA"]
-
-# Method rows to display (edit this list anytime)
-# IMPORTANT: names must match columns in your meta file
-mc_rows = [
-    ("Device Brand", "Device_Brand"),
-    ("Sampling Rate (Hz)", "Sampling_Rate_Hz"),
-    ("Device Type", "Device_Type"),
-    ("Sleep Measurement Type", "Sleep_Measurement_Type"),
-    ("Cutpoint Type", "Cutpoint_Type"),
-    ("Primary Analysis Type", "Primary_Analysis_Type"),
-]
-
-# ------------------------------------------------------------
-# Helper: summarize per method category for one behavior
-# ------------------------------------------------------------
-def mc_summarize(df_f, meta, behavior, mean_type, method_col):
-    # Filter to behavior + mean type
-    d = df_f[(df_f["Behavior"] == behavior) & (df_f["Mean_Type"] == mean_type)].copy()
-
-    # Clean numeric
-    d["Minutes"] = pd.to_numeric(
-        d["Minutes"].astype(str).str.replace(",", "", regex=False),
+def _clean_minutes(x):
+    return pd.to_numeric(
+        pd.Series(x).astype(str).str.replace(",", "", regex=False),
         errors="coerce"
     )
-    d = d.dropna(subset=["StudyID", "Minutes"])
 
+def summarize_choice_variation(df_f, meta, behavior, mean_type, method_col):
+    """
+    One summary line for: (behavior, mean_type) showing variability ACROSS method choices.
+    Steps:
+      1) One value per study (median if duplicates)
+      2) Attach method choice from meta
+      3) For each choice: median across studies
+      4) Summarize distribution of choice-medians: min/q25/median/q75/max
+    """
+    if method_col not in meta.columns:
+        return None
+
+    d = df_f[(df_f["Behavior"] == behavior) & (df_f["Mean_Type"] == mean_type)].copy()
     if d.empty:
-        return pd.DataFrame()
+        return None
 
-    # One value per StudyID (robust). You can change median -> mean if you want.
+    d["Minutes"] = _clean_minutes(d["Minutes"])
+    d = d.dropna(subset=["StudyID", "Minutes"])
+    if d.empty:
+        return None
+
+    # 1) One value per StudyID
     per_study = (
         d.groupby("StudyID", as_index=False)["Minutes"]
-        .median()
-        .rename(columns={"Minutes": "StudyValue"})
+         .median()
+         .rename(columns={"Minutes": "StudyValue"})
     )
 
-    # Join method column from meta
-    if method_col not in meta.columns:
-        return pd.DataFrame()
-
+    # 2) Attach method choice from metadata
     m = meta[["StudyID", method_col]].copy()
     m[method_col] = m[method_col].fillna("NR").astype(str)
 
-    data = per_study.merge(m, on="StudyID", how="left")
-    data[method_col] = data[method_col].fillna("NR").astype(str)
+    merged = per_study.merge(m, on="StudyID", how="left")
+    merged[method_col] = merged[method_col].fillna("NR").astype(str)
 
-    # Summary per method category
-    summary = (
-        data.groupby(method_col)["StudyValue"]
-        .agg(
-            n="count",
-            q25=lambda x: np.nanpercentile(x, 25),
-            median="median",
-            q75=lambda x: np.nanpercentile(x, 75),
-        )
-        .reset_index()
-        .rename(columns={method_col: "Category"})
+    # 3) For each choice: median across studies
+    by_choice = (
+        merged.groupby(method_col)["StudyValue"]
+              .agg(choice_median="median", n_studies="count")
+              .reset_index()
+              .rename(columns={method_col: "Choice"})
+              .sort_values("choice_median", ascending=True)
+              .reset_index(drop=True)
     )
 
-    # Sort categories by median (nice for reading)
-    summary = summary.sort_values("median", ascending=True).reset_index(drop=True)
-    return summary
+    vals = by_choice["choice_median"].dropna().values
+    if len(vals) == 0:
+        return None
 
+    return {
+        "n_choices": int(by_choice["Choice"].nunique()),
+        "min": float(np.min(vals)),
+        "q25": float(np.percentile(vals, 25)),
+        "median": float(np.median(vals)),
+        "q75": float(np.percentile(vals, 75)),
+        "max": float(np.max(vals)),
+        "by_choice": by_choice
+    }
 
-# ------------------------------------------------------------
-# Helper: draw forest plot for one behavior
-# ------------------------------------------------------------
-def mc_forest_plot(summary, row_label, behavior, mean_type):
+def plot_choice_variation_cell(summary, title, x_label="Minutes/day"):
+    """
+    Draws:
+      - thin line: min -> max
+      - thick line: q25 -> q75
+      - dot: median
+    """
     fig = go.Figure()
 
-    if summary.empty:
+    if summary is None:
         fig.update_layout(
-            title=behavior,
-            height=420,
-            margin=dict(l=60, r=10, t=50, b=40),
-            xaxis_title="Minutes/day",
-            yaxis_title=""
+            title=title,
+            height=250,
+            margin=dict(l=10, r=10, t=45, b=35),
+            xaxis_title=x_label,
+            yaxis_visible=False
         )
         fig.add_annotation(
             text="No data",
-            x=0.5, y=0.5,
-            xref="paper", yref="paper",
+            x=0.5, y=0.5, xref="paper", yref="paper",
             showarrow=False
         )
         return fig
 
-    # IQR bars
-    for _, r in summary.iterrows():
-        fig.add_shape(
-            type="line",
-            x0=r["q25"], x1=r["q75"],
-            y0=r["Category"], y1=r["Category"],
-            xref="x", yref="y",
-            line=dict(width=6),
-            opacity=0.3
-        )
+    # thin range line
+    fig.add_shape(
+        type="line",
+        x0=summary["min"], x1=summary["max"],
+        y0=0, y1=0,
+        xref="x", yref="y",
+        line=dict(width=3),
+        opacity=0.25
+    )
 
-    # Median dots
+    # thick IQR line
+    fig.add_shape(
+        type="line",
+        x0=summary["q25"], x1=summary["q75"],
+        y0=0, y1=0,
+        xref="x", yref="y",
+        line=dict(width=8),
+        opacity=0.35
+    )
+
+    # median dot
     fig.add_trace(
         go.Scatter(
-            x=summary["median"],
-            y=summary["Category"],
+            x=[summary["median"]],
+            y=[0],
             mode="markers",
-            marker=dict(size=10),
-            customdata=np.stack(
-                [summary["q25"], summary["q75"], summary["n"]], axis=1
-            ),
+            marker=dict(size=12),
             hovertemplate=(
-                f"{row_label}: " + "%{y}<br>"
-                f"{behavior} ({mean_type})<br>"
-                "Median: %{x:.1f} min<br>"
-                "IQR: [%{customdata[0]:.1f}, %{customdata[1]:.1f}]<br>"
-                "n studies: %{customdata[2]}<extra></extra>"
+                f"Median across choices: {summary['median']:.1f}<br>"
+                f"IQR: [{summary['q25']:.1f}, {summary['q75']:.1f}]<br>"
+                f"Range: [{summary['min']:.1f}, {summary['max']:.1f}]<br>"
+                f"n choices: {summary['n_choices']}<extra></extra>"
             ),
             showlegend=False
         )
     )
 
     fig.update_layout(
-        title=behavior,
-        xaxis_title="Minutes/day",
-        yaxis_title="",
-        margin=dict(l=90, r=10, t=50, b=40),
-        height=max(420, 26 * len(summary) + 160),
+        title=title,
+        height=250,
+        margin=dict(l=10, r=10, t=45, b=35),
+        xaxis_title=x_label,
+        yaxis_visible=False,
+        yaxis_range=[-1, 1]
     )
 
     return fig
 
+# ---------------------------
+# Figure section (NO UI)
+# ---------------------------
 
-    # IQR bars (q25 -> q75)
-    for _, r in summary.iterrows():
-        fig.add_shape(
-            type="line",
-            x0=r["q25"], x1=r["q75"],
-            y0=r["Category"], y1=r["Category"],
-            xref="x", yref="y",
-            line=dict(width=6),
-            opacity=0.30
-        )
+st.markdown("## Method Comparison (variation across methodological choices)")
+st.caption(
+    "Each panel shows one behavior. The dot is the median across methodological choices, "
+    "the thick segment is the IQR, and the thin segment is the full range."
+)
 
-    # Median dots
-    fig.add_trace(
-        go.Scatter(
-            x=summary["median"],
-            y=summary["Category"],
-            mode="markers",
-            marker=dict(size=10),
-            customdata=np.stack([summary["q25"], summary["q75"], summary["n"]], axis=1),
-            hovertemplate=(
-                f"{row_label}: %{y}<br>"
-                f"{behavior} ({mean_type})<br>"
-                "Median: %{x:.1f} min<br>"
-                "IQR: [%{customdata[0]:.1f}, %{customdata[1]:.1f}]<br>"
-                "n studies: %{customdata[2]}<extra></extra>"
-            ),
-            showlegend=False,
-            name="Median"
-        )
+# Choose which methodological dimension to show here:
+# Replace with any meta column you want (e.g., 'Device_Brand', 'Sampling_Rate_Hz', 'Device_Type')
+method_col = "Cutpoint_Type"
+
+# Choose which mean type to use for the comparison:
+mc_mean_type = "Geometric"   # or "Arithmetic"
+
+st.markdown(f"### {method_col} — {mc_mean_type} estimates")
+
+behaviors = ["Sleep", "SB", "LPA", "MVPA"]
+cols = st.columns(4)
+
+details_store = {}  # keep for expander
+
+for i, b in enumerate(behaviors):
+    summ = summarize_choice_variation(df_f, meta, b, mc_mean_type, method_col)
+    details_store[b] = summ
+
+    fig = plot_choice_variation_cell(
+        summ,
+        title=b,
+        x_label="Minutes/day"
     )
+    cols[i].plotly_chart(fig, width="stretch")
 
-    fig.update_layout(
-        title=behavior,
-        xaxis_title="Minutes/day",
-        yaxis_title="",
-        margin=dict(l=90, r=10, t=50, b=40),
-        height=max(420, 26 * len(summary) + 160),
+with st.expander("Show underlying choice medians (details)"):
+    st.write(
+        "This table shows the median estimate *within each methodological choice* "
+        "(e.g., each cutpoint type), which is what the range/IQR/median are computed from."
     )
-
-    return fig
-
-
-# ------------------------------------------------------------
-# Build grid: each method row gets a 4-panel line
-# ------------------------------------------------------------
-for row_label, method_col in mc_rows:
-
-    # Skip row if the column does not exist in meta
-    if method_col not in meta.columns:
-        st.info(f"Skipping **{row_label}** (column `{method_col}` not found in metadata).")
-        continue
-
-    st.subheader(row_label)
-
-    # 4 behavior panels
-    cols = st.columns(4)
-
-    for i, b in enumerate(mc_behaviors):
-        summary_b = mc_summarize(df_f, meta, b, mc_mean_type, method_col)
-        fig_b = mc_forest_plot(summary_b, row_label, b, mc_mean_type)
-        cols[i].plotly_chart(fig_b, width="stretch")
+    for b in behaviors:
+        s = details_store.get(b)
+        if s is None:
+            st.write(f"**{b}**: No data")
+        else:
+            st.write(f"**{b}** (n choices = {s['n_choices']})")
+            st.dataframe(s["by_choice"], width="stretch")
 
 
 
