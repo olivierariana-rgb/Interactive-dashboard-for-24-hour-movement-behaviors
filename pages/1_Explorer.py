@@ -1,4 +1,2 @@
 import streamlit as st
-
-st.title("Test page")
-st.write("If you see this, pages are working.")
+st.set_page_config(page_title="Explorer", page_icon="🔎", layout="wide")
