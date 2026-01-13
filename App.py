@@ -1,28 +1,28 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="24-Hour Movement Composition Explorer",
+    page_title="24-Hour Movement Explorer",
     page_icon="📊",
-    layout="wide",
+    layout="wide"
 )
 
-st.write("# 24-Hour Movement Composition Explorer 📊")
-
-st.sidebar.success("Select a page above.")
+st.title("24-Hour Movement Composition Explorer")
 
 st.markdown(
     """
-This Streamlit app supports a scoping review on 24-hour movement behaviours.
+    Welcome 👋  
 
-Use the sidebar to navigate:
-- **Explorer**: interactive filtering + plots (arithmetic vs geometric, scatter, tables)
-- **Simplex**: ternary composition view
-- **Results Engine**: methodology summaries across studies
-- **Study Tables**: export-ready tables for the manuscript
+    This interactive application accompanies a scoping review on  
+    **24-hour movement behaviour measurement and methodological choices**.
 
-**👈 Select a page from the sidebar** to get started.
-"""
+    👉 Use the **sidebar on the left** to navigate between sections:
+    - Explorer
+    - Study Tables
+    - Simplex
+    - Results Engine
+    """
 )
 
+st.sidebar.success("Select a page above ⬆️")
 
 
