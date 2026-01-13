@@ -694,165 +694,199 @@ hetero_df = pd.DataFrame(heterogeneity)
 st.dataframe(hetero_df, use_container_width=True)
 
 # ============================================================
-# PAPER-STYLE METHOD COMPARISON — Forest-plot look (Median + IQR)
+# METHOD COMPARISON — Forest-plot style (Median + IQR)
 # ============================================================
 
+import numpy as np
+import plotly.graph_objects as go
+
 st.markdown("---")
-st.header("Method Comparison (Paper-Style)")
+st.header("Method Comparison — Forest Plot Style")
 st.caption(
-    "A static, publication-style summary of behavior minutes across methodological choices. "
-    "Dots show the median; thick bars show the IQR (25th–75th)."
+    "Compares study-level estimates across methodological choices (median and IQR). "
+    "This section uses the currently filtered studies (df_f)."
 )
 
-# --- Build analysis table from wide_all + meta ---
-wide_plot = wide_all.copy()
-wide_plot = wide_plot.merge(meta, on="StudyID", how="left")
+# ----------------------------
+# Controls (keep minimal)
+# ----------------------------
+beh_options = sorted(df_f["Behavior"].dropna().unique()) if "Behavior" in df_f.columns else []
+if len(beh_options) == 0:
+    st.warning("No behavior information available in df_f.")
+    st.stop()
 
-# Choose which central tendency you want to plot (Geometric minutes are usually nicer)
-# Requires these columns to exist from your pivot: G_Sleep, G_SB, G_LPA, G_MVPA
-beh_cols = {
-    "Sleep": "G_Sleep",
-    "SB": "G_SB",
-    "LPA": "G_LPA",
-    "MVPA": "G_MVPA"
+mc_behavior = st.selectbox("Behavior", beh_options, index=0)
+
+mean_type_options = []
+if "Mean_Type" in df_f.columns:
+    mean_type_options = sorted(df_f["Mean_Type"].dropna().unique())
+if len(mean_type_options) == 0:
+    mean_type_options = ["Geometric", "Arithmetic"]
+
+mc_mean_type = st.radio("Mean type", mean_type_options, horizontal=True)
+
+# Pick which methodological dimension to compare
+method_vars = {
+    "Device Brand": "Device_Brand",
+    "Device Model": "Device_Model",  # only works if you have this column in meta
+    "Device Type": "Device_Type",
+    "Sampling Rate (Hz)": "Sampling_Rate_Hz",
+    "Sleep Measurement Type": "Sleep_Measurement_Type",
+    "Cutpoint Type": "Cutpoint_Type",
+    "Primary Analysis Type": "Primary_Analysis_Type",
 }
 
-# If your wide_all doesn't have G_LPA, handle safely
-beh_cols = {k: v for k, v in beh_cols.items() if v in wide_plot.columns}
+mc_label = st.selectbox("Compare by", list(method_vars.keys()), index=0)
+mc_dim = method_vars[mc_label]
 
-if len(beh_cols) < 3:
-    st.warning("Not enough geometric behavior columns found (expected G_Sleep/G_SB/G_LPA/G_MVPA).")
+# ----------------------------
+# Build a study-level table:
+# one value per StudyID (for the selected behavior + mean type)
+# ----------------------------
+
+required_df_cols = {"StudyID", "Behavior", "Mean_Type", "Minutes"}
+if not required_df_cols.issubset(set(df_f.columns)):
+    st.error(f"df_f is missing required columns: {sorted(required_df_cols - set(df_f.columns))}")
     st.stop()
 
-# --- Pick comparison variable ---
-# If you want ZERO controls, hardcode this to e.g. "Device_Brand"
-compare_var = "Device_Brand"
+df_plot = df_f[
+    (df_f["Behavior"] == mc_behavior) &
+    (df_f["Mean_Type"] == mc_mean_type)
+].copy()
 
-# Keep only rows where compare_var is present + behavior values present
-needed_cols = [compare_var] + list(beh_cols.values())
-plot_df = wide_plot.dropna(subset=needed_cols).copy()
+# Clean Minutes
+df_plot["Minutes"] = pd.to_numeric(
+    df_plot["Minutes"].astype(str).str.replace(",", "", regex=False),
+    errors="coerce"
+)
+df_plot = df_plot.dropna(subset=["StudyID", "Minutes"])
 
-# Optional: keep only Full subgroup rows if you want cleaner "one estimate per study"
-# plot_df = plot_df[plot_df["Subgroup"].fillna("Full").isin(["Full"])].copy()
+# Collapse to ONE value per study (if you have multiple rows per study because of subgroups etc.)
+# Using median within-study as a safe default
+study_vals = (
+    df_plot.groupby("StudyID", as_index=False)["Minutes"]
+    .median()
+    .rename(columns={"Minutes": "StudyValue"})
+)
 
-# Make long format: one row per (study x behavior)
-long_rows = []
-for beh, col in beh_cols.items():
-    tmp = plot_df[["StudyID", compare_var, col]].copy()
-    tmp = tmp.rename(columns={col: "Minutes"})
-    tmp["Behavior"] = beh
-    long_rows.append(tmp)
-
-long_df = pd.concat(long_rows, ignore_index=True)
-long_df["Minutes"] = pd.to_numeric(long_df["Minutes"], errors="coerce")
-long_df = long_df.dropna(subset=["Minutes"])
-
-if long_df.empty:
-    st.warning("No data available for this method comparison plot.")
+# Join metadata so we can compare categories
+if "StudyID" not in meta.columns:
+    st.error("meta is missing StudyID column.")
     st.stop()
 
-# --- Summarize: median + IQR per (compare_var x behavior) ---
+meta_cols_needed = ["StudyID", mc_dim]
+meta_join = meta[meta_cols_needed].copy() if mc_dim in meta.columns else None
+
+if meta_join is None:
+    st.warning(f"'{mc_dim}' not found in meta. Add it to your metadata to use this comparison.")
+    st.stop()
+
+data = study_vals.merge(meta_join, on="StudyID", how="left")
+data[mc_dim] = data[mc_dim].fillna("NR").astype(str)
+
+if data.empty:
+    st.warning("No data available after applying behavior + mean type selection.")
+    st.stop()
+
+# ----------------------------
+# Summarize per category (median + IQR + n)
+# ----------------------------
 summary = (
-    long_df
-    .groupby([compare_var, "Behavior"])["Minutes"]
+    data.groupby(mc_dim)["StudyValue"]
     .agg(
         n="count",
+        q25=lambda x: np.nanpercentile(x, 25),
         median="median",
-        q25=lambda x: x.quantile(0.25),
-        q75=lambda x: x.quantile(0.75),
+        q75=lambda x: np.nanpercentile(x, 75),
     )
     .reset_index()
 )
 
-# Keep only levels with at least a few studies to avoid noisy singletons (tweak threshold)
-min_n = 3
+# Optional: drop categories with very small n
+min_n = 1
 summary = summary[summary["n"] >= min_n].copy()
 
-if summary.empty:
-    st.warning(f"Not enough studies per category to plot (need ≥ {min_n} per group).")
-    st.stop()
+# Sort categories by median so the plot reads nicely
+summary = summary.sort_values("median", ascending=True)
 
-# Order categories by overall median (across behaviors) for nicer layout
-order = (
-    summary.groupby(compare_var)["median"]
-    .median()
-    .sort_values(ascending=False)
-    .index
-    .tolist()
+# ----------------------------
+# Forest plot
+# ----------------------------
+fig = go.Figure()
+
+# IQR line
+fig.add_trace(
+    go.Scatter(
+        x=summary["q75"],
+        y=summary[mc_dim],
+        mode="lines",
+        line=dict(width=8),
+        showlegend=False,
+        hoverinfo="skip",
+        opacity=0.25,
+    )
 )
-summary[compare_var] = pd.Categorical(summary[compare_var], categories=order, ordered=True)
-
-# --- Plot: one facet per behavior, y = categories, x = minutes ---
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-
-behaviors = list(beh_cols.keys())
-fig = make_subplots(
-    rows=1,
-    cols=len(behaviors),
-    shared_yaxes=True,
-    subplot_titles=behaviors,
-    horizontal_spacing=0.06
+fig.add_trace(
+    go.Scatter(
+        x=summary["q25"],
+        y=summary[mc_dim],
+        mode="lines",
+        line=dict(width=8),
+        showlegend=False,
+        hoverinfo="skip",
+        opacity=0.25,
+    )
 )
 
-for i, beh in enumerate(behaviors, start=1):
-    sub = summary[summary["Behavior"] == beh].sort_values(compare_var)
+# Better way: draw IQR as horizontal segments using shapes
+# (Plotly doesn't have native "segment per row" lines in one trace cleanly)
+# We'll do shapes for IQR and a dot for median.
 
-    # IQR line (thick bar)
-    fig.add_trace(
-        go.Scatter(
-            x=sub["q75"],
-            y=sub[compare_var],
-            mode="lines",
-            line=dict(width=8),
-            showlegend=False,
-            hovertemplate=(
-                f"{compare_var}: %{y}<br>"
-                "Median: %{customdata[0]:.1f} min<br>"
-                "IQR: %{customdata[1]:.1f}–%{customdata[2]:.1f} min<br>"
-                "n: %{customdata[3]}<extra></extra>"
-            ),
-            customdata=list(zip(sub["median"], sub["q25"], sub["q75"], sub["n"]))
-        ),
-        row=1,
-        col=i
+fig = go.Figure()
+
+for _, r in summary.iterrows():
+    cat = r[mc_dim]
+    fig.add_shape(
+        type="line",
+        x0=r["q25"], x1=r["q75"],
+        y0=cat, y1=cat,
+        xref="x", yref="y",
+        line=dict(width=6),
+        opacity=0.30
     )
 
-    # Median dot
-    fig.add_trace(
-        go.Scatter(
-            x=sub["median"],
-            y=sub[compare_var],
-            mode="markers",
-            marker=dict(size=10, symbol="circle", line=dict(width=1)),
-            showlegend=False,
-            hovertemplate=(
-                f"{compare_var}: %{y}<br>"
-                "Median: %{x:.1f} min<br>"
-                "IQR: %{customdata[0]:.1f}–%{customdata[1]:.1f} min<br>"
-                "n: %{customdata[2]}<extra></extra>"
-            ),
-            customdata=list(zip(sub["q25"], sub["q75"], sub["n"]))
+# Median dots
+fig.add_trace(
+    go.Scatter(
+        x=summary["median"],
+        y=summary[mc_dim],
+        mode="markers",
+        marker=dict(size=10),
+        name="Median",
+        customdata=np.stack([summary["q25"], summary["q75"], summary["n"]], axis=1),
+        hovertemplate=(
+            f"{mc_label}: " + "%{y}<br>"
+            "Median: %{x:.1f} min<br>"
+            "IQR: [%{customdata[0]:.1f}, %{customdata[1]:.1f}]<br>"
+            "n studies: %{customdata[2]}<extra></extra>"
         ),
-        row=1,
-        col=i
     )
-
-# Reference line (overall median across all studies, optional)
-overall_med = long_df["Minutes"].median()
-for i in range(1, len(behaviors) + 1):
-    fig.add_vline(x=overall_med, line_dash="dot", row=1, col=i)
+)
 
 fig.update_layout(
-    height=700,
-    margin=dict(l=40, r=40, t=90, b=40),
-    title=f"Behavior Minutes by {compare_var} (Median + IQR, n ≥ {min_n})",
+    title=f"{mc_behavior} ({mc_mean_type}) by {mc_label}",
+    xaxis_title="Minutes per day",
+    yaxis_title=mc_label,
+    margin=dict(l=80, r=30, t=70, b=40),
+    height=max(420, 28 * len(summary) + 180),
 )
 
-fig.update_xaxes(title_text="Minutes/day")
-fig.update_yaxes(title_text=compare_var)
+st.plotly_chart(fig, width="stretch")
 
-st.plotly_chart(fig, use_container_width=True)
+# Show the numeric table too (useful for thesis writing)
+with st.expander("Show summary table"):
+    st.dataframe(summary, width="stretch")
+
 
 
 
