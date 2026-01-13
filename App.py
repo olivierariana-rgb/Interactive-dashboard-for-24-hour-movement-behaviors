@@ -694,198 +694,182 @@ hetero_df = pd.DataFrame(heterogeneity)
 st.dataframe(hetero_df, use_container_width=True)
 
 # ============================================================
-# METHOD COMPARISON — Forest-plot style (Median + IQR)
+# METHOD COMPARISON — Forest-plot style grid (like your professor)
+# Rows = method choice, Columns = behaviors
+# Each cell: median (dot) + IQR (bar) across studies in df_f
 # ============================================================
 
 import numpy as np
 import plotly.graph_objects as go
 
 st.markdown("---")
-st.header("Method Comparison — Forest Plot Style")
+st.header("Method Comparison (Forest-Plot Style)")
 st.caption(
-    "Compares study-level estimates across methodological choices (median and IQR). "
-    "This section uses the currently filtered studies (df_f)."
+    "Each row is a methodological choice (e.g., device brand). "
+    "Each column is a behavior (Sleep, SB, LPA, MVPA). "
+    "Within each cell, the dot is the median across studies and the bar is the IQR (25th–75th percentile)."
 )
 
-# ----------------------------
-# Controls (keep minimal)
-# ----------------------------
-beh_options = sorted(df_f["Behavior"].dropna().unique()) if "Behavior" in df_f.columns else []
-if len(beh_options) == 0:
-    st.warning("No behavior information available in df_f.")
-    st.stop()
-
-mc_behavior = st.selectbox("Behavior", beh_options, index=0)
-
-mean_type_options = []
-if "Mean_Type" in df_f.columns:
-    mean_type_options = sorted(df_f["Mean_Type"].dropna().unique())
-if len(mean_type_options) == 0:
-    mean_type_options = ["Geometric", "Arithmetic"]
-
-mc_mean_type = st.radio("Mean type", mean_type_options, horizontal=True)
-
-# Pick which methodological dimension to compare
-method_vars = {
-    "Device Brand": "Device_Brand",
-    "Device Model": "Device_Model",  # only works if you have this column in meta
-    "Device Type": "Device_Type",
-    "Sampling Rate (Hz)": "Sampling_Rate_Hz",
-    "Sleep Measurement Type": "Sleep_Measurement_Type",
-    "Cutpoint Type": "Cutpoint_Type",
-    "Primary Analysis Type": "Primary_Analysis_Type",
-}
-
-mc_label = st.selectbox("Compare by", list(method_vars.keys()), index=0)
-mc_dim = method_vars[mc_label]
-
-# ----------------------------
-# Build a study-level table:
-# one value per StudyID (for the selected behavior + mean type)
-# ----------------------------
-
-required_df_cols = {"StudyID", "Behavior", "Mean_Type", "Minutes"}
-if not required_df_cols.issubset(set(df_f.columns)):
-    st.error(f"df_f is missing required columns: {sorted(required_df_cols - set(df_f.columns))}")
-    st.stop()
-
-df_plot = df_f[
-    (df_f["Behavior"] == mc_behavior) &
-    (df_f["Mean_Type"] == mc_mean_type)
-].copy()
-
-# Clean Minutes
-df_plot["Minutes"] = pd.to_numeric(
-    df_plot["Minutes"].astype(str).str.replace(",", "", regex=False),
-    errors="coerce"
-)
-df_plot = df_plot.dropna(subset=["StudyID", "Minutes"])
-
-# Collapse to ONE value per study (if you have multiple rows per study because of subgroups etc.)
-# Using median within-study as a safe default
-study_vals = (
-    df_plot.groupby("StudyID", as_index=False)["Minutes"]
-    .median()
-    .rename(columns={"Minutes": "StudyValue"})
+# ------------------------------------------------------------
+# Minimal control: mean type
+# (Does NOT change your global filters; it only changes what is summarized)
+# ------------------------------------------------------------
+mc_mean_type = st.radio(
+    "Mean type used for this comparison:",
+    ["Geometric", "Arithmetic"],
+    horizontal=True,
+    index=0
 )
 
-# Join metadata so we can compare categories
-if "StudyID" not in meta.columns:
-    st.error("meta is missing StudyID column.")
-    st.stop()
+# Behaviors to display as columns
+mc_behaviors = ["Sleep", "SB", "LPA", "MVPA"]
 
-meta_cols_needed = ["StudyID", mc_dim]
-meta_join = meta[meta_cols_needed].copy() if mc_dim in meta.columns else None
+# Method rows to display (edit this list anytime)
+# IMPORTANT: names must match columns in your meta file
+mc_rows = [
+    ("Device Brand", "Device_Brand"),
+    ("Sampling Rate (Hz)", "Sampling_Rate_Hz"),
+    ("Device Type", "Device_Type"),
+    ("Sleep Measurement Type", "Sleep_Measurement_Type"),
+    ("Cutpoint Type", "Cutpoint_Type"),
+    ("Primary Analysis Type", "Primary_Analysis_Type"),
+]
 
-if meta_join is None:
-    st.warning(f"'{mc_dim}' not found in meta. Add it to your metadata to use this comparison.")
-    st.stop()
+# ------------------------------------------------------------
+# Helper: summarize per method category for one behavior
+# ------------------------------------------------------------
+def mc_summarize(df_f, meta, behavior, mean_type, method_col):
+    # Filter to behavior + mean type
+    d = df_f[(df_f["Behavior"] == behavior) & (df_f["Mean_Type"] == mean_type)].copy()
 
-data = study_vals.merge(meta_join, on="StudyID", how="left")
-data[mc_dim] = data[mc_dim].fillna("NR").astype(str)
-
-if data.empty:
-    st.warning("No data available after applying behavior + mean type selection.")
-    st.stop()
-
-# ----------------------------
-# Summarize per category (median + IQR + n)
-# ----------------------------
-summary = (
-    data.groupby(mc_dim)["StudyValue"]
-    .agg(
-        n="count",
-        q25=lambda x: np.nanpercentile(x, 25),
-        median="median",
-        q75=lambda x: np.nanpercentile(x, 75),
+    # Clean numeric
+    d["Minutes"] = pd.to_numeric(
+        d["Minutes"].astype(str).str.replace(",", "", regex=False),
+        errors="coerce"
     )
-    .reset_index()
-)
+    d = d.dropna(subset=["StudyID", "Minutes"])
 
-# Optional: drop categories with very small n
-min_n = 1
-summary = summary[summary["n"] >= min_n].copy()
+    if d.empty:
+        return pd.DataFrame()
 
-# Sort categories by median so the plot reads nicely
-summary = summary.sort_values("median", ascending=True)
-
-# ----------------------------
-# Forest plot
-# ----------------------------
-fig = go.Figure()
-
-# IQR line
-fig.add_trace(
-    go.Scatter(
-        x=summary["q75"],
-        y=summary[mc_dim],
-        mode="lines",
-        line=dict(width=8),
-        showlegend=False,
-        hoverinfo="skip",
-        opacity=0.25,
-    )
-)
-fig.add_trace(
-    go.Scatter(
-        x=summary["q25"],
-        y=summary[mc_dim],
-        mode="lines",
-        line=dict(width=8),
-        showlegend=False,
-        hoverinfo="skip",
-        opacity=0.25,
-    )
-)
-
-# Better way: draw IQR as horizontal segments using shapes
-# (Plotly doesn't have native "segment per row" lines in one trace cleanly)
-# We'll do shapes for IQR and a dot for median.
-
-fig = go.Figure()
-
-for _, r in summary.iterrows():
-    cat = r[mc_dim]
-    fig.add_shape(
-        type="line",
-        x0=r["q25"], x1=r["q75"],
-        y0=cat, y1=cat,
-        xref="x", yref="y",
-        line=dict(width=6),
-        opacity=0.30
+    # One value per StudyID (robust). You can change median -> mean if you want.
+    per_study = (
+        d.groupby("StudyID", as_index=False)["Minutes"]
+        .median()
+        .rename(columns={"Minutes": "StudyValue"})
     )
 
-# Median dots
-fig.add_trace(
-    go.Scatter(
-        x=summary["median"],
-        y=summary[mc_dim],
-        mode="markers",
-        marker=dict(size=10),
-        name="Median",
-        customdata=np.stack([summary["q25"], summary["q75"], summary["n"]], axis=1),
-        hovertemplate=(
-            f"{mc_label}: " + "%{y}<br>"
-            "Median: %{x:.1f} min<br>"
-            "IQR: [%{customdata[0]:.1f}, %{customdata[1]:.1f}]<br>"
-            "n studies: %{customdata[2]}<extra></extra>"
-        ),
+    # Join method column from meta
+    if method_col not in meta.columns:
+        return pd.DataFrame()
+
+    m = meta[["StudyID", method_col]].copy()
+    m[method_col] = m[method_col].fillna("NR").astype(str)
+
+    data = per_study.merge(m, on="StudyID", how="left")
+    data[method_col] = data[method_col].fillna("NR").astype(str)
+
+    # Summary per method category
+    summary = (
+        data.groupby(method_col)["StudyValue"]
+        .agg(
+            n="count",
+            q25=lambda x: np.nanpercentile(x, 25),
+            median="median",
+            q75=lambda x: np.nanpercentile(x, 75),
+        )
+        .reset_index()
+        .rename(columns={method_col: "Category"})
     )
-)
 
-fig.update_layout(
-    title=f"{mc_behavior} ({mc_mean_type}) by {mc_label}",
-    xaxis_title="Minutes per day",
-    yaxis_title=mc_label,
-    margin=dict(l=80, r=30, t=70, b=40),
-    height=max(420, 28 * len(summary) + 180),
-)
+    # Sort categories by median (nice for reading)
+    summary = summary.sort_values("median", ascending=True).reset_index(drop=True)
+    return summary
 
-st.plotly_chart(fig, width="stretch")
 
-# Show the numeric table too (useful for thesis writing)
-with st.expander("Show summary table"):
-    st.dataframe(summary, width="stretch")
+# ------------------------------------------------------------
+# Helper: draw forest plot for one behavior
+# ------------------------------------------------------------
+def mc_forest_plot(summary, row_label, behavior, mean_type):
+    fig = go.Figure()
+
+    if summary.empty:
+        fig.update_layout(
+            title=behavior,
+            height=420,
+            margin=dict(l=60, r=10, t=50, b=40),
+            xaxis_title="Minutes/day",
+            yaxis_title=""
+        )
+        fig.add_annotation(
+            text="No data",
+            x=0.5, y=0.5, xref="paper", yref="paper",
+            showarrow=False
+        )
+        return fig
+
+    # IQR bars (q25 -> q75)
+    for _, r in summary.iterrows():
+        fig.add_shape(
+            type="line",
+            x0=r["q25"], x1=r["q75"],
+            y0=r["Category"], y1=r["Category"],
+            xref="x", yref="y",
+            line=dict(width=6),
+            opacity=0.30
+        )
+
+    # Median dots
+    fig.add_trace(
+        go.Scatter(
+            x=summary["median"],
+            y=summary["Category"],
+            mode="markers",
+            marker=dict(size=10),
+            customdata=np.stack([summary["q25"], summary["q75"], summary["n"]], axis=1),
+            hovertemplate=(
+                f"{row_label}: %{y}<br>"
+                f"{behavior} ({mean_type})<br>"
+                "Median: %{x:.1f} min<br>"
+                "IQR: [%{customdata[0]:.1f}, %{customdata[1]:.1f}]<br>"
+                "n studies: %{customdata[2]}<extra></extra>"
+            ),
+            showlegend=False,
+            name="Median"
+        )
+    )
+
+    fig.update_layout(
+        title=behavior,
+        xaxis_title="Minutes/day",
+        yaxis_title="",
+        margin=dict(l=90, r=10, t=50, b=40),
+        height=max(420, 26 * len(summary) + 160),
+    )
+
+    return fig
+
+
+# ------------------------------------------------------------
+# Build grid: each method row gets a 4-panel line
+# ------------------------------------------------------------
+for row_label, method_col in mc_rows:
+
+    # Skip row if the column does not exist in meta
+    if method_col not in meta.columns:
+        st.info(f"Skipping **{row_label}** (column `{method_col}` not found in metadata).")
+        continue
+
+    st.subheader(row_label)
+
+    # 4 behavior panels
+    cols = st.columns(4)
+
+    for i, b in enumerate(mc_behaviors):
+        summary_b = mc_summarize(df_f, meta, b, mc_mean_type, method_col)
+        fig_b = mc_forest_plot(summary_b, row_label, b, mc_mean_type)
+        cols[i].plotly_chart(fig_b, width="stretch")
+
 
 
 
