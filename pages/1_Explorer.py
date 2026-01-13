@@ -1,2 +1,7 @@
 import streamlit as st
-st.set_page_config(page_title="Explorer", page_icon="🔎", layout="wide")
+import pandas as pd
+import plotly.express as px
+
+st.set_page_config(layout="wide")
+
+st.title("Explorer")
