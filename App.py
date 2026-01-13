@@ -692,3 +692,153 @@ for col in method_vars.values():
 hetero_df = pd.DataFrame(heterogeneity)
 
 st.dataframe(hetero_df, use_container_width=True)
+
+# ============================================================
+# METHODS COMPARISON — Forest-plot style (minutes by choice)
+# ============================================================
+
+import numpy as np
+import plotly.graph_objects as go
+
+st.subheader("Methods Comparison (Forest-Plot Style)")
+st.caption(
+    "This figure compares how reported minutes/day vary across methodological choices. "
+    "It summarizes studies within each choice using a median (dot) and IQR (line)."
+)
+
+# --- Controls (local, does NOT change global filters) ---
+colA, colB, colC = st.columns(3)
+
+with colA:
+    mc_behavior = st.selectbox(
+        "Behavior",
+        options=["Sleep", "SB", "LPA", "MVPA"],
+        index=0
+    )
+
+with colB:
+    mc_dim_label_to_col = {
+        "Device brand": "Device_Brand",
+        "Device model": "Device_Model",
+        "Sleep measurement type": "Sleep_Measurement_Type",
+        "Cutpoint type": "Cutpoint_Type",
+        "Sampling rate (Hz)": "Sampling_Rate_Hz",
+        "Device type": "Device_Type",
+        "Country": "Country",
+    }
+    mc_dim_label = st.selectbox("Methodological choice to compare", list(mc_dim_label_to_col.keys()))
+    mc_dim = mc_dim_label_to_col[mc_dim_label]
+
+with colC:
+    mc_age = st.radio(
+        "Age group (local)",
+        options=["All", "Children", "Adolescents", "Adult"],
+        horizontal=True
+    )
+
+# --- Build dataset for this plot ---
+df_mc = df_f.copy()
+
+# If your df_f doesn't already include the meta columns, merge them in:
+if mc_dim not in df_mc.columns and mc_dim in meta.columns:
+    df_mc = df_mc.merge(meta[["StudyID", mc_dim]], on="StudyID", how="left")
+
+# Apply local filters
+df_mc = df_mc[df_mc["Behavior"] == mc_behavior].copy()
+if mc_age != "All":
+    df_mc = df_mc[df_mc["Age_Group"] == mc_age].copy()
+
+# Clean minutes
+df_mc["Minutes"] = pd.to_numeric(
+    df_mc["Minutes"].astype(str).str.replace(",", "", regex=False),
+    errors="coerce"
+)
+
+# Drop missing
+keep_cols = ["StudyID", "Minutes", mc_dim]
+df_mc = df_mc.dropna(subset=["StudyID", "Minutes", mc_dim])
+
+# (Optional) collapse to ONE value per study to avoid duplicates:
+# If a study appears multiple times because of Mean_Type, choose one:
+# e.g., take Geometric only OR take median across entries.
+# Here: we keep BOTH mean types if present by taking median within study.
+df_mc = (
+    df_mc.groupby(["StudyID", mc_dim], as_index=False)["Minutes"]
+    .median()
+)
+
+if df_mc.empty:
+    st.warning("No data available for this selection.")
+else:
+    # --- Summarize within each choice level ---
+    summary = (
+        df_mc.groupby(mc_dim)["Minutes"]
+        .agg(
+            n="count",
+            q25=lambda x: np.percentile(x, 25),
+            med="median",
+            q75=lambda x: np.percentile(x, 75),
+        )
+        .reset_index()
+    )
+
+    # Keep choices with enough studies (slider)
+    min_n = st.slider("Minimum studies per choice (to display)", 1, 20, 3)
+    summary = summary[summary["n"] >= min_n].copy()
+
+    if summary.empty:
+        st.warning("Nothing meets the minimum-n threshold. Lower the slider.")
+    else:
+        # Sort choices by median (looks nicer)
+        summary = summary.sort_values("med", ascending=True)
+
+        # Overall median reference line
+        overall_median = df_mc["Minutes"].median()
+
+        # --- Build forest plot ---
+        fig = go.Figure()
+
+        fig.add_trace(
+            go.Scatter(
+                x=summary["med"],
+                y=summary[mc_dim],
+                mode="markers",
+                marker=dict(size=10),
+                name="Median",
+                hovertemplate=(
+                    f"{mc_dim}: %{y}<br>"
+                    "Median: %{x:.1f}<br>"
+                    "IQR: [%{customdata[0]:.1f}, %{customdata[1]:.1f}]<br>"
+                    "n studies: %{customdata[2]}<extra></extra>"
+                ),
+                customdata=np.stack([summary["q25"], summary["q75"], summary["n"]], axis=1)
+            )
+        )
+
+        # IQR lines
+        for _, r in summary.iterrows():
+            fig.add_shape(
+                type="line",
+                x0=r["q25"], x1=r["q75"],
+                y0=r[mc_dim], y1=r[mc_dim],
+                line=dict(width=4),
+            )
+
+        # Overall reference
+        fig.add_vline(x=overall_median, line_width=2, line_dash="dot")
+
+        fig.update_layout(
+            title=f"{mc_behavior} minutes/day by {mc_dim_label} ({mc_age})",
+            xaxis_title="Minutes per day",
+            yaxis_title="",
+            height=max(500, 35 * len(summary) + 250),
+            margin=dict(l=40, r=40, t=80, b=40),
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+        # Optional: show the table behind the plot
+        with st.expander("Show summary table"):
+            st.dataframe(summary, use_container_width=True)
+
+
