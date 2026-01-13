@@ -694,7 +694,8 @@ hetero_df = pd.DataFrame(heterogeneity)
 st.dataframe(hetero_df, use_container_width=True)
 
 # ============================================================
-# METHOD COMPARISON — Forest-plot style (1 line per behavior)
+# METHOD COMPARISON GRID — variation across methodological choices
+# Rows = methodological dimensions, Cols = behaviors
 # ============================================================
 
 import numpy as np
@@ -844,7 +845,7 @@ def plot_choice_variation_cell(summary, title, x_label="Minutes/day"):
     return fig
 
 # ---------------------------
-# Figure section (NO UI)
+# GRID SETTINGS
 # ---------------------------
 
 st.markdown("## Method Comparison (variation across methodological choices)")
@@ -853,41 +854,70 @@ st.caption(
     "the thick segment is the IQR, and the thin segment is the full range."
 )
 
-# Choose which methodological dimension to show here:
-# Replace with any meta column you want (e.g., 'Device_Brand', 'Sampling_Rate_Hz', 'Device_Type')
-method_col = "Cutpoint_Type"
-
-# Choose which mean type to use for the comparison:
+# Which mean type to use for the grid
 mc_mean_type = "Geometric"   # or "Arithmetic"
 
-st.markdown(f"### {method_col} — {mc_mean_type} estimates")
+# ✅ Put whatever method columns you want here (these must exist in meta)
+method_rows = [
+    "Cutpoint_Type",
+    "Device_Brand",
+    "Device_Type",
+    "Sampling_Rate_Hz",
+    "Sleep_Measurement_Type",
+    # add more if you want:
+    # "Wear_Days_Instructed",
+    # "Valid_Hours_Per_Day",
+]
 
 behaviors = ["Sleep", "SB", "LPA", "MVPA"]
-cols = st.columns(4)
 
-details_store = {}  # keep for expander
+# Store detail tables so the expander can show them
+details_grid = {}  # details_grid[method_col][behavior] = summary dict
 
-for i, b in enumerate(behaviors):
-    summ = summarize_choice_variation(df_f, meta, b, mc_mean_type, method_col)
-    details_store[b] = summ
+# ---------------------------
+# BUILD GRID
+# ---------------------------
 
-    fig = plot_choice_variation_cell(
-        summ,
-        title=b,
-        x_label="Minutes/day"
-    )
-    cols[i].plotly_chart(fig, width="stretch")
+for method_col in method_rows:
+    if method_col not in meta.columns:
+        st.warning(f"Skipping `{method_col}` (not found in metadata).")
+        continue
+
+    st.markdown(f"### {method_col} — {mc_mean_type} estimates")
+
+    cols = st.columns(4)
+    details_grid[method_col] = {}
+
+    for i, b in enumerate(behaviors):
+        summ = summarize_choice_variation(df_f, meta, b, mc_mean_type, method_col)
+        details_grid[method_col][b] = summ
+
+        fig = plot_choice_variation_cell(
+            summ,
+            title=b,
+            x_label="Minutes/day"
+        )
+        cols[i].plotly_chart(fig, width="stretch")
+
+# ---------------------------
+# OPTIONAL DETAILS
+# ---------------------------
 
 with st.expander("Show underlying choice medians (details)"):
     st.write(
-        "This table shows the median estimate *within each methodological choice* "
+        "For each methodological dimension, this shows the median estimate *within each choice* "
         "(e.g., each cutpoint type), which is what the range/IQR/median are computed from."
     )
-    for b in behaviors:
-        s = details_store.get(b)
-        if s is None:
-            st.write(f"**{b}**: No data")
-        else:
+
+    for method_col in details_grid:
+        st.markdown(f"#### {method_col}")
+        for b in behaviors:
+            s = details_grid[method_col].get(b)
+
+            if s is None:
+                st.write(f"**{b}**: No data")
+                continue
+
             st.write(f"**{b}** (n choices = {s['n_choices']})")
             st.dataframe(s["by_choice"], width="stretch")
 
