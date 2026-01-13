@@ -22,6 +22,18 @@ This app is intended as a transparent research companion and
 methodological exploration tool.
 """)
 
+import streamlit as st
+
+st.set_page_config(
+    page_title="24-Hour Movement Composition Explorer",
+    page_icon="📊",
+    layout="wide"
+)
+
+st.title("24-Hour Movement Composition Explorer")
+st.write("Use the sidebar to navigate between pages.")
+
+st.sidebar.success("Select a page above.")
 
 
 
