@@ -7,6 +7,6 @@ simplex = st.Page("simplex.py", title="Simplex", icon="🔺")
 results_engine = st.Page("results_engine.py", title="Results Engine", icon="🧠")
 corrections = st.Page("corrections.py", title="Corrections & Feedback")
 
-pg = st.navigation([home, explorer, study_tables, simplex, results_engine])
+pg = st.navigation([home, explorer, study_tables, simplex, results_engine, corrections])
 pg.run()
 
