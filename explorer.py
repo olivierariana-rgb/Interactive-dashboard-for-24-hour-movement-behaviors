@@ -30,8 +30,8 @@ def auto_multiselect(df, label, column):
 # ============================================================
 # LOAD DATA
 # ============================================================
-df = pd.read_csv("dashboard_clean_input (1).csv")
-meta = pd.read_csv("full_metadata (1).csv")
+df = pd.read_csv("dashboard_clean_input (2).csv")
+meta = pd.read_csv("full_metadata (2).csv")
 
 df["Minutes"] = pd.to_numeric(df["Minutes"], errors="coerce")
 
