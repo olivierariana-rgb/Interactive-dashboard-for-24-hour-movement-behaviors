@@ -72,8 +72,8 @@ st.write(
     "- “NR” indicates **not reported** in the source article.\n"
 )
 
-# Optional: space for links later
-with st.expander("Links (optional)"):
+# Space for links later
+with st.expander("Links"):
     st.write("- Scoping review preprint: (add later)")
     st.write("- GitHub repository: (add later)")
     st.write("- Contact: (add later)")
