@@ -8,9 +8,6 @@ import plotly.express as px
 # ============================================================
 st.set_page_config(page_title="Explorer", page_icon="🔎", layout="wide")
 
-st.markdown("# Explorer 🔎")
-st.sidebar.header("Filters")
-
 # ============================================================
 # HELPERS
 # ============================================================
@@ -26,49 +23,41 @@ def summarize_filter(label, selected, all_options):
 
     return f"{label}: {', '.join(map(str, selected))}"
 
-
 def auto_multiselect(df, label, column):
-    if column not in df.columns:
-        st.sidebar.warning(f"Missing column: {column}")
-        return []
     options = sorted(df[column].dropna().unique())
     return st.sidebar.multiselect(label, options=options, default=options)
 
-
-def clean_minutes(series):
-    return pd.to_numeric(series.astype(str).str.replace(",", "", regex=False), errors="coerce")
-
-
 # ============================================================
-# LOAD DATA (robust file names)
+# LOAD DATA
 # ============================================================
-@st.cache_data
-def load_data():
-    df = pd.read_csv("dashboard_clean_input (1).csv")
-    meta = pd.read_csv("full_metadata (1).csv")
-    return df, meta
+df = pd.read_csv("dashboard_clean_input (1).csv")
+meta = pd.read_csv("full_metadata (1).csv")
 
+df["Minutes"] = pd.to_numeric(df["Minutes"], errors="coerce")
 
-df, meta = load_data()
-
-# Fix numeric type
-if "Minutes" in df.columns:
-    df["Minutes"] = clean_minutes(df["Minutes"])
-
-# Keep only known age groups (consistent ordering)
+# Keep only known age groups
 df = df[df["Age_Group"].isin(["Children", "Adolescents", "Adult"])].copy()
-df["Age_Group"] = pd.Categorical(df["Age_Group"], categories=["Children", "Adolescents", "Adult"], ordered=True)
 
-# Normalize subgroup (for filtering)
+df["Age_Group"] = pd.Categorical(
+    df["Age_Group"],
+    categories=["Children", "Adolescents", "Adult"],
+    ordered=True
+)
+
+# Normalize subgroup
 df["Subgroup_clean"] = (
     df["Subgroup"]
     .fillna("Full")
     .replace({"": "Full", "full": "Full", "FULL": "Full", "NA": "Full"})
 )
 
+subgroups_available = sorted([s for s in df["Subgroup_clean"].unique() if s != "Full"])
+
 # ============================================================
-# SIDEBAR FILTERS (page-level)
+# SIDEBAR FILTERS (ONLY ONCE)
 # ============================================================
+st.sidebar.header("Filters")
+
 age_filter     = auto_multiselect(df, "Age Group", "Age_Group")
 brand_filter   = auto_multiselect(df, "Device Brand", "Device_Brand")
 type_filter    = auto_multiselect(df, "Device Type", "Device_Type")
@@ -77,15 +66,14 @@ rate_filter    = auto_multiselect(df, "Sampling Rate (Hz)", "Sampling_Rate_Hz")
 sleep_filter   = auto_multiselect(df, "Sleep Measurement Type", "Sleep_Measurement_Type")
 
 st.sidebar.markdown("### Subgroup Selection")
-
 subgroup_mode = st.sidebar.radio(
     "Choose subgroup filtering mode:",
     ["Full sample only", "All subgroups", "Specific subgroups"]
 )
 
-subgroups_available = sorted([s for s in df["Subgroup_clean"].dropna().unique() if s != "Full"])
-
-# Apply filters
+# ============================================================
+# APPLY FILTERS
+# ============================================================
 df_f = df.copy()
 
 if age_filter:     df_f = df_f[df_f["Age_Group"].isin(age_filter)]
@@ -95,21 +83,29 @@ if country_filter: df_f = df_f[df_f["Country"].isin(country_filter)]
 if rate_filter:    df_f = df_f[df_f["Sampling_Rate_Hz"].isin(rate_filter)]
 if sleep_filter:   df_f = df_f[df_f["Sleep_Measurement_Type"].isin(sleep_filter)]
 
-# subgroup mode
+# Subgroup mode
 if subgroup_mode == "Full sample only":
     df_f = df_f[df_f["Subgroup_clean"] == "Full"]
+
 elif subgroup_mode == "Specific subgroups":
-    chosen_groups = st.sidebar.multiselect("Choose one or more subgroups:", options=subgroups_available)
+    chosen_groups = st.sidebar.multiselect(
+        "Choose one or more subgroups:",
+        options=subgroups_available
+    )
     if len(chosen_groups) > 0:
         df_f = df_f[df_f["Subgroup_clean"].isin(chosen_groups)]
     else:
         st.sidebar.warning("Select at least one subgroup or switch mode.")
 
 # ============================================================
-# SUMMARY (top)
+# TITLE + SUMMARY
 # ============================================================
+st.title("24-Hour Movement Composition Explorer")
+st.write("Compare arithmetic and geometric means across studies and visualize individual data points.")
+
 st.markdown("### Current Selection Summary")
-n_studies = df_f["StudyID"].nunique() if "StudyID" in df_f.columns else 0
+
+n_studies = df_f["StudyID"].nunique()
 st.write(f"📊 **Number of studies meeting these criteria:** {n_studies}")
 
 filter_summaries = [
@@ -119,10 +115,10 @@ filter_summaries = [
     summarize_filter("Country", country_filter, df["Country"].unique()),
     summarize_filter("Sampling rate", rate_filter, df["Sampling_Rate_Hz"].unique()),
     summarize_filter("Sleep measurement", sleep_filter, df["Sleep_Measurement_Type"].unique()),
-    f"Subgroup mode: {subgroup_mode}",
+    f"Subgroup mode: {subgroup_mode}"
 ]
-
 st.write("**Filters applied:**  \n" + " • " + "  \n • ".join(filter_summaries))
+
 st.markdown("---")
 
 # ============================================================
@@ -143,11 +139,10 @@ with col1:
     if not arith_means.empty:
         fig_a = px.bar(
             arith_means,
-            x="Minutes",
-            y="Age_Group",
+            x="Minutes", y="Age_Group",
             color="Behavior",
             orientation="h",
-            category_orders={"Age_Group": ["Children", "Adolescents", "Adult"]},
+            category_orders={"Age_Group": ["Children","Adolescents","Adult"]}
         )
         fig_a.update_layout(barmode="stack")
         st.plotly_chart(fig_a, width="stretch")
@@ -159,11 +154,10 @@ with col2:
     if not geo_means.empty:
         fig_g = px.bar(
             geo_means,
-            x="Minutes",
-            y="Age_Group",
+            x="Minutes", y="Age_Group",
             color="Behavior",
             orientation="h",
-            category_orders={"Age_Group": ["Children", "Adolescents", "Adult"]},
+            category_orders={"Age_Group": ["Children","Adolescents","Adult"]}
         )
         fig_g.update_layout(barmode="stack")
         st.plotly_chart(fig_g, width="stretch")
@@ -173,37 +167,47 @@ with col2:
 st.markdown("---")
 
 # ============================================================
-# PLOT 2 — BEHAVIOR-LEVEL SCATTER (Zoomed, local controls)
+# PLOT 2 — BEHAVIOR-LEVEL SCATTER (ZOOM VIEW)
 # ============================================================
 st.subheader("Behavior-Level Scatter Plot")
+
 st.caption(
-    "Zoomed view within the currently selected studies. Changing behavior/age group here does not affect the sidebar filters."
+    "This view provides a focused look within the currently selected studies. "
+    "Changing the behavior or age group here does not affect the global filters above."
 )
 
-beh_options = sorted(df_f["Behavior"].dropna().unique()) if "Behavior" in df_f.columns else []
-if len(beh_options) == 0:
-    st.warning("No behaviors available after filtering.")
-    st.stop()
+selected_behavior = st.selectbox(
+    "Zoom in on behavior:",
+    sorted(df_f["Behavior"].dropna().unique())
+)
 
-selected_behavior = st.selectbox("Zoom in on behavior:", beh_options)
-selected_age = st.radio("Zoom in on age group:", ["Children", "Adolescents", "Adult"], horizontal=True)
+selected_age = st.radio(
+    "Zoom in on age group:",
+    ["Children", "Adolescents", "Adult"],
+    horizontal=True
+)
 
-df_beh = df_f[(df_f["Behavior"] == selected_behavior) & (df_f["Age_Group"] == selected_age)].copy()
+df_beh = df_f[
+    (df_f["Behavior"] == selected_behavior) &
+    (df_f["Age_Group"] == selected_age)
+].copy()
 
-# Clean and drop missing
-df_beh["Minutes"] = clean_minutes(df_beh["Minutes"])
+df_beh["Minutes"] = pd.to_numeric(
+    df_beh["Minutes"].astype(str).str.replace(",", "", regex=False),
+    errors="coerce"
+)
+
 df_beh = df_beh.dropna(subset=["Minutes", "StudyID_display", "Mean_Type"])
 
 if df_beh.empty:
     st.warning("No data available for this selection.")
 else:
-    # Order studies by year if it exists in THIS table
+    # Order studies by year if available (sometimes Year is only in meta)
     if "Year" in df_beh.columns:
         df_beh = df_beh.sort_values(["Year", "StudyID_display"])
     else:
         df_beh = df_beh.sort_values("StudyID_display")
 
-    # Median summary by Mean_Type
     summary = (
         df_beh.groupby("Mean_Type")["Minutes"]
         .median()
@@ -219,10 +223,10 @@ else:
         symbol="Mean_Type",
         symbol_map={"Arithmetic": "circle", "Geometric": "triangle-up"},
         title=f"{selected_behavior} — {selected_age}",
-        height=700,
+        height=700
     )
 
-    # Add reference lines + readable labels (only for types that exist)
+    # Add medians with readable labels (and skip missing types automatically)
     for _, row in summary.iterrows():
         mean_type = row["Mean_Type"]
         median_val = row["Median"]
@@ -239,7 +243,6 @@ else:
             y_offset = 1.06
 
         fig.add_vline(x=median_val, line_width=2, line_dash=dash, line_color="black")
-
         fig.add_annotation(
             x=median_val,
             y=y_offset,
@@ -248,7 +251,7 @@ else:
             showarrow=False,
             font=dict(size=12),
             align="center",
-            bgcolor="rgba(255,255,255,0.8)",
+            bgcolor="rgba(255,255,255,0.85)"
         )
 
     fig.update_layout(
@@ -259,3 +262,92 @@ else:
     )
 
     st.plotly_chart(fig, width="stretch")
+
+st.markdown("---")
+
+# ============================================================
+# FILTERED STUDY TABLES (moved here so no duplicate filters/pages)
+# ============================================================
+st.header("Study Tables (filtered by Explorer selection)")
+st.caption("These tables reflect the filters selected in the Explorer sidebar above.")
+
+# ---- Study-level breakdown (1 row per study) ----
+st.subheader("Study-Level Breakdown (1 row per study)")
+
+study_ids = df_f["StudyID"].dropna().unique()
+
+if len(study_ids) == 0:
+    st.warning("No studies match the current filters.")
+else:
+    st.info(f"Showing **{len(study_ids)} unique studies** based on current filters.")
+
+    meta_filtered = meta[meta["StudyID"].isin(study_ids)].copy()
+
+    # Prefer Full subgroup rows when possible
+    if "Subgroup" in meta_filtered.columns:
+        meta_filtered["Subgroup_clean"] = (
+            meta_filtered["Subgroup"]
+            .fillna("Full")
+            .replace({"": "Full", "full": "Full", "FULL": "Full", "NA": "Full"})
+        )
+        meta_filtered["is_full"] = (meta_filtered["Subgroup_clean"] == "Full").astype(int)
+        meta_unique = (
+            meta_filtered.sort_values(["StudyID", "is_full"], ascending=[True, False])
+            .drop_duplicates(subset="StudyID", keep="first")
+            .reset_index(drop=True)
+        )
+    else:
+        meta_unique = (
+            meta_filtered.sort_values("StudyID")
+            .drop_duplicates(subset="StudyID", keep="first")
+            .reset_index(drop=True)
+        )
+
+    metadata_cols = [
+        "StudyID", "Year", "title", "Country",
+        "Age_Group", "SampleSize", "Device_Brand", "Device_Type",
+        "Sampling_Rate_Hz", "Sleep_Measurement_Type"
+    ]
+    metadata_cols = [c for c in metadata_cols if c in meta_unique.columns]
+
+    st.dataframe(meta_unique[metadata_cols], width="stretch")
+
+# ---- Subgroup summary ----
+st.subheader("Subgroups Available Per Study")
+
+if len(study_ids) > 0:
+    subgroup_table = (
+        df_f.groupby("StudyID")["Subgroup_clean"]
+            .unique()
+            .reset_index()
+            .rename(columns={"Subgroup_clean": "Available_Subgroups"})
+    )
+    st.dataframe(subgroup_table, width="stretch")
+
+# ---- Behavior summary wide ----
+st.subheader("Behavior Summary (Wide Format: 1 row per Study + Subgroup)")
+
+behaviors = ["Sleep", "SB", "LPA", "MVPA"]
+df_beh4 = df_f[df_f["Behavior"].isin(behaviors)].copy()
+
+if df_beh4.empty:
+    st.warning("No behavior data available for current filters.")
+else:
+    wide_arith = (
+        df_beh4[df_beh4["Mean_Type"] == "Arithmetic"]
+        .pivot_table(index=["StudyID", "Subgroup_clean"], columns="Behavior", values="Minutes", aggfunc="mean")
+        .add_prefix("A_")
+        .reset_index()
+        .rename(columns={"Subgroup_clean": "Subgroup"})
+    )
+
+    wide_geo = (
+        df_beh4[df_beh4["Mean_Type"] == "Geometric"]
+        .pivot_table(index=["StudyID", "Subgroup_clean"], columns="Behavior", values="Minutes", aggfunc="mean")
+        .add_prefix("G_")
+        .reset_index()
+        .rename(columns={"Subgroup_clean": "Subgroup"})
+    )
+
+    wide_all = pd.merge(wide_arith, wide_geo, on=["StudyID", "Subgroup"], how="outer")
+    st.dataframe(wide_all, width="stretch")
