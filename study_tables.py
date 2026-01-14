@@ -1,252 +1,274 @@
-# pages/2_Study_Tables.py
+# study_tables.py
 import streamlit as st
 import pandas as pd
 
-# ============================================================
-# PAGE CONFIG
-# ============================================================
 st.set_page_config(page_title="Study Tables", page_icon="📋", layout="wide")
 
-st.markdown("# Study Tables 📋")
-st.sidebar.header("Filters")
+st.title("Study Tables")
+st.caption(
+    "This page shows the full extraction tables (metadata + behavior estimates) to support verification. "
+    "It is not affected by filters on other pages."
+)
 
-# ============================================================
-# HELPERS
-# ============================================================
-def summarize_filter(label, selected, all_options):
-    selected = list(selected) if selected is not None else []
-    all_options = list(all_options) if all_options is not None else []
-
-    if len(selected) == 0:
-        return f"{label}: none"
-
-    if set(map(str, selected)) == set(map(str, all_options)):
-        return f"{label}: all"
-
-    return f"{label}: {', '.join(map(str, selected))}"
-
-
-def auto_multiselect(df, label, column):
-    if column not in df.columns:
-        st.sidebar.warning(f"Missing column: {column}")
-        return []
-    options = sorted(df[column].dropna().unique())
-    return st.sidebar.multiselect(label, options=options, default=options)
-
-
-def clean_minutes(series):
-    return pd.to_numeric(series.astype(str).str.replace(",", "", regex=False), errors="coerce")
-
+st.markdown("---")
 
 # ============================================================
 # LOAD DATA
 # ============================================================
+
 @st.cache_data
-def load_data():
-    df = pd.read_csv("dashboard_clean_input (1).csv")   # long format for plotting/tables
-    meta = pd.read_csv("full_metadata (1).csv")         # one row per study/subgroup (metadata)
-    return df, meta
+def load_meta():
+    meta = pd.read_csv("full_metadata (1).csv")
+    if "StudyID" not in meta.columns:
+        raise ValueError("`StudyID` column not found in full_metadata CSV.")
+    return meta
 
+@st.cache_data
+def load_long():
+    df = pd.read_csv("dashboard_clean_input (1).csv")
+    if "StudyID" not in df.columns:
+        raise ValueError("`StudyID` column not found in dashboard_clean_input CSV.")
+    return df
 
-df, meta = load_data()
-
-# Clean numeric
-if "Minutes" in df.columns:
-    df["Minutes"] = clean_minutes(df["Minutes"])
-
-# Keep only known age groups
-df = df[df["Age_Group"].isin(["Children", "Adolescents", "Adult"])].copy()
-df["Age_Group"] = pd.Categorical(df["Age_Group"], categories=["Children", "Adolescents", "Adult"], ordered=True)
-
-# Normalize subgroup
-df["Subgroup_clean"] = (
-    df["Subgroup"]
-    .fillna("Full")
-    .replace({"": "Full", "full": "Full", "FULL": "Full", "NA": "Full"})
-)
-
-# ============================================================
-# SIDEBAR FILTERS (same style as Explorer)
-# ============================================================
-age_filter     = auto_multiselect(df, "Age Group", "Age_Group")
-brand_filter   = auto_multiselect(df, "Device Brand", "Device_Brand")
-type_filter    = auto_multiselect(df, "Device Type", "Device_Type")
-country_filter = auto_multiselect(df, "Country", "Country")
-rate_filter    = auto_multiselect(df, "Sampling Rate (Hz)", "Sampling_Rate_Hz")
-sleep_filter   = auto_multiselect(df, "Sleep Measurement Type", "Sleep_Measurement_Type")
-
-st.sidebar.markdown("### Subgroup Selection")
-
-subgroup_mode = st.sidebar.radio(
-    "Choose subgroup filtering mode:",
-    ["Full sample only", "All subgroups", "Specific subgroups"]
-)
-
-subgroups_available = sorted([s for s in df["Subgroup_clean"].dropna().unique() if s != "Full"])
-
-# Apply filters
-df_f = df.copy()
-
-if age_filter:     df_f = df_f[df_f["Age_Group"].isin(age_filter)]
-if brand_filter:   df_f = df_f[df_f["Device_Brand"].isin(brand_filter)]
-if type_filter:    df_f = df_f[df_f["Device_Type"].isin(type_filter)]
-if country_filter: df_f = df_f[df_f["Country"].isin(country_filter)]
-if rate_filter:    df_f = df_f[df_f["Sampling_Rate_Hz"].isin(rate_filter)]
-if sleep_filter:   df_f = df_f[df_f["Sleep_Measurement_Type"].isin(sleep_filter)]
-
-# subgroup mode
-if subgroup_mode == "Full sample only":
-    df_f = df_f[df_f["Subgroup_clean"] == "Full"]
-elif subgroup_mode == "Specific subgroups":
-    chosen_groups = st.sidebar.multiselect("Choose one or more subgroups:", options=subgroups_available)
-    if len(chosen_groups) > 0:
-        df_f = df_f[df_f["Subgroup_clean"].isin(chosen_groups)]
-    else:
-        st.sidebar.warning("Select at least one subgroup or switch mode.")
-
-# ============================================================
-# SUMMARY
-# ============================================================
-st.markdown("### Current Selection Summary")
-
-n_studies = df_f["StudyID"].nunique() if "StudyID" in df_f.columns else 0
-st.write(f"📊 **Number of studies meeting these criteria:** {n_studies}")
-
-filter_summaries = [
-    summarize_filter("Age group", age_filter, df["Age_Group"].unique()),
-    summarize_filter("Device brand", brand_filter, df["Device_Brand"].unique()),
-    summarize_filter("Device type", type_filter, df["Device_Type"].unique()),
-    summarize_filter("Country", country_filter, df["Country"].unique()),
-    summarize_filter("Sampling rate", rate_filter, df["Sampling_Rate_Hz"].unique()),
-    summarize_filter("Sleep measurement", sleep_filter, df["Sleep_Measurement_Type"].unique()),
-    f"Subgroup mode: {subgroup_mode}",
-]
-
-st.write("**Filters applied:**  \n" + " • " + "  \n • ".join(filter_summaries))
-st.markdown("---")
-
-# ============================================================
-# STUDY-LEVEL BREAKDOWN (1 row per StudyID)
-# ============================================================
-st.subheader("Study-Level Breakdown (1 row per study)")
-
-if "StudyID" not in df_f.columns:
-    st.warning("StudyID column not found in filtered dataset.")
+try:
+    meta = load_meta()
+    df_long = load_long()
+except Exception as e:
+    st.error(f"Could not load data files. Error: {e}")
     st.stop()
 
-study_ids = df_f["StudyID"].dropna().unique()
-
-if len(study_ids) == 0:
-    st.warning("No studies match the current filters.")
-else:
-    st.info(f"Showing **{len(study_ids)} unique studies** based on current filters.")
-
-    # Filter metadata to these studies
-    meta_filtered = meta[meta["StudyID"].isin(study_ids)].copy()
-
-    # Prefer Full subgroup row if available (if Subgroup exists in meta)
-    if "Subgroup" in meta_filtered.columns:
-        meta_filtered["Subgroup_clean"] = (
-            meta_filtered["Subgroup"]
-            .fillna("Full")
-            .replace({"": "Full", "full": "Full", "FULL": "Full", "NA": "Full"})
-        )
-        meta_filtered["is_full"] = (meta_filtered["Subgroup_clean"] == "Full").astype(int)
-
-        meta_unique = (
-            meta_filtered
-            .sort_values(["StudyID", "is_full"], ascending=[True, False])
-            .drop_duplicates(subset="StudyID", keep="first")
-            .reset_index(drop=True)
-        )
-    else:
-        meta_unique = (
-            meta_filtered
-            .sort_values("StudyID")
-            .drop_duplicates(subset="StudyID", keep="first")
-            .reset_index(drop=True)
-        )
-
-    # Columns to display (only keep those that exist)
-    metadata_cols = [
-        "StudyID", "Year", "title", "Country",
-        "Age_Group", "SampleSize", "Device_Brand", "Device_Type",
-        "Sampling_Rate_Hz", "Sleep_Measurement_Type"
-    ]
-    metadata_cols = [c for c in metadata_cols if c in meta_unique.columns]
-
-    st.write("### Study Characteristics")
-    st.dataframe(meta_unique[metadata_cols], width="stretch")
-
-st.markdown("---")
-
-# ============================================================
-# SUBGROUP SUMMARY TABLE
-# ============================================================
-st.subheader("Subgroups Available Per Study")
-
-if "Subgroup" not in df_f.columns:
-    st.info("No subgroup column available in this dataset.")
-else:
-    subgroup_table = (
-        df_f.groupby("StudyID")["Subgroup"]
-            .unique()
-            .reset_index()
-            .rename(columns={"Subgroup": "Available_Subgroups"})
-    )
-    st.dataframe(subgroup_table, width="stretch")
-
-st.markdown("---")
-
-# ============================================================
-# BEHAVIOR SUMMARY TABLE (WIDE FORMAT)
-# ============================================================
-st.subheader("Behavior Summary (Wide Format: 1 row per Study + Subgroup)")
-
-behaviors = ["Sleep", "SB", "LPA", "MVPA"]
-
-if "Behavior" not in df_f.columns or "Mean_Type" not in df_f.columns:
-    st.warning("Behavior and/or Mean_Type columns are missing.")
-    st.stop()
-
-df_beh4 = df_f[df_f["Behavior"].isin(behaviors)].copy()
-
-if df_beh4.empty:
-    st.warning("No behavior data available for current filters.")
-else:
-    # Pivot arithmetic and geometric separately
-    wide_arith = (
-        df_beh4[df_beh4["Mean_Type"] == "Arithmetic"]
-        .pivot_table(
-            index=["StudyID", "Subgroup"],
-            columns="Behavior",
-            values="Minutes",
-            aggfunc="mean"
-        )
-        .add_prefix("A_")
-        .reset_index()
+# Clean Minutes if present
+if "Minutes" in df_long.columns:
+    df_long["Minutes"] = pd.to_numeric(
+        df_long["Minutes"].astype(str).str.replace(",", "", regex=False),
+        errors="coerce"
     )
 
-    wide_geo = (
-        df_beh4[df_beh4["Mean_Type"] == "Geometric"]
-        .pivot_table(
-            index=["StudyID", "Subgroup"],
-            columns="Behavior",
-            values="Minutes",
-            aggfunc="mean"
-        )
-        .add_prefix("G_")
-        .reset_index()
+# ============================================================
+# CONTROLS (LIGHT FILTERING + SEARCH)
+# ============================================================
+
+st.subheader("Full Metadata Table (one row per record in your extraction sheet)")
+
+colA, colB, colC, colD = st.columns([2, 1, 1, 1])
+
+with colA:
+    search = st.text_input(
+        "Search (StudyID, title, country, device brand, etc.)",
+        placeholder="Try: ActiGraph, Canada, 2019, GT3X, etc."
     )
 
-    wide_all = pd.merge(wide_arith, wide_geo, on=["StudyID", "Subgroup"], how="outer")
-
-    # Optional: sort if Year exists in meta
+with colB:
     if "Year" in meta.columns:
-        wide_all = wide_all.merge(meta[["StudyID", "Year"]].drop_duplicates(), on="StudyID", how="left")
-        wide_all = wide_all.sort_values(["Year", "StudyID"], na_position="last")
-        # Put Year near front
-        cols = ["Year"] + [c for c in wide_all.columns if c != "Year"]
-        wide_all = wide_all[cols]
+        years = sorted(meta["Year"].dropna().unique().tolist())
+        year_pick = st.multiselect("Year", options=years, default=years)
+    else:
+        year_pick = None
 
-    st.dataframe(wide_all, width="stretch")
+with colC:
+    if "Age_Group" in meta.columns:
+        ages = sorted(meta["Age_Group"].dropna().unique().tolist())
+        age_pick = st.multiselect("Age group", options=ages, default=ages)
+    else:
+        age_pick = None
+
+with colD:
+    show_cols_mode = st.selectbox(
+        "Columns",
+        ["Key columns", "All columns"],
+        index=0
+    )
+
+meta_view = meta.copy()
+
+# Apply light filters
+if year_pick is not None and "Year" in meta_view.columns:
+    meta_view = meta_view[meta_view["Year"].isin(year_pick)]
+
+if age_pick is not None and "Age_Group" in meta_view.columns:
+    meta_view = meta_view[meta_view["Age_Group"].isin(age_pick)]
+
+# Apply search across multiple text-like columns
+if search.strip():
+    s = search.strip().lower()
+    # pick a reasonable set of columns to search
+    candidate_cols = [c for c in meta_view.columns if meta_view[c].dtype == "object"] + \
+                     [c for c in ["StudyID", "Year"] if c in meta_view.columns]
+    candidate_cols = list(dict.fromkeys(candidate_cols))  # unique preserving order
+
+    mask = False
+    for c in candidate_cols:
+        mask = mask | meta_view[c].astype(str).str.lower().str.contains(s, na=False)
+    meta_view = meta_view[mask]
+
+# Choose columns to display
+key_cols = [
+    "StudyID", "Year", "title", "Country", "Age_Group", "SampleSize",
+    "Device_Brand", "Device_Model", "Device_Type", "Sampling_Rate_Hz",
+    "Sleep_Measurement_Type", "Cutpoint_Type",
+    "Wear_Days_Instructed", "Valid_Hours_Per_Day",
+    "Primary_Analysis_Type"
+]
+if show_cols_mode == "Key columns":
+    cols_to_show = [c for c in key_cols if c in meta_view.columns]
+else:
+    cols_to_show = list(meta_view.columns)
+
+# Sort option
+sort_col = st.selectbox(
+    "Sort by",
+    options=[c for c in ["Year", "StudyID", "Country", "Device_Brand", "Age_Group"] if c in meta_view.columns],
+    index=0 if "Year" in meta_view.columns else 0
+)
+sort_asc = st.checkbox("Ascending", value=True)
+
+if sort_col in meta_view.columns:
+    meta_view = meta_view.sort_values(sort_col, ascending=sort_asc)
+
+st.info(f"Showing **{len(meta_view)}** rows from metadata.")
+st.dataframe(meta_view[cols_to_show], width="stretch")
+
+# Download
+st.download_button(
+    "Download metadata table as CSV",
+    data=meta_view.to_csv(index=False).encode("utf-8"),
+    file_name="metadata_table_filtered.csv",
+    mime="text/csv"
+)
+
+st.markdown("---")
+
+# ============================================================
+# BEHAVIOR ESTIMATES TABLE (LONG + OPTIONAL WIDE)
+# ============================================================
+
+st.subheader("Behavior Estimates (long format)")
+
+col1, col2, col3 = st.columns([1.2, 1, 1])
+
+with col1:
+    # Limit to behaviors if present
+    if "Behavior" in df_long.columns:
+        beh_opts = sorted(df_long["Behavior"].dropna().unique().tolist())
+        beh_pick = st.multiselect("Behaviors", options=beh_opts, default=beh_opts)
+    else:
+        beh_pick = None
+
+with col2:
+    if "Mean_Type" in df_long.columns:
+        mt_opts = sorted(df_long["Mean_Type"].dropna().unique().tolist())
+        mt_pick = st.multiselect("Mean type", options=mt_opts, default=mt_opts)
+    else:
+        mt_pick = None
+
+with col3:
+    wide_mode = st.selectbox("View", ["Long table", "Wide (A_ and G_ columns)"], index=0)
+
+df_view = df_long.copy()
+
+if beh_pick is not None and "Behavior" in df_view.columns:
+    df_view = df_view[df_view["Behavior"].isin(beh_pick)]
+
+if mt_pick is not None and "Mean_Type" in df_view.columns:
+    df_view = df_view[df_view["Mean_Type"].isin(mt_pick)]
+
+# Optional: merge key study info for easier checking
+meta_cols_for_merge = [c for c in ["StudyID", "Year", "title", "Country", "Age_Group", "Device_Brand", "Device_Model"] if c in meta.columns]
+if "StudyID" in meta_cols_for_merge and "StudyID" in df_view.columns:
+    df_view = df_view.merge(meta[meta_cols_for_merge].drop_duplicates("StudyID"), on="StudyID", how="left")
+
+# Columns to show (long)
+long_cols = [c for c in [
+    "StudyID", "Year", "title", "Country", "Age_Group",
+    "Subgroup", "Behavior", "Mean_Type", "Minutes"
+] if c in df_view.columns]
+
+if wide_mode == "Long table":
+    st.info(f"Showing **{len(df_view)}** rows of behavior estimates (long format).")
+    st.dataframe(df_view[long_cols], width="stretch")
+
+    st.download_button(
+        "Download behavior estimates (long) as CSV",
+        data=df_view[long_cols].to_csv(index=False).encode("utf-8"),
+        file_name="behavior_estimates_long.csv",
+        mime="text/csv"
+    )
+
+else:
+    # Wide: 1 row per StudyID + Subgroup, columns A_* and G_*
+    needed_cols = [c for c in ["StudyID", "Subgroup", "Behavior", "Mean_Type", "Minutes"] if c in df_view.columns]
+    if len(needed_cols) < 5:
+        st.warning("Wide view requires columns: StudyID, Subgroup, Behavior, Mean_Type, Minutes.")
+    else:
+        df_w = df_view[needed_cols].copy()
+
+        wide_arith = (
+            df_w[df_w["Mean_Type"] == "Arithmetic"]
+            .pivot_table(index=["StudyID", "Subgroup"], columns="Behavior", values="Minutes", aggfunc="median")
+            .add_prefix("A_")
+            .reset_index()
+        )
+        wide_geo = (
+            df_w[df_w["Mean_Type"] == "Geometric"]
+            .pivot_table(index=["StudyID", "Subgroup"], columns="Behavior", values="Minutes", aggfunc="median")
+            .add_prefix("G_")
+            .reset_index()
+        )
+
+        wide_all = pd.merge(wide_arith, wide_geo, on=["StudyID", "Subgroup"], how="outer")
+
+        # Add key metadata
+        if "StudyID" in wide_all.columns:
+            wide_all = wide_all.merge(meta[meta_cols_for_merge].drop_duplicates("StudyID"), on="StudyID", how="left")
+
+        # Order columns nicely
+        front = [c for c in ["StudyID", "Year", "title", "Country", "Age_Group", "Device_Brand", "Device_Model", "Subgroup"] if c in wide_all.columns]
+        rest = [c for c in wide_all.columns if c not in front]
+        wide_all = wide_all[front + rest]
+
+        st.info(f"Showing **{len(wide_all)}** rows (wide format).")
+        st.dataframe(wide_all, width="stretch")
+
+        st.download_button(
+            "Download behavior estimates (wide) as CSV",
+            data=wide_all.to_csv(index=False).encode("utf-8"),
+            file_name="behavior_estimates_wide.csv",
+            mime="text/csv"
+        )
+
+st.markdown("---")
+
+# ============================================================
+# DRILL-DOWN: ONE STUDY VIEW
+# ============================================================
+
+st.subheader("Drill-down: Check one study")
+
+# Make a nice picker
+meta_picker = meta.copy()
+if "title" in meta_picker.columns:
+    meta_picker["__label__"] = meta_picker.apply(
+        lambda r: f"{r.get('Year','')} — {str(r.get('title',''))[:90]} (StudyID: {r['StudyID']})",
+        axis=1
+    )
+else:
+    meta_picker["__label__"] = meta_picker["StudyID"].astype(str)
+
+pick_label = st.selectbox("Select a study", options=meta_picker["__label__"].tolist())
+picked = meta_picker.loc[meta_picker["__label__"] == pick_label].iloc[0]
+sid = picked["StudyID"]
+
+st.markdown(f"### Selected StudyID: `{sid}`")
+
+# Show metadata row(s) for this study
+st.write("**Metadata**")
+st.dataframe(meta[meta["StudyID"] == sid], width="stretch")
+
+# Show behavior rows for this study
+st.write("**Behavior estimates (all rows)**")
+df_sid = df_long[df_long["StudyID"] == sid].copy()
+show_cols = [c for c in ["StudyID", "Subgroup", "Behavior", "Mean_Type", "Minutes"] if c in df_sid.columns]
+if len(df_sid) == 0:
+    st.warning("No behavior estimates found for this StudyID in the long dataset.")
+else:
+    st.dataframe(df_sid[show_cols], width="stretch")
