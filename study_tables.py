@@ -18,7 +18,7 @@ st.markdown("---")
 
 @st.cache_data
 def load_meta():
-    meta = pd.read_csv("full_metadata (1).csv")
+    meta = pd.read_csv("full_metadata (2).csv")
     if "StudyID" not in meta.columns:
         raise ValueError("`StudyID` column not found in full_metadata CSV.")
     return meta
