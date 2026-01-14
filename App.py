@@ -6,7 +6,7 @@ explorer = st.Page("explorer.py", title="Explorer", icon="🔎")
 simplex = st.Page("simplex.py", title="Simplex", icon="🔺")
 results = st.Page("results_engine.py", title="Results Engine", icon="🧠")
 tables = st.Page("study_tables.py", title="Study Tables", icon="📋")
-feedback = st.Page("corrections_feedback.py", title="Corrections & Feedback", icon="🛠️")
+feedback = st.Page("corrections.py", title="Corrections & Feedback", icon="🛠️")
 
 pg = st.navigation([
     home,
