@@ -4,6 +4,13 @@ import numpy as np
 import plotly.express as px
 
 # --------------------------------------------------
+# LOAD DATA (page-local)
+# --------------------------------------------------
+
+meta = pd.read_csv("full_metadata (1).csv")
+df = pd.read_csv("dashboard_clean_input (1).csv")
+
+# --------------------------------------------------
 # SIMPLEX — Comparison mode (no Explorer filters)
 # --------------------------------------------------
 
