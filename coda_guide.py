@@ -11,7 +11,7 @@ st.set_page_config(
 # LOAD + PREP METADATA (ONE ROW PER STUDY, PREFER FULL)
 # ============================================================
 
-meta = pd.read_csv("full_metadata (1).csv", encoding="latin1")
+meta = pd.read_csv("full_metadata (2).csv", encoding="latin1")
 
 # Optional: keep only studies you marked for the app
 if "Include_in_app" in meta.columns:
