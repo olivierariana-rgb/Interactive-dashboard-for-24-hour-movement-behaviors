@@ -200,3 +200,74 @@ with st.expander("Optional: completeness trend over time"):
         )
         st.plotly_chart(fig2, width="stretch")
         st.dataframe(comp_year, width="stretch")
+
+st.markdown("---")
+st.write("## Most common methodological choices")
+
+st.caption(
+    "Top values across included studies (metadata, one row per study). "
+    "Use the selector to switch between Overall and age groups. "
+    "NR means not reported."
+)
+
+# --------------------------------------------------
+# Selector: Overall + age groups
+# --------------------------------------------------
+age_choice = st.radio(
+    "View by age group:",
+    ["Overall", "Children", "Adolescents", "Adult"],
+    horizontal=True
+)
+
+if age_choice == "Overall":
+    meta_view = meta_base.copy()
+else:
+    # Safety: handle missing Age_Group column
+    if "Age_Group" not in meta_base.columns:
+        st.warning("`Age_Group` not found in metadata.")
+        meta_view = meta_base.copy()
+    else:
+        meta_view = meta_base[meta_base["Age_Group"] == age_choice].copy()
+
+n_view = len(meta_view)
+st.info(f"📊 {n_view} studies included for **{age_choice}**")
+
+if n_view == 0:
+    st.warning("No studies available for this selection.")
+else:
+    # --------------------------------------------------
+    # Variables to summarize
+    # --------------------------------------------------
+    method_vars = {
+        "Device brand": "Device_Brand",
+        "Device type": "Device_Type",
+        "Sampling rate (Hz)": "Sampling_Rate_Hz",
+        "Sleep measurement type": "Sleep_Measurement_Type",
+        "Cutpoint type": "Cutpoint_Type",
+        "Primary analysis type": "Primary_Analysis_Type",
+    }
+
+    for label, col in method_vars.items():
+        if col not in meta_view.columns:
+            continue
+
+        st.write(f"### {label}")
+
+        counts = meta_view[col].fillna("NR").astype(str).value_counts()
+        total = int(counts.sum())
+
+        if total == 0:
+            st.write("• No data available")
+            continue
+
+        top3 = counts.head(3)
+
+        for val, cnt in top3.items():
+            pct = round(100 * int(cnt) / total, 1)
+            st.write(f"• **{val}** — {int(cnt)} studies ({pct}%)")
+
+        # Always show NR if it exists and isn't already shown
+        if "NR" in counts.index and "NR" not in top3.index:
+            nr_cnt = int(counts["NR"])
+            pct_nr = round(100 * nr_cnt / total, 1)
+            st.write(f"• **NR** — {nr_cnt} studies ({pct_nr}%)")
