@@ -1,40 +1,17 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="24-Hour Movement Methods Explorer",
+    page_title="24-Hour Movement Composition Explorer",
     page_icon="📊",
+    layout="wide",
 )
 
-st.write("# 24-Hour Movement Methods Explorer")
+home = st.Page("home.py", title="Home", icon="🏠")
+explorer = st.Page("explorer.py", title="Explorer", icon="🔍")
+study_tables = st.Page("study_tables.py", title="Study Tables", icon="📋")
+simplex = st.Page("simplex.py", title="Simplex", icon="🔺")
+results_engine = st.Page("results_engine.py", title="Results Engine", icon="🧠")
 
-st.sidebar.success("Select a section above.")
-
-st.markdown(
-    """
-    This interactive application accompanies a scoping review on  
-    **24-hour movement behaviours (sleep, sedentary behaviour, LPA, MVPA)**  
-    and the **methodological choices** used to derive time-use estimates from wearable data.
-
-    **👈 Use the sidebar** to navigate between sections of the app, including:
-    - An interactive explorer of extracted study characteristics  
-    - Summary tables of included studies  
-    - Visual comparisons of methodological choices  
-    - Results illustrating variability across analytic decisions  
-
-    ### What is the goal of this app?
-    To transparently show how different **measurement and processing decisions**
-    (e.g., cutpoints, devices, sampling rates, summaries) can lead to
-    **meaningful variation in reported 24-hour movement behaviour estimates**.
-
-    ### How to use it
-    - Navigate through pages using the sidebar  
-    - Hover over figures to see detailed values  
-    - Use filters where available to focus on specific behaviours or subgroups  
-
-    This app is designed as a **companion tool** for researchers, reviewers,
-    and students interested in reproducibility and methodological rigor in
-    movement behaviour research.
-    """
-)
-
+pg = st.navigation([home, explorer, study_tables, simplex, results_engine])
+pg.run()
 
