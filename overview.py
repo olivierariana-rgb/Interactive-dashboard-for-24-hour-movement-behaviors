@@ -14,7 +14,7 @@ st.write(
 # ------------------------------------------------------------
 # Load metadata
 # ------------------------------------------------------------
-meta = pd.read_csv("full_metadata (1).csv")
+meta = pd.read_csv("full_metadata (2).csv")
 
 # ------------------------------------------------------------
 # Helper: find a year column + clean it
